@@ -9,6 +9,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+func TestGCFHandler(t *testing.T) {
+	mconn := SetConnection("mongodb://raulgantengbanget:0nGCVlPPoCsXNhqG@ac-oilbpwk-shard-00-00.9ofhjs3.mongodb.net:27017,ac-oilbpwk-shard-00-01.9ofhjs3.mongodb.net:27017,ac-oilbpwk-shard-00-02.9ofhjs3.mongodb.net:27017/test?replicaSet=atlas-13x7kp-shard-0&ssl=true&authSource=admin", "petapedia")
+	datagedung := GetAllUser(mconn, "user")
+	fmt.Println(datagedung)
+}
 func TestCreateNewUser(t *testing.T) {
 	userdata := User{
 		Username: "pakrolly",

@@ -1,6 +1,8 @@
 package peda
 
 import (
+	"os"
+
 	"github.com/aiteung/atdb"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -8,7 +10,7 @@ import (
 
 func SetConnection(MONGOCONNSTRINGENV, dbname string) *mongo.Database {
 	var DBmongoinfo = atdb.DBInfo{
-		DBString: MONGOCONNSTRINGENV,
+		DBString: os.Getenv(MONGOCONNSTRINGENV),
 		DBName:   dbname,
 	}
 	return atdb.MongoConnect(DBmongoinfo)
