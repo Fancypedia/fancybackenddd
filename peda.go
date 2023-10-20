@@ -20,7 +20,7 @@ func GCFDeleteHandler(MONGOCONNSTRINGENV, dbname, collectionname string, r *http
 	var datauser User
 	err := json.NewDecoder(r.Body).Decode(&datauser)
 	if err != nil {
-		return "error parsing application/json: " + err.Error()
+		return err.Error()
 	}
 	DeleteUser(mconn, collectionname, datauser)
 	return GCFReturnStruct(datauser)
@@ -31,7 +31,7 @@ func GCFUpdateHandler(MONGOCONNSTRINGENV, dbname, collectionname string, r *http
 	var datauser User
 	err := json.NewDecoder(r.Body).Decode(&datauser)
 	if err != nil {
-		return "error parsing application/json: " + err.Error()
+		return err.Error()
 	}
 	ReplaceOneDoc(mconn, collectionname, bson.M{"username": datauser.Username}, datauser)
 	return GCFReturnStruct(datauser)
@@ -42,7 +42,7 @@ func GCFCreateHandler(MONGOCONNSTRINGENV, dbname, collectionname string, r *http
 	var datauser User
 	err := json.NewDecoder(r.Body).Decode(&datauser)
 	if err != nil {
-		return "error parsing application/json: " + err.Error()
+		return err.Error()
 	}
 	CreateNewUserRole(mconn, collectionname, datauser)
 	return GCFReturnStruct(datauser)
