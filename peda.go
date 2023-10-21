@@ -71,7 +71,7 @@ func GCFCreateHandler(MONGOCONNSTRINGENV, dbname, collectionname string, r *http
 
 	return GCFReturnStruct(datauser)
 }
-func GFCPostHandlerUser(MONGOCONNSTRINGENV, dbname string, r *http.Request) {
+func GFCPostHandlerUser(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) {
 	var Response Credential
 	Response.Status = false
 
@@ -85,7 +85,6 @@ func GFCPostHandlerUser(MONGOCONNSTRINGENV, dbname string, r *http.Request) {
 		mongoConnStringEnv := MONGOCONNSTRINGENV
 
 		mconn := SetConnection(mongoConnStringEnv, dbname)
-		collectionname := "user" // Gantilah dengan nama koleksi yang sesuai
 
 		// Lakukan pemeriksaan kata sandi menggunakan bcrypt
 		if IsPasswordValid(mconn, collectionname, datauser) {
