@@ -71,7 +71,7 @@ func GCFCreateHandler(MONGOCONNSTRINGENV, dbname, collectionname string, r *http
 
 	return GCFReturnStruct(datauser)
 }
-func GFCPostHandlerUser(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) {
+func GFCPostHandlerUser(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
 	var Response Credential
 	Response.Status = false
 
@@ -96,7 +96,8 @@ func GFCPostHandlerUser(MONGOCONNSTRINGENV, dbname, collectionname string, r *ht
 	}
 
 	// Mengirimkan respons sebagai JSON
-	Response.Status = true
+	responseJSON, _ := json.Marshal(Response)
+	return string(responseJSON)
 }
 
 func GCFPostHandler(PASETOPRIVATEKEYENV, MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {

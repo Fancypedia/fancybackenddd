@@ -52,6 +52,15 @@ func TestDeleteUser(t *testing.T) {
 	DeleteUser(mconn, "user", userdata)
 }
 
+func TestGFCPostHandlerUser(t *testing.T) {
+	mconn := SetConnection("MONGOULBI", "petapedia")
+	var userdata User
+	userdata.Username = "raulmahya"
+	userdata.Password = "banget"
+	userdata.Role = "admin"
+	CreateNewUserRole(mconn, "user", userdata)
+}
+
 func TestFunciionUser(t *testing.T) {
 	mconn := SetConnection("MONGOULBI", "petapedia")
 	var userdata User
