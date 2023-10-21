@@ -73,7 +73,7 @@ func TestFunciionUser(t *testing.T) {
 func TestProduct(t *testing.T) {
 	mconn := SetConnection("MONGOULBI", "petapedia")
 	var productdata Product
-	productdata.ID = 1
+	productdata.Nomorid = 1
 	productdata.Name = "raul"
 	productdata.Description = "mahya"
 	productdata.Price = 1000

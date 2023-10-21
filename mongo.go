@@ -21,6 +21,11 @@ func GetAllBangunanLineString(mongoconn *mongo.Database, collection string) []Ge
 	return lokasi
 }
 
+func GetAllProduct(mongoconn *mongo.Database, collection string) []Product {
+	product := atdb.GetAllDoc[[]Product](mongoconn, collection)
+	return product
+}
+
 func GetAllUser(mongoconn *mongo.Database, collection string) []User {
 	user := atdb.GetAllDoc[[]User](mongoconn, collection)
 	return user
@@ -55,10 +60,6 @@ func IsPasswordValid(mongoconn *mongo.Database, collection string, userdata User
 }
 
 // product
-func GetAllProduct(mongoconn *mongo.Database, collection string) []Product {
-	product := atdb.GetAllDoc[[]Product](mongoconn, collection)
-	return product
-}
 
 func CreateNewProduct(mongoconn *mongo.Database, collection string, productdata Product) interface{} {
 	return atdb.InsertOneDoc(mongoconn, collection, productdata)
