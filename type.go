@@ -54,7 +54,7 @@ type Credential struct {
 }
 
 type Product struct {
-	ID          string `json:"id" bson:"id"`
+	ID          int    `json:"id" bson:"id"`
 	Name        string `json:"name" bson:"name"`
 	Description string `json:"description" bson:"description"`
 	Price       int    `json:"price" bson:"price"`

@@ -135,7 +135,8 @@ func GCFReturnStruct(DataStuct any) string {
 func GCFGetAllProduct(MONGOCONNSTRINGENV, dbname, collectionname string) string {
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	datagedung := GetAllProduct(mconn, collectionname)
-	return GCFReturnStruct(datagedung)
+	Response := GCFReturnStruct(datagedung)
+	return Response
 }
 
 func GCFCreateProduct(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
