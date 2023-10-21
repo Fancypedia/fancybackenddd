@@ -130,3 +130,21 @@ func GCFReturnStruct(DataStuct any) string {
 	jsondata, _ := json.Marshal(DataStuct)
 	return string(jsondata)
 }
+
+// product
+func GCFGetAllProduct(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	datagedung := GetAllProduct(mconn, collectionname)
+	return GCFReturnStruct(datagedung)
+}
+
+func GCFCreateProduct(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var dataproduct Product
+	err := json.NewDecoder(r.Body).Decode(&dataproduct)
+	if err != nil {
+		return err.Error()
+	}
+	CreateNewProduct(mconn, collectionname, dataproduct)
+	return GCFReturnStruct(dataproduct)
+}

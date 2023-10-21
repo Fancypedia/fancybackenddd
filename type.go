@@ -52,3 +52,13 @@ type Credential struct {
 	Token   string `json:"token,omitempty" bson:"token,omitempty"`
 	Message string `json:"message,omitempty" bson:"message,omitempty"`
 }
+
+type Product struct {
+	ID          string `json:"id" bson:"id"`
+	Name        string `json:"name" bson:"name"`
+	Description string `json:"description" bson:"description"`
+	Price       int    `json:"price" bson:"price"`
+	Stock       int    `json:"stock" bson:"stock"`
+	Size        string `json:"size" bson:"size"`
+	Image       string `json:"image" bson:"image"`
+}

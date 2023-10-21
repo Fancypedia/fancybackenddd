@@ -53,3 +53,13 @@ func IsPasswordValid(mongoconn *mongo.Database, collection string, userdata User
 	res := atdb.GetOneDoc[User](mongoconn, collection, filter)
 	return CheckPasswordHash(userdata.Password, res.Password)
 }
+
+// product
+func GetAllProduct(mongoconn *mongo.Database, collection string) []Product {
+	product := atdb.GetAllDoc[[]Product](mongoconn, collection)
+	return product
+}
+
+func CreateNewProduct(mongoconn *mongo.Database, collection string, productdata Product) interface{} {
+	return atdb.InsertOneDoc(mongoconn, collection, productdata)
+}
