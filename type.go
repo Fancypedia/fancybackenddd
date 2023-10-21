@@ -62,3 +62,9 @@ type Product struct {
 	Size        string `json:"size" bson:"size"`
 	Image       string `json:"image" bson:"image"`
 }
+
+type Response struct {
+	Status  bool        `json:"status" bson:"status"`
+	Message string      `json:"message" bson:"message"`
+	Data    interface{} `json:"data" bson:"data"`
+}

@@ -70,6 +70,19 @@ func TestFunciionUser(t *testing.T) {
 	CreateNewUserRole(mconn, "user", userdata)
 }
 
+func TestProduct(t *testing.T) {
+	mconn := SetConnection("MONGOULBI", "petapedia")
+	var productdata Product
+	productdata.ID = "1"
+	productdata.Name = "raul"
+	productdata.Description = "mahya"
+	productdata.Price = 1000
+	productdata.Size = "XL"
+	productdata.Stock = 100
+	productdata.Image = "https://images3.alphacoders.com/165/thumb-1920-165265.jpg"
+	CreateNewProduct(mconn, "product", productdata)
+}
+
 func TestGeneratePasswordHashh(t *testing.T) {
 	password := "secret"
 	hash, _ := HashPassword(password) // ignore error for the sake of simplicity
