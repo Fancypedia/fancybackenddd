@@ -26,8 +26,17 @@ func GetAllUser(mongoconn *mongo.Database, collection string) []User {
 	return user
 }
 func CreateNewUserRole(mongoconn *mongo.Database, collection string, userdata User) interface{} {
+	// Hash the password before storing it
+	hashedPassword, err := HashPassword(userdata.Password)
+	if err != nil {
+		return err
+	}
+	userdata.Password = hashedPassword
+
+	// Insert the user data into the database
 	return atdb.InsertOneDoc(mongoconn, collection, userdata)
 }
+
 func DeleteUser(mongoconn *mongo.Database, collection string, userdata User) interface{} {
 	filter := bson.M{"username": userdata.Username}
 	return atdb.DeleteOneDoc(mongoconn, collection, filter)

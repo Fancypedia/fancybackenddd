@@ -2,6 +2,7 @@ package peda
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 
@@ -57,9 +58,17 @@ func GCFCreateHandler(MONGOCONNSTRINGENV, dbname, collectionname string, r *http
 	if err != nil {
 		return err.Error()
 	}
-	hash, _ := HashPassword(datauser.Password)
-	datauser.Password = hash
-	CreateNewUserRole(mconn, collectionname, datauser)
+
+	// Hash the password before storing it
+	hashedPassword, hashErr := HashPassword(datauser.Password)
+	if hashErr != nil {
+		return hashErr.Error()
+	}
+	datauser.Password = hashedPassword
+
+	createErr := CreateNewUserRole(mconn, collectionname, datauser)
+	fmt.Println(createErr)
+
 	return GCFReturnStruct(datauser)
 }
 

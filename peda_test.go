@@ -9,27 +9,39 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func TestGCFHandler(t *testing.T) {
-	mconn := SetConnection("mongodb://raulgantengbanget:0nGCVlPPoCsXNhqG@ac-oilbpwk-shard-00-00.9ofhjs3.mongodb.net:27017,ac-oilbpwk-shard-00-01.9ofhjs3.mongodb.net:27017,ac-oilbpwk-shard-00-02.9ofhjs3.mongodb.net:27017/test?replicaSet=atlas-13x7kp-shard-0&ssl=true&authSource=admin", "petapedia")
+func TestUpdateGetData(t *testing.T) {
+	mconn := SetConnection("MONGOULBI", "petapedia")
 	datagedung := GetAllUser(mconn, "user")
 	fmt.Println(datagedung)
 }
-func TestCreateNewUser(t *testing.T) {
-	userdata := User{
-		Username: "pakrolly",
-		Password: "ganteng",
-		Role:     "admin",
-	}
 
-	// You may want to create a connection to your MongoDB database and insert the user data here.
-	// Replace the following code with your database operations.
+// }
+// func TestGCFCreateHandler(t *testing.T) {
+// 	// Simulate input parameters
+// 	MONGOCONNSTRINGENV := "mongodb://raulgantengbanget:0nGCVlPPoCsXNhqG@ac-oilbpwk-shard-00-00.9ofhjs3.mongodb.net:27017,ac-oilbpwk-shard-00-01.9ofhjs3.mongodb.net:27017,ac-oilbpwk-shard-00-02.9ofhjs3.mongodb.net:27017/test?replicaSet=atlas-13x7kp-shard-0&ssl=true&authSource=admin"
+// 	dbname := "petapedia"
+// 	collectionname := "user"
 
-	mconn := SetConnection("mongodb://raulgantengbanget:0nGCVlPPoCsXNhqG@ac-oilbpwk-shard-00-00.9ofhjs3.mongodb.net:27017,ac-oilbpwk-shard-00-01.9ofhjs3.mongodb.net:27017,ac-oilbpwk-shard-00-02.9ofhjs3.mongodb.net:27017/test?replicaSet=atlas-13x7kp-shard-0&ssl=true&authSource=admin", "petapedia")
-	err := CreateNewUserRole(mconn, "user", userdata)
-	if err != nil {
-		t.Errorf("Error creating a new user: %v", err)
-	}
-	t.Logf("User created successfully: %s", userdata.Username)
+// 	// Create a test User
+// 	datauser := User{
+// 		Username: "testuser",
+// 		Password: "testpassword",
+// 		Role:     "user",
+// 	}
+
+// 	// Call the handler function
+// 	result := GCFCreateHandler(MONGOCONNSTRINGENV, dbname, collectionname, datauser)
+// 	fmt.Println(result)
+// 	// You can add assertions here to validate the result, or check the database for the created user.
+// }
+
+func TestCreateNewUserRole(t *testing.T) {
+	var userdata User
+	userdata.Username = "zz"
+	userdata.Password = "banget"
+	userdata.Role = "admin"
+	mconn := SetConnection("MONGOULBI", "petapedia")
+	CreateNewUserRole(mconn, "user", userdata)
 }
 
 func TestDeleteUser(t *testing.T) {
