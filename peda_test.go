@@ -83,6 +83,12 @@ func TestProduct(t *testing.T) {
 	CreateNewProduct(mconn, "product", productdata)
 }
 
+func TestAllProduct(t *testing.T) {
+	mconn := SetConnection("MONGOULBI", "petapedia")
+	product := GetAllProduct(mconn, "product")
+	fmt.Println(product)
+}
+
 func TestGeneratePasswordHashh(t *testing.T) {
 	password := "secret"
 	hash, _ := HashPassword(password) // ignore error for the sake of simplicity
