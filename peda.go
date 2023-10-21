@@ -132,7 +132,7 @@ func GCFReturnStruct(DataStuct any) string {
 }
 
 // product
-func GCFGetAllProduct(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+func GCFGetAllProduct(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	datagedung := GetAllProduct(mconn, collectionname)
 	Response := GCFReturnStruct(datagedung)
