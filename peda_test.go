@@ -52,6 +52,31 @@ func TestDeleteUser(t *testing.T) {
 	DeleteUser(mconn, "user", userdata)
 }
 
+func TestGeneratePasswordHashh(t *testing.T) {
+	password := "secret"
+	hash, _ := HashPassword(password) // ignore error for the sake of simplicity
+
+	fmt.Println("Password:", password)
+	fmt.Println("Hash:    ", hash)
+
+	match := CheckPasswordHash(password, hash)
+	fmt.Println("Match:   ", match)
+}
+func TestHashFunctionn(t *testing.T) {
+	mconn := SetConnection("MONGOULBI", "petapedia")
+	var userdata User
+	userdata.Username = "zz"
+	userdata.Password = "mahya"
+
+	filter := bson.M{"username": userdata.Username}
+	res := atdb.GetOneDoc[User](mconn, "user", filter)
+	fmt.Println("Mongo User Result: ", res)
+	hash, _ := HashPassword(userdata.Password)
+	fmt.Println("Hash Password : ", hash)
+	match := CheckPasswordHash(userdata.Password, res.Password)
+	fmt.Println("Match:   ", match)
+
+}
 func TestFindUser(t *testing.T) {
 	var userdata User
 	userdata.Username = "petped"
