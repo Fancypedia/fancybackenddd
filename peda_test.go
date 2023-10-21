@@ -37,7 +37,7 @@ func TestUpdateGetData(t *testing.T) {
 
 func TestCreateNewUserRole(t *testing.T) {
 	var userdata User
-	userdata.Username = "zz"
+	userdata.Username = "raulmahya"
 	userdata.Password = "banget"
 	userdata.Role = "admin"
 	mconn := SetConnection("MONGOULBI", "petapedia")
@@ -50,6 +50,15 @@ func TestDeleteUser(t *testing.T) {
 	var userdata User
 	userdata.Username = "maulana"
 	DeleteUser(mconn, "user", userdata)
+}
+
+func TestFunciionUser(t *testing.T) {
+	mconn := SetConnection("MONGOULBI", "petapedia")
+	var userdata User
+	userdata.Username = "raulmahya"
+	userdata.Password = "banget"
+	userdata.Role = "admin"
+	CreateNewUserRole(mconn, "user", userdata)
 }
 
 func TestGeneratePasswordHashh(t *testing.T) {

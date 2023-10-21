@@ -71,30 +71,33 @@ func GCFCreateHandler(MONGOCONNSTRINGENV, dbname, collectionname string, r *http
 
 	return GCFReturnStruct(datauser)
 }
-func GCFPostHandlerUser(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GFCPostHandlerUser(MONGOCONNSTRINGENV, dbname string, r *http.Request) {
 	var Response Credential
 	Response.Status = false
-	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	// Mendapatkan data yang diterima dari permintaan HTTP POST
 	var datauser User
 	err := json.NewDecoder(r.Body).Decode(&datauser)
 	if err != nil {
 		Response.Message = "error parsing application/json: " + err.Error()
 	} else {
+		// Menggunakan variabel MONGOCONNSTRINGENV untuk string koneksi MongoDB
+		mongoConnStringEnv := MONGOCONNSTRINGENV
+
+		mconn := SetConnection(mongoConnStringEnv, dbname)
+		collectionname := "user" // Gantilah dengan nama koleksi yang sesuai
+
+		// Lakukan pemeriksaan kata sandi menggunakan bcrypt
 		if IsPasswordValid(mconn, collectionname, datauser) {
 			Response.Status = true
-			tokenstring, err := watoken.Encode(datauser.Username, os.Getenv("PASETOPRIVATEKEYENV"))
-			if err != nil {
-				Response.Message = "Gagal Encode Token : " + err.Error()
-			} else {
-				Response.Message = "Selamat Datang"
-				Response.Token = tokenstring
-			}
+			Response.Message = "Selamat Datang"
 		} else {
 			Response.Message = "Password Salah"
 		}
 	}
 
-	return GCFReturnStruct(Response)
+	// Mengirimkan respons sebagai JSON
+	Response.Status = true
 }
 
 func GCFPostHandler(PASETOPRIVATEKEYENV, MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
