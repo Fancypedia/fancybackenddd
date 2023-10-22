@@ -42,7 +42,7 @@ func GCFFindUserByName(MONGOCONNSTRINGENV, dbname, collectionname string, r *htt
 	if datauser.Username != "" {
 		return GCFReturnStruct(datauser)
 	}
-	user := FindUser(mconn, collectionname, datauser)
+	user := FindUserUser(mconn, collectionname, datauser)
 	return GCFReturnStruct(user)
 }
 
