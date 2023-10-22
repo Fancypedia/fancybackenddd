@@ -27,6 +27,11 @@ func GetAllProduct(mongoconn *mongo.Database, collection string) []Product {
 	return product
 }
 
+func GetNameAndPassowrd(mongoconn *mongo.Database, collection string) []User {
+	user := atdb.GetAllDoc[[]User](mongoconn, collection)
+	return user
+}
+
 func GetAllUser(mongoconn *mongo.Database, collection string) []User {
 	user := atdb.GetAllDoc[[]User](mongoconn, collection)
 	return user

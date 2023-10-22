@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/aiteung/atdb"
 	"github.com/whatsauth/watoken"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -168,4 +169,22 @@ func GCFCreateProduct(MONGOCONNSTRINGENV, dbname, collectionname string, r *http
 	}
 	CreateNewProduct(mconn, collectionname, dataproduct)
 	return GCFReturnStruct(dataproduct)
+}
+
+func GCFLoginTest(username, password, MONGOCONNSTRINGENV, dbname, collectionname string) bool {
+	// Membuat koneksi ke MongoDB
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	// Mencari data pengguna berdasarkan username
+	filter := bson.M{"username": username}
+	collection := collectionname
+	res := atdb.GetOneDoc[User](mconn, collection, filter)
+
+	// Memeriksa apakah pengguna ditemukan dalam database
+	if res == (User{}) {
+		return false
+	}
+
+	// Memeriksa apakah kata sandi cocok
+	return CheckPasswordHash(password, res.Password)
 }
