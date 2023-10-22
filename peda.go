@@ -51,6 +51,27 @@ func GCFUpdateHandler(MONGOCONNSTRINGENV, dbname, collectionname string, r *http
 // 	return GCFReturnStruct(datauser)
 // }
 
+func GCFCreateHandlerTokenPaseto(PASETOPRIVATEKEYENV, MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var datauser User
+	err := json.NewDecoder(r.Body).Decode(&datauser)
+	if err != nil {
+		return err.Error()
+	}
+	hashedPassword, hashErr := HashPassword(datauser.Password)
+	if hashErr != nil {
+		return hashErr.Error()
+	}
+	datauser.Password = hashedPassword
+	CreateNewUserRole(mconn, collectionname, datauser)
+	tokenstring, err := watoken.Encode(datauser.Username, os.Getenv(PASETOPRIVATEKEYENV))
+	if err != nil {
+		return err.Error()
+	}
+	datauser.Token = tokenstring
+	return GCFReturnStruct(datauser)
+}
+
 func GCFCreateHandler(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	var datauser User

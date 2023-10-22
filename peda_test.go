@@ -1,12 +1,16 @@
 package peda
 
 import (
+	"context"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/aiteung/atdb"
 	"github.com/whatsauth/watoken"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func TestUpdateGetData(t *testing.T) {
@@ -42,6 +46,56 @@ func TestCreateNewUserRole(t *testing.T) {
 	userdata.Role = "admin"
 	mconn := SetConnection("MONGOULBI", "petapedia")
 	CreateNewUserRole(mconn, "user", userdata)
+}
+
+func TestCreateNewUserToken(t *testing.T) {
+	// Create a User struct
+	var userdata User
+	userdata.Username = "asd"
+	userdata.Password = "banget"
+	userdata.Role = "admin"
+
+	// Generate private and public keys using watoken.GenerateKey
+	privateKey, publicKey := watoken.GenerateKey()
+
+	// Store the private and public keys in the userdata
+	userdata.Private = privateKey
+	userdata.Publick = publicKey // Corrected the field name from Publick to Public
+
+	// Encode a token using the privateKey
+	hasil, err := watoken.Encode("banget", privateKey)
+	fmt.Println(hasil, err)
+	if err != nil {
+		t.Errorf("Failed to create user and token: %v", err)
+	} else {
+		t.Logf("User and token created successfully")
+
+		// Assuming you have a MongoDB client and a database connection, use the client and connection to insert the userdata
+		// Replace "yourDatabaseName" with your actual database name
+		client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://raulgantengbanget:0nGCVlPPoCsXNhqG@ac-oilbpwk-shard-00-00.9ofhjs3.mongodb.net:27017,ac-oilbpwk-shard-00-01.9ofhjs3.mongodb.net:27017,ac-oilbpwk-shard-00-02.9ofhjs3.mongodb.net:27017/test?replicaSet=atlas-13x7kp-shard-0&ssl=true&authSource=admin"))
+		if err != nil {
+			t.Errorf("Failed to create MongoDB client: %v", err)
+		} else {
+			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			defer cancel()
+
+			err = client.Connect(ctx)
+			if err != nil {
+				t.Errorf("Failed to connect to MongoDB: %v", err)
+			} else {
+				// Use the database name and collection name where you want to insert the user data
+				db := client.Database("petapedia")
+				collection := db.Collection("user")
+
+				_, err = collection.InsertOne(ctx, userdata)
+				if err != nil {
+					t.Errorf("Failed to insert user data into MongoDB: %v", err)
+				} else {
+					t.Logf("User data inserted into MongoDB successfully")
+				}
+			}
+		}
+	}
 }
 
 func TestDeleteUser(t *testing.T) {
