@@ -80,6 +80,15 @@ func FindUser(mongoconn *mongo.Database, collection string, userdata User) User 
 	filter := bson.M{"username": userdata.Username}
 	return atdb.GetOneDoc[User](mongoconn, collection, filter)
 }
+
+func FindUserUser(mongoconn *mongo.Database, collection string, userdata User) User {
+	filter := bson.M{
+		"username": userdata.Username,
+		"role":     "user", // Menetapkan peran sebagai "User"
+	}
+	return atdb.GetOneDoc[User](mongoconn, collection, filter)
+}
+
 func IsPasswordValid(mongoconn *mongo.Database, collection string, userdata User) bool {
 	filter := bson.M{"username": userdata.Username}
 	res := atdb.GetOneDoc[User](mongoconn, collection, filter)

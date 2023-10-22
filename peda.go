@@ -28,6 +28,24 @@ func GCFFindUserByID(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.
 	return GCFReturnStruct(user)
 }
 
+func GCFFindUserByName(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var datauser User
+	err := json.NewDecoder(r.Body).Decode(&datauser)
+	if err != nil {
+		return err.Error()
+	}
+	if datauser.Username == "" {
+		return err.Error()
+	}
+	// jika ada username ada muncul respon berhasil
+	if datauser.Username != "" {
+		return GCFReturnStruct(datauser)
+	}
+	user := FindUser(mconn, collectionname, datauser)
+	return GCFReturnStruct(user)
+}
+
 func GCFDeleteHandler(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	var datauser User
