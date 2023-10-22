@@ -84,7 +84,6 @@ func FindUser(mongoconn *mongo.Database, collection string, userdata User) User 
 func FindUserUser(mongoconn *mongo.Database, collection string, userdata User) User {
 	filter := bson.M{
 		"username": userdata.Username,
-		"role":     "user", // Menetapkan peran sebagai "User"
 	}
 	return atdb.GetOneDoc[User](mongoconn, collection, filter)
 }
