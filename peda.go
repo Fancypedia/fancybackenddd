@@ -35,15 +35,22 @@ func GCFFindUserByName(MONGOCONNSTRINGENV, dbname, collectionname string, r *htt
 	if err != nil {
 		return err.Error()
 	}
+
+	// Jika username kosong, maka respon "false" dan data tidak ada
 	if datauser.Username == "" {
-		return err.Error()
+		return "false"
 	}
-	// jika ada username ada muncul respon berhasil
-	if datauser.Username != "" {
-		return GCFReturnStruct(datauser)
-	}
+
+	// Jika ada username, mencari data pengguna
 	user := FindUserUser(mconn, collectionname, datauser)
-	return GCFReturnStruct(user)
+
+	// Jika data pengguna ditemukan, mengembalikan data pengguna dalam format yang sesuai
+	if user != (User{}) {
+		return GCFReturnStruct(user)
+	}
+
+	// Jika tidak ada data pengguna yang ditemukan, mengembalikan "false" dan data tidak ada
+	return "false"
 }
 
 func GCFDeleteHandler(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
