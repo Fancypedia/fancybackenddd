@@ -1,76 +1,42 @@
-swagger: "2.0"
+swagger: '2.0'
 info:
-  description: "API for managing users"
-  version: "1.0.0"
-  title: "FANCY PEDIA BACKEND"
-host: "your-api-host.com"
-basePath: "/api/v1"
+  version: 1.0.0
+  title: Contoh API POST User
+  description: Contoh API untuk membuat pengguna baru
+host: asia-southeast2-testlogin-366704.cloudfunctions.net
+basePath: /postuser
 schemes:
-  - "https"
+  - https
 paths:
-  /user/{username}:
-    get:
-      summary: "Get User by Username"
-      description: "Get user information by username"
-      parameters:
-        - name: "username"
-          in: "path"
-          required: true
-          type: "string"
-      responses:
-        200:
-          description: "User information retrieved successfully"
-          schema:
-            $ref: "#/definitions/User"
-        404:
-          description: "User not found"
-    delete:
-      summary: "Delete User by Username"
-      description: "Delete user by username"
-      parameters:
-        - name: "username"
-          in: "path"
-          required: true
-          type: "string"
-      responses:
-        204:
-          description: "User deleted successfully"
-        404:
-          description: "User not found"
-  /user:
+  /:
     post:
-      summary: "Create User"
-      description: "Create a new user"
+      summary: Membuat Pengguna Baru
+      description: API untuk membuat pengguna baru dengan informasi username, password, dan role.
+      consumes:
+        - application/json
+      produces:
+        - application/json
       parameters:
-        - name: "user"
-          in: "body"
-          description: "User object to be created"
+        - in: body
+          name: user
+          description: Informasi pengguna yang akan dibuat
           required: true
           schema:
-            $ref: "#/definitions/User"
+            type: object
+            properties:
+              Username:
+                type: string
+                example: pakrolly
+              Password:
+                type: string
+                example: ganteng
+              Role:
+                type: string
+                example: admin
       responses:
         201:
-          description: "User created successfully"
+          description: Pengguna berhasil dibuat
         400:
-          description: "Invalid user data"
-        409:
-          description: "User already exists"
-definitions:
-  User:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      username:
-        type: "string"
-      firstName:
-        type: "string"
-      lastName:
-        type: "string"
-      email:
-        type: "string"
-      password:
-        type: "string"
-    xml:
-      name: "User"
+          description: Permintaan tidak valid
+        500:
+          description: Kesalahan server

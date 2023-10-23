@@ -99,10 +99,9 @@ func TestCreateNewUserToken(t *testing.T) {
 }
 
 func TestDeleteUser(t *testing.T) {
-
-	mconn := SetConnection("mongodb://raulgantengbanget:0nGCVlPPoCsXNhqG@ac-oilbpwk-shard-00-00.9ofhjs3.mongodb.net:27017,ac-oilbpwk-shard-00-01.9ofhjs3.mongodb.net:27017,ac-oilbpwk-shard-00-02.9ofhjs3.mongodb.net:27017/test?replicaSet=atlas-13x7kp-shard-0&ssl=true&authSource=admin", "petapedia")
+	mconn := SetConnection("MONGOULBI", "petapedia")
 	var userdata User
-	userdata.Username = "maulana"
+	userdata.Username = "yyy"
 	DeleteUser(mconn, "user", userdata)
 }
 
