@@ -217,3 +217,13 @@ func TestIsPasswordValid(t *testing.T) {
 	anu := IsPasswordValid(mconn, "user", userdata)
 	fmt.Println(anu)
 }
+
+func CreateContent(t *testing.T) {
+	mconn := SetConnection("MONGOULBI", "petapedia")
+	var contentdata Content
+	contentdata.ID = 1
+	contentdata.Content = "raul"
+	contentdata.Description = "mahya"
+	contentdata.Image = "https://images3.alphacoders.com/165/thumb-1920-165265.jpg"
+	CreateNewContent(mconn, "content", contentdata)
+}

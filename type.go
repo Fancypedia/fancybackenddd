@@ -76,18 +76,18 @@ type Response struct {
 }
 
 type Content struct {
-	ID          primitive.ObjectID `bson:"_id"`
-	Content     string             `json:"content" bson:"content"`
-	Image       string             `json:"image" bson:"image"`
-	Description string             `json:"description" bson:"description"`
+	ID          int    `bson:"_id"`
+	Content     string `json:"content" bson:"content"`
+	Image       string `json:"image" bson:"image"`
+	Description string `json:"description" bson:"description"`
 }
 
 type Blog struct {
-	ID          primitive.ObjectID `bson:"_id"`
-	Title       string             `json:"title" bson:"title"`
-	Tanggal     string             `json:"tanggal" bson:"tanggal"`
-	Description string             `json:"judul" bson:"judul"`
-	Content     []Content          `json:"content" bson:"content"`
+	ID          int       `bson:"_id"`
+	Title       string    `json:"title" bson:"title"`
+	Tanggal     string    `json:"tanggal" bson:"tanggal"`
+	Description string    `json:"judul" bson:"judul"`
+	Content     []Content `json:"content" bson:"content"`
 }
 
 type Tags struct {
@@ -99,11 +99,11 @@ type Category struct {
 }
 
 type Comment struct {
-	ID        primitive.ObjectID `bson:"_id"`
-	Username  string             `json:"username" bson:"username"`
-	Answer    string             `json:"comment" bson:"comment"`
-	Questions string             `json:"questions" bson:"questions"`
-	Tanggal   string             `json:"tanggal" bson:"tanggal"`
+	ID        int    `bson:"_id"`
+	Username  string `json:"username" bson:"username"`
+	Answer    string `json:"comment" bson:"comment"`
+	Questions string `json:"questions" bson:"questions"`
+	Tanggal   string `json:"tanggal" bson:"tanggal"`
 }
 
 type Share struct {
@@ -111,50 +111,50 @@ type Share struct {
 }
 
 type EventGlobal struct {
-	ID          primitive.ObjectID `bson:"_id"`
-	Title       string             `json:"title" bson:"title"`
-	Description string             `json:"description" bson:"description"`
-	Tanggal     string             `json:"tanggal" bson:"tanggal"`
-	Image       string             `json:"image" bson:"image"`
-	Harga       int                `json:"harga" bson:"harga"`
+	ID          int    `bson:"_id"`
+	Title       string `json:"title" bson:"title"`
+	Description string `json:"description" bson:"description"`
+	Tanggal     string `json:"tanggal" bson:"tanggal"`
+	Image       string `json:"image" bson:"image"`
+	Harga       int    `json:"harga" bson:"harga"`
 }
 
 type Event struct {
-	ID          primitive.ObjectID `bson:"_id"`
-	Title       string             `json:"title" bson:"title"`
-	Description string             `json:"description" bson:"description"`
-	Tanggal     string             `json:"tanggal" bson:"tanggal"`
-	Image       string             `json:"image" bson:"image"`
-	Harga       int                `json:"harga" bson:"harga"`
-	LinkYoutube string             `json:"linkyoutube" bson:"linkyoutube"`
+	ID          int    `bson:"_id"`
+	Title       string `json:"title" bson:"title"`
+	Description string `json:"description" bson:"description"`
+	Tanggal     string `json:"tanggal" bson:"tanggal"`
+	Image       string `json:"image" bson:"image"`
+	Harga       int    `json:"harga" bson:"harga"`
+	LinkYoutube string `json:"linkyoutube" bson:"linkyoutube"`
 }
 
 type About struct {
-	ID          primitive.ObjectID `bson:"_id"`
-	Title       string             `json:"title" bson:"title"`
-	Description string             `json:"description" bson:"description"`
-	Image       string             `json:"image" bson:"image"`
+	ID          int    `bson:"_id"`
+	Title       string `json:"title" bson:"title"`
+	Description string `json:"description" bson:"description"`
+	Image       string `json:"image" bson:"image"`
 }
 
 type Gallery struct {
-	ID          primitive.ObjectID `bson:"_id"`
-	Title       string             `json:"title" bson:"title"`
-	Description string             `json:"description" bson:"description"`
-	Image       string             `json:"image" bson:"image"`
+	ID          int    `bson:"_id"`
+	Title       string `json:"title" bson:"title"`
+	Description string `json:"description" bson:"description"`
+	Image       string `json:"image" bson:"image"`
 }
 
 type Contack struct {
-	ID      primitive.ObjectID `bson:"_id"`
-	Name    string             `json:"title" bson:"title"`
-	Subject string             `json:"description" bson:"description"`
-	Message string             `json:"image" bson:"image"`
-	Email   string             `json:"email" bson:"email"`
-	Phone   string             `json:"phone" bson:"phone"`
+	ID      int    `bson:"_id"`
+	Name    string `json:"title" bson:"title"`
+	Subject string `json:"description" bson:"description"`
+	Message string `json:"image" bson:"image"`
+	Email   string `json:"email" bson:"email"`
+	Phone   string `json:"phone" bson:"phone"`
 }
 
 type Iklan struct {
-	ID          primitive.ObjectID `bson:"_id"`
-	Title       string             `json:"title" bson:"title"`
-	Description string             `json:"description" bson:"description"`
-	Image       string             `json:"image" bson:"image"`
+	ID          int    `bson:"_id"`
+	Title       string `json:"title" bson:"title"`
+	Description string `json:"description" bson:"description"`
+	Image       string `json:"image" bson:"image"`
 }
