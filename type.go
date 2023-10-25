@@ -76,14 +76,14 @@ type Response struct {
 }
 
 type Content struct {
-	ID          int    `bson:"id" bson:"status"`
+	ID          int    `bson:"id" bson:"id"`
 	Content     string `json:"content" bson:"content"`
 	Image       string `json:"image" bson:"image"`
 	Description string `json:"description" bson:"description"`
 }
 
 type Blog struct {
-	ID          int       `bson:"id" bson:"status"`
+	ID          int       `bson:"id" bson:"id"`
 	Title       string    `json:"title" bson:"title"`
 	Tanggal     string    `json:"tanggal" bson:"tanggal"`
 	Description string    `json:"judul" bson:"judul"`
