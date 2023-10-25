@@ -32,6 +32,11 @@ func GetNameAndPassowrd(mongoconn *mongo.Database, collection string) []User {
 	return user
 }
 
+func GetAllContent(mongoconn *mongo.Database, collection string) []Content {
+	content := atdb.GetAllDoc[[]Content](mongoconn, collection)
+	return content
+}
+
 func GetAllUser(mongoconn *mongo.Database, collection string) []User {
 	user := atdb.GetAllDoc[[]User](mongoconn, collection)
 	return user
@@ -103,9 +108,4 @@ func CreateNewProduct(mongoconn *mongo.Database, collection string, productdata 
 // content
 func CreateNewContent(mongoconn *mongo.Database, collection string, contentdata Content) interface{} {
 	return atdb.InsertOneDoc(mongoconn, collection, contentdata)
-}
-
-func FindAllContent(mongoconn *mongo.Database, collection string) []Content {
-	content := atdb.GetAllDoc[[]Content](mongoconn, collection)
-	return content
 }

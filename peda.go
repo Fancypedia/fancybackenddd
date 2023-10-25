@@ -17,6 +17,12 @@ func GCFHandler(MONGOCONNSTRINGENV, dbname, collectionname string) string {
 	return GCFReturnStruct(datagedung)
 }
 
+func GCFContent(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	datacontent := GetAllContent(mconn, collectionname)
+	return GCFReturnStruct(datacontent)
+}
+
 func GCFFindUserByID(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	var datauser User
@@ -243,10 +249,4 @@ func GCFCreateContent(MONGOCONNSTRINGENV, dbname, collectionname string, r *http
 	} else {
 		return GCFReturnStruct(CreateResponse(false, "Failed Create Data Content", datacontent))
 	}
-}
-
-func GCFFindAllContent(MONGOCONNSTRINGENV, dbname, collectionname string) string {
-	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
-	datacontent := FindAllContent(mconn, collectionname)
-	return GCFReturnStruct(datacontent)
 }
