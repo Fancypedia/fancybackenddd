@@ -17,12 +17,6 @@ func GCFHandler(MONGOCONNSTRINGENV, dbname, collectionname string) string {
 	return GCFReturnStruct(datagedung)
 }
 
-func GCFContent(MONGOCONNSTRINGENV, dbname, collectionname string) string {
-	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
-	datacontent := GetAllContent(mconn, collectionname)
-	return GCFReturnStruct(datacontent)
-}
-
 func GCFFindUserByID(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	var datauser User
@@ -200,6 +194,12 @@ func GCFGetAllProduct(MONGOCONNSTRINGENV, dbname, collectionname string) string 
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	datagedung := GetAllProduct(mconn, collectionname)
 	return GCFReturnStruct(datagedung)
+}
+
+func GCFGetAllContent(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	datacontent := GetAllContent(mconn, collectionname)
+	return GCFReturnStruct(datacontent)
 }
 
 func GCFCreateProduct(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
