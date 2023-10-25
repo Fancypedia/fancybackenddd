@@ -100,6 +100,12 @@ func CreateNewProduct(mongoconn *mongo.Database, collection string, productdata 
 	return atdb.InsertOneDoc(mongoconn, collection, productdata)
 }
 
+// content
 func CreateNewContent(mongoconn *mongo.Database, collection string, contentdata Content) interface{} {
 	return atdb.InsertOneDoc(mongoconn, collection, contentdata)
+}
+
+func FindAllContent(mongoconn *mongo.Database, collection string) []Content {
+	content := atdb.GetAllDoc[[]Content](mongoconn, collection)
+	return content
 }

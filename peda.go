@@ -244,3 +244,9 @@ func GCFCreateContent(MONGOCONNSTRINGENV, dbname, collectionname string, r *http
 		return GCFReturnStruct(CreateResponse(false, "Failed Create Data Content", datacontent))
 	}
 }
+
+func GCFFindAllContent(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	datacontent := FindAllContent(mconn, collectionname)
+	return GCFReturnStruct(datacontent)
+}
