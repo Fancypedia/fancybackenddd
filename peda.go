@@ -224,3 +224,24 @@ func GCFLoginTest(username, password, MONGOCONNSTRINGENV, dbname, collectionname
 	// Memeriksa apakah kata sandi cocok
 	return CheckPasswordHash(password, res.Password)
 }
+
+// Content
+
+func GCFCreateContent(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var datacontent Content
+	err := json.NewDecoder(r.Body).Decode(&datacontent)
+	if err != nil {
+		return err.Error()
+	}
+
+	CreateNewContent(mconn, collectionname, datacontent)
+	// setelah create content munculkan response berhasil dan 200
+	if datacontent.Content == "" {
+		return "Gagal Membuat Data Content"
+	} else {
+		CreateResponse(true, "Berhasil Membuat Data Content", datacontent.Content)
+	}
+
+	return GCFReturnStruct(datacontent)
+}
