@@ -237,11 +237,10 @@ func GCFCreateContent(MONGOCONNSTRINGENV, dbname, collectionname string, r *http
 
 	CreateNewContent(mconn, collectionname, datacontent)
 	// setelah create content munculkan response berhasil dan 200
-	if datacontent.Content == "" {
-		return "Gagal Membuat Data Content"
-	} else {
-		CreateResponse(true, "Berhasil Membuat Data Content", datacontent.Content)
-	}
 
-	return GCFReturnStruct(datacontent)
+	if CreateResponse(true, "Berhasil", datacontent) != (Response{}) {
+		return GCFReturnStruct(CreateResponse(true, "success Create Data Content", datacontent))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Create Data Content", datacontent))
+	}
 }
