@@ -99,7 +99,7 @@ type Category struct {
 }
 
 type Comment struct {
-	ID        int    `bson:"id" bson:"status"`
+	ID        int    `bson:"id" bson:"id"`
 	Username  string `json:"username" bson:"username"`
 	Answer    string `json:"comment" bson:"comment"`
 	Questions string `json:"questions" bson:"questions"`
@@ -111,7 +111,7 @@ type Share struct {
 }
 
 type EventGlobal struct {
-	ID          int    `bson:"id" bson:"status"`
+	ID          int    `bson:"id" bson:"id"`
 	Title       string `json:"title" bson:"title"`
 	Description string `json:"description" bson:"description"`
 	Tanggal     string `json:"tanggal" bson:"tanggal"`
@@ -120,7 +120,7 @@ type EventGlobal struct {
 }
 
 type Event struct {
-	ID          int    `bson:"id" bson:"status"`
+	ID          int    `bson:"id" bson:"id"`
 	Title       string `json:"title" bson:"title"`
 	Description string `json:"description" bson:"description"`
 	Tanggal     string `json:"tanggal" bson:"tanggal"`
@@ -130,21 +130,21 @@ type Event struct {
 }
 
 type About struct {
-	ID          int    `bson:"id" bson:"status"`
+	ID          int    `bson:"id" bson:"id"`
 	Title       string `json:"title" bson:"title"`
 	Description string `json:"description" bson:"description"`
 	Image       string `json:"image" bson:"image"`
 }
 
 type Gallery struct {
-	ID          int    `bson:"id" bson:"status"`
+	ID          int    `bson:"id" bson:"id"`
 	Title       string `json:"title" bson:"title"`
 	Description string `json:"description" bson:"description"`
 	Image       string `json:"image" bson:"image"`
 }
 
 type Contack struct {
-	ID      int    `bson:"id" bson:"status"`
+	ID      int    `bson:"id" bson:"id"`
 	Name    string `json:"title" bson:"title"`
 	Subject string `json:"description" bson:"description"`
 	Message string `json:"image" bson:"image"`
@@ -153,7 +153,7 @@ type Contack struct {
 }
 
 type Iklan struct {
-	ID          int    `bson:"id" bson:"status"`
+	ID          int    `bson:"id" bson:"id"`
 	Title       string `json:"title" bson:"title"`
 	Description string `json:"description" bson:"description"`
 	Image       string `json:"image" bson:"image"`
