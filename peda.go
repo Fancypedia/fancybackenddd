@@ -196,6 +196,12 @@ func GCFGetAllProduct(MONGOCONNSTRINGENV, dbname, collectionname string) string 
 	return GCFReturnStruct(datagedung)
 }
 
+func GCFGetAllContentBy(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	datacontent := GetAllContent(mconn, collectionname)
+	return GCFReturnStruct(datacontent)
+}
+
 func GCFGetAllContent(MONGOCONNSTRINGENV, dbname, collectionname string) string {
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	datacontent := GetAllContent(mconn, collectionname)
