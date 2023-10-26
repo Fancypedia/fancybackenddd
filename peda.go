@@ -1,4 +1,4 @@
-package fancybackenddd
+package peda
 
 import (
 	"encoding/json"
