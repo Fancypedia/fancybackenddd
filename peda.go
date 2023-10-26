@@ -205,22 +205,24 @@ func GCFGetAllContentBy(MONGOCONNSTRINGENV, dbname, collectionname string) strin
 func GCFCreateProduct(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) Credential {
 	var Response Credential
 	Response.Status = false
-	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
-	var dataproduct Product
-	err := json.NewDecoder(r.Body).Decode(&dataproduct)
-	if err != nil {
-		Response.Message = "Error parsing application/json: " + err.Error()
+
+	// Retrieve the "PUBLICKEY" from the request headers
+	publicKey := r.Header.Get("PUBLICKEY")
+
+	if publicKey == "" {
+		Response.Message = "Missing PUBLICKEY in headers"
 	} else {
-		CreateNewProduct(mconn, collectionname, dataproduct)
-		Response.Status = true
-		Response.Message = "Berhasil"
-		tokenstring, err := watoken.Encode(dataproduct.Name, os.Getenv("PASETOPRIVATEKEYENV"))
+		// Process the request with the "PUBLICKEY"
+		mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+		var dataproduct Product
+		err := json.NewDecoder(r.Body).Decode(&dataproduct)
 		if err != nil {
-			Response.Message = "Gagal Encode Token: " + err.Error()
-			Response.Status = false // Setel status ke false jika encoding token gagal
+			Response.Message = "Error parsing application/json: " + err.Error()
 		} else {
-			Response.Message = "Create Product Berhasil"
-			Response.Token = tokenstring
+			CreateNewProduct(mconn, collectionname, dataproduct)
+			Response.Status = true
+			Response.Message = "Berhasil"
+			// No token generation here
 		}
 	}
 	return Response
