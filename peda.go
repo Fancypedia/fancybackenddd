@@ -272,3 +272,14 @@ func GCFCreateContent(MONGOCONNSTRINGENV, dbname, collectionname string, r *http
 		return GCFReturnStruct(CreateResponse(false, "Failed Create Data Content", datacontent))
 	}
 }
+
+func GCFDeletedContent(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var contentdata Content
+	err := json.NewDecoder(r.Body).Decode(&contentdata)
+	if err != nil {
+		return err.Error()
+	}
+	DeleteContent(mconn, collectionname, contentdata)
+	return GCFReturnStruct(contentdata)
+}

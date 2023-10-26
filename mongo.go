@@ -109,3 +109,8 @@ func CreateNewProduct(mongoconn *mongo.Database, collection string, productdata 
 func CreateNewContent(mongoconn *mongo.Database, collection string, contentdata Content) interface{} {
 	return atdb.InsertOneDoc(mongoconn, collection, contentdata)
 }
+
+func DeleteContent(mongoconn *mongo.Database, collection string, contentdata Content) interface{} {
+	filter := bson.M{"id": contentdata.ID}
+	return atdb.DeleteOneDoc(mongoconn, collection, filter)
+}
