@@ -118,3 +118,7 @@ func DeleteContent(mongoconn *mongo.Database, collection string, contentdata Con
 func ReplaceContent(mongoconn *mongo.Database, collection string, filter bson.M, contentdata Content) interface{} {
 	return atdb.ReplaceOneDoc(mongoconn, collection, filter, contentdata)
 }
+
+func CreateNewBlog(mongoconn *mongo.Database, collection string, blogdata Blog) interface{} {
+	return atdb.InsertOneDoc(mongoconn, collection, blogdata)
+}

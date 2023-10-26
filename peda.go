@@ -294,3 +294,14 @@ func GCFUpdatedContent(MONGOCONNSTRINGENV, dbname, collectionname string, r *htt
 	ReplaceContent(mconn, collectionname, bson.M{"id": contentdata.ID}, contentdata)
 	return GCFReturnStruct(contentdata)
 }
+
+func GCFCreateNewBlog(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var blogdata Blog
+	err := json.NewDecoder(r.Body).Decode(&blogdata)
+	if err != nil {
+		return err.Error()
+	}
+	CreateNewBlog(mconn, collectionname, blogdata)
+	return GCFReturnStruct(blogdata)
+}
