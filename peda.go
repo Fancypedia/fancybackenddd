@@ -273,7 +273,7 @@ func GCFCreateContent(MONGOCONNSTRINGENV, dbname, collectionname string, r *http
 	}
 }
 
-func GCFDeletedContent(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFDeleteHandlerContent(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	var contentdata Content
 	err := json.NewDecoder(r.Body).Decode(&contentdata)
