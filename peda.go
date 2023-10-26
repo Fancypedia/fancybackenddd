@@ -283,3 +283,14 @@ func GCFDeletedContent(MONGOCONNSTRINGENV, dbname, collectionname string, r *htt
 	DeleteContent(mconn, collectionname, contentdata)
 	return GCFReturnStruct(contentdata)
 }
+
+func GCFUpdatedContent(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var contentdata Content
+	err := json.NewDecoder(r.Body).Decode(&contentdata)
+	if err != nil {
+		return err.Error()
+	}
+	ReplaceContent(mconn, collectionname, bson.M{"id": contentdata.ID}, contentdata)
+	return GCFReturnStruct(contentdata)
+}

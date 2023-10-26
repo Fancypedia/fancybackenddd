@@ -114,3 +114,7 @@ func DeleteContent(mongoconn *mongo.Database, collection string, contentdata Con
 	filter := bson.M{"id": contentdata.ID}
 	return atdb.DeleteOneDoc(mongoconn, collection, filter)
 }
+
+func ReplaceContent(mongoconn *mongo.Database, collection string, filter bson.M, contentdata Content) interface{} {
+	return atdb.ReplaceOneDoc(mongoconn, collection, filter, contentdata)
+}
