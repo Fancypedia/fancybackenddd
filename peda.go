@@ -208,7 +208,6 @@ func GCFCreateProduct(MONGOCONNSTRINGENV, dbname, collectionname string, r *http
 
 	// Retrieve the "PUBLICKEY" from the request headers
 	publicKey := r.Header.Get("PUBLICKEY")
-
 	if publicKey == "" {
 		Response.Message = "Missing PUBLICKEY in headers"
 	} else {
@@ -219,7 +218,15 @@ func GCFCreateProduct(MONGOCONNSTRINGENV, dbname, collectionname string, r *http
 		if err != nil {
 			Response.Message = "Error parsing application/json: " + err.Error()
 		} else {
-			CreateNewProduct(mconn, collectionname, dataproduct)
+			CreateNewProduct(mconn, dbname, Product{
+				Nomorid:     dataproduct.Nomorid,
+				Name:        dataproduct.Name,
+				Description: dataproduct.Description,
+				Price:       dataproduct.Price,
+				Stock:       dataproduct.Stock,
+				Size:        dataproduct.Size,
+				Image:       dataproduct.Image,
+			})
 			Response.Status = true
 			Response.Message = "Berhasil"
 			// No token generation here
