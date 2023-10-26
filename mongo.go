@@ -1,4 +1,4 @@
-package peda
+package fancybackenddd
 
 import (
 	"os"
@@ -37,10 +37,10 @@ func GetAllContent(mongoconn *mongo.Database, collection string) []Content {
 	return content
 }
 
-func GetAllUser(mongoconn *mongo.Database, collection string) []User {
-	user := atdb.GetAllDoc[[]User](mongoconn, collection)
-	return user
-}
+//	func GetAllUser(mongoconn *mongo.Database, collection string) []User {
+//		user := atdb.GetAllDoc[[]User](mongoconn, collection)
+//		return user
+//	}
 func CreateNewUserRole(mongoconn *mongo.Database, collection string, userdata User) interface{} {
 	// Hash the password before storing it
 	hashedPassword, err := HashPassword(userdata.Password)
