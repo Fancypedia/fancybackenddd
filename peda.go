@@ -202,18 +202,28 @@ func GCFGetAllContentBy(MONGOCONNSTRINGENV, dbname, collectionname string) strin
 	return GCFReturnStruct(datacontent)
 }
 
-func GCFCreateProduct(PUBLICKEY, MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFCreateProduct(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) Credential {
+	var Response Credential
+	Response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	var dataproduct Product
 	err := json.NewDecoder(r.Body).Decode(&dataproduct)
-	pasetotoken := r.Header.Get("token")
-	_, err = watoken.Decode(pasetotoken, os.Getenv("PUBLICKEY"))
 	if err != nil {
-		return err.Error()
+		Response.Message = "Error parsing application/json: " + err.Error()
 	} else {
 		CreateNewProduct(mconn, collectionname, dataproduct)
+		Response.Status = true
+		Response.Message = "Berhasil"
+		tokenstring, err := watoken.Encode(dataproduct.Name, os.Getenv("PASETOPRIVATEKEYENV"))
+		if err != nil {
+			Response.Message = "Gagal Encode Token: " + err.Error()
+			Response.Status = false // Setel status ke false jika encoding token gagal
+		} else {
+			Response.Message = "Create Product Berhasil"
+			Response.Token = tokenstring
+		}
 	}
-	return GCFReturnStruct(dataproduct)
+	return Response
 }
 
 func GCFLoginTest(username, password, MONGOCONNSTRINGENV, dbname, collectionname string) bool {
