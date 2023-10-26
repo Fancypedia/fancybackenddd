@@ -202,12 +202,29 @@ func GCFGetAllContentBy(MONGOCONNSTRINGENV, dbname, collectionname string) strin
 	return GCFReturnStruct(datacontent)
 }
 
-func GCFCreateProduct(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFCreateProduct(PASETOPRIVATEKEYENV, MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	var Response Credential
+	Response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	var dataproduct Product
 	err := json.NewDecoder(r.Body).Decode(&dataproduct)
 	if err != nil {
-		return err.Error()
+		Response.Message = "error parsing application/json: " + err.Error()
+	} else {
+		if CreateNewProduct(mconn, collectionname, dataproduct) != nil {
+			CreateNewProduct(mconn, collectionname, dataproduct)
+			Response.Status = true
+			Response.Message = "Berhasil"
+			tokenstring, err := watoken.Encode(dataproduct.Name, os.Getenv(PASETOPRIVATEKEYENV))
+			if err != nil {
+				Response.Message = "Gagal Encode Token : " + err.Error()
+			} else {
+				Response.Message = "Gagal Create Product"
+				Response.Token = tokenstring
+			}
+		} else {
+			Response.Message = "Gagal Create Product"
+		}
 	}
 	CreateNewProduct(mconn, collectionname, dataproduct)
 	return GCFReturnStruct(dataproduct)
