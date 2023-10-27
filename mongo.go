@@ -122,3 +122,13 @@ func ReplaceContent(mongoconn *mongo.Database, collection string, filter bson.M,
 func CreateNewBlog(mongoconn *mongo.Database, collection string, blogdata Blog) interface{} {
 	return atdb.InsertOneDoc(mongoconn, collection, blogdata)
 }
+
+func FindContentAllId(mongoconn *mongo.Database, collection string, contentdata Content) Content {
+	filter := bson.M{"id": contentdata.ID}
+	return atdb.GetOneDoc[Content](mongoconn, collection, filter)
+}
+
+func GetAllBlogAll(mongoconn *mongo.Database, collection string) []Blog {
+	blog := atdb.GetAllDoc[[]Blog](mongoconn, collection)
+	return blog
+}
