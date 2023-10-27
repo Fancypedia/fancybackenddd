@@ -420,8 +420,9 @@ func GCFRegister(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Requ
 		if err != nil {
 			resp.Message = "Gagal Hash Password: " + err.Error()
 		}
-		atdb.InsertOneDoc(conn, collectionname, userdata)
+		createErr := CreateUser(conn, collectionname, User{userdata.Username, hashedPassword, userdata.Role, tokenstring, userdata.Private, userdata.Publick})
 		resp.Message = "Berhasil Input data"
+		fmt.Println(createErr)
 	}
 	response := GCFReturnStruct(resp)
 	return response

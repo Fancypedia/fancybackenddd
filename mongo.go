@@ -22,6 +22,18 @@ func GetAllBangunanLineString(mongoconn *mongo.Database, collection string) []Ge
 	return lokasi
 }
 
+func CreateUser(mongoconn *mongo.Database, collection string, userdata User) interface{} {
+	// Hash the password before storing it
+	hashedPassword, err := HashPassword(userdata.Password)
+	if err != nil {
+		return err
+	}
+	userdata.Password = hashedPassword
+
+	// Insert the user data into the database
+	return atdb.InsertOneDoc(mongoconn, collection, userdata)
+}
+
 func GetAllProduct(mongoconn *mongo.Database, collection string) []Product {
 	product := atdb.GetAllDoc[[]Product](mongoconn, collection)
 	return product
