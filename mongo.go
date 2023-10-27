@@ -137,3 +137,28 @@ func GetIDBlog(mongoconn *mongo.Database, collection string, blogdata Blog) Blog
 	filter := bson.M{"id": blogdata.ID}
 	return atdb.GetOneDoc[Blog](mongoconn, collection, filter)
 }
+
+func CreateUserAndAddToken(privateKeyEnv string, mongoconn *mongo.Database, collection string, userdata User) error {
+	// Hash the password before storing it
+	hashedPassword, err := HashPassword(userdata.Password)
+	if err != nil {
+		return err
+	}
+	userdata.Password = hashedPassword
+
+	// Create a token for the user
+	tokenstring, err := watoken.Encode(userdata.Username, os.Getenv(privateKeyEnv))
+	if err != nil {
+		return err
+	}
+
+	userdata.Token = tokenstring
+
+	// Insert the user data into the MongoDB collection
+	if err := atdb.InsertOneDoc(mongoconn, collection, userdata.Username); err != nil {
+		return nil // Mengembalikan kesalahan yang dikembalikan oleh atdb.InsertOneDoc
+	}
+
+	// Return nil to indicate success
+	return nil
+}

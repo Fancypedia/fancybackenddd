@@ -109,6 +109,21 @@ func GCFCreateHandlerTokenPaseto(PASETOPRIVATEKEYENV, MONGOCONNSTRINGENV, dbname
 	return GCFReturnStruct(datauser)
 }
 
+func GCFCreateAccountAndToken(PASETOPRIVATEKEYENV, MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var datauser User
+	err := json.NewDecoder(r.Body).Decode(&datauser)
+	if err != nil {
+		return err.Error()
+	}
+	hashedPassword, hashErr := HashPassword(datauser.Password)
+	if hashErr != nil {
+		return hashErr.Error()
+	}
+	datauser.Password = hashedPassword
+	CreateUserAndAddedToeken(PASETOPRIVATEKEYENV, mconn, collectionname, datauser)
+	return GCFReturnStruct(datauser)
+}
 func GCFCreateHandler(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	var datauser User
@@ -348,4 +363,30 @@ func GCFGetAllBlog(MONGOCONNSTRINGENV, dbname, collectionname string) string {
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	datablog := GetAllBlogAll(mconn, collectionname)
 	return GCFReturnStruct(datablog)
+}
+
+func GCFCreateTokenAndSaveToDB(PASETOPRIVATEKEYENV, MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) (string, error) {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	// Inisialisasi variabel datauser
+	var datauser User
+
+	// Membaca data JSON dari permintaan HTTP ke dalam datauser
+	if err := json.NewDecoder(r.Body).Decode(&datauser); err != nil {
+		return "", err // Mengembalikan kesalahan langsung
+	}
+
+	// Generate a token for the user
+	tokenstring, err := watoken.Encode(datauser.Username, os.Getenv(PASETOPRIVATEKEYENV))
+	if err != nil {
+		return "", err // Mengembalikan kesalahan langsung
+	}
+	datauser.Token = tokenstring
+
+	// Simpan pengguna ke dalam basis data
+	if err := atdb.InsertOneDoc(mconn, collectionname, datauser); err != nil {
+		return tokenstring, nil // Mengembalikan kesalahan langsung
+	}
+
+	return tokenstring, nil // Mengembalikan token dan nil untuk kesalahan jika sukses
 }
