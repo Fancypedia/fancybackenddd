@@ -132,3 +132,8 @@ func GetAllBlogAll(mongoconn *mongo.Database, collection string) []Blog {
 	blog := atdb.GetAllDoc[[]Blog](mongoconn, collection)
 	return blog
 }
+
+func GetIDBlog(mongoconn *mongo.Database, collection string, blogdata Blog) Blog {
+	filter := bson.M{"id": blogdata.ID}
+	return atdb.GetOneDoc[Blog](mongoconn, collection, filter)
+}
