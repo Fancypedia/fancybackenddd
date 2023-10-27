@@ -32,7 +32,7 @@ func CreateUser(mongoconn *mongo.Database, collection string, userdata User) int
 		return err
 	}
 	privateKey, publicKey := watoken.GenerateKey()
-	userid := "fancypedia"
+	userid := userdata.Username
 	tokenstring, err := watoken.Encode(userid, privateKey)
 	if err != nil {
 		fmt.Println(err)
