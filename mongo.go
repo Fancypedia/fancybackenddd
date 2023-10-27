@@ -1,6 +1,7 @@
 package peda
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/aiteung/atdb"
@@ -28,6 +29,21 @@ func CreateUser(mongoconn *mongo.Database, collection string, userdata User) int
 	if err != nil {
 		return err
 	}
+	privateKey, publicKey := watoken.GenerateKey()
+	userid := "fancypedia"
+	tokenstring, err := watoken.Encode(userid, privateKey)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(tokenstring)
+	// decode token to get userid
+	useridstring := watoken.DecodeGetId(publicKey, tokenstring)
+	if useridstring == "" {
+		fmt.Println("expire token")
+	}
+	fmt.Println(useridstring)
+	userdata.Private = privateKey
+	userdata.Publick = publicKey
 	userdata.Password = hashedPassword
 
 	// Insert the user data into the database

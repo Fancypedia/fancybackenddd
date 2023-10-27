@@ -391,39 +391,12 @@ func GCFCreateTokenAndSaveToDB(PASETOPRIVATEKEYENV, MONGOCONNSTRINGENV, dbname, 
 	return tokenstring, nil // Mengembalikan token dan nil untuk kesalahan jika sukses
 }
 func GCFCreteRegister(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
-	resp := new(Credential)
-	userdata := new(User)
-	resp.Status = false
-	conn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var userdata User
 	err := json.NewDecoder(r.Body).Decode(&userdata)
 	if err != nil {
-		resp.Message = "error parsing application/json: " + err.Error()
-	} else {
-		privateKey, publicKey := watoken.GenerateKey()
-		userid := "fancypedia"
-		tokenstring, err := watoken.Encode(userid, privateKey)
-		if err != nil {
-			fmt.Println(err)
-		}
-		fmt.Println(tokenstring)
-		// decode token to get userid
-		useridstring := watoken.DecodeGetId(publicKey, tokenstring)
-		if useridstring == "" {
-			fmt.Println("expire token")
-		}
-		fmt.Println(useridstring)
-		userdata.Private = privateKey
-		userdata.Publick = publicKey
-		resp.Status = true
-		hashedPassword, err := HashPassword(userdata.Password)
-		fmt.Println(hashedPassword)
-		if err != nil {
-			resp.Message = "Gagal Hash Password: " + err.Error()
-		}
-		createErr := CreateUser(conn, collectionname, User{userdata.Username, hashedPassword, userdata.Role, tokenstring, userdata.Private, userdata.Publick})
-		resp.Message = "Berhasil Input data"
-		fmt.Println(createErr)
+		return err.Error()
 	}
-	response := GCFReturnStruct(resp)
-	return response
+	CreateUser(mconn, collectionname, userdata)
+	return GCFReturnStruct(userdata)
 }
