@@ -343,3 +343,9 @@ func GCFFindBlogAllID(MONGOCONNSTRINGENV, dbname, collectionname string, r *http
 	// Mengembalikan hasil dalam bentuk JSON
 	return GCFReturnStruct(blog)
 }
+
+func GCFGetAllBlog(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	datablog := GetAllBlogAll(mconn, collectionname)
+	return GCFReturnStruct(datablog)
+}
