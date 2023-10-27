@@ -225,3 +225,22 @@ func FindUserByUsername(mongoconn *mongo.Database, collection string, username s
 	}
 	return user, nil
 }
+
+// create login using Private
+func CreateLogin(mongoconn *mongo.Database, collection string, userdata User) interface{} {
+	// Hash the password before storing it
+	hashedPassword, err := HashPassword(userdata.Password)
+	if err != nil {
+		return err
+	}
+	userdata.Password = hashedPassword
+	// Create a token for the user
+	tokenstring, err := watoken.Encode(userdata.Username, userdata.Private)
+	if err != nil {
+		return err
+	}
+	userdata.Token = tokenstring
+
+	// Insert the user data into the database
+	return atdb.InsertOneDoc(mongoconn, collection, userdata)
+}
