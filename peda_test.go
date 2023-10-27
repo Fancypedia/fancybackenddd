@@ -148,3 +148,12 @@ func CreateContent(t *testing.T) {
 	contentdata.Image = "https://images3.alphacoders.com/165/thumb-1920-165265.jpg"
 	CreateNewContent(mconn, "content", contentdata)
 }
+
+func TestUserFix(t *testing.T) {
+	mconn := SetConnection("MONGOULBI", "petapedia")
+	var userdata User
+	userdata.Username = "raulmahya"
+	userdata.Password = "banget"
+	userdata.Role = "admin"
+	CreateUser(mconn, "user", userdata)
+}

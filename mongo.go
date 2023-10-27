@@ -1,6 +1,8 @@
 package peda
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"os"
 
@@ -189,4 +191,35 @@ func CreateUserAndAddToken(privateKeyEnv string, mongoconn *mongo.Database, coll
 
 	// Return nil to indicate success
 	return nil
+}
+
+func AuthenticateUserAndGenerateToken(privateKeyEnv string, mongoconn *mongo.Database, collection string, username, password string) (string, error) {
+	// Cari pengguna berdasarkan nama pengguna
+	userdata, err := FindUserByUsername(mongoconn, collection, username)
+	if err != nil {
+		return "", err
+	}
+
+	// Memeriksa kata sandi
+	if !CheckPasswordHash(password, userdata.Password) {
+		return "", errors.New("Password salah") // Gantilah pesan kesalahan sesuai kebutuhan Anda
+	}
+
+	// Generate token untuk otentikasi
+	tokenstring, err := watoken.Encode(username, os.Getenv(privateKeyEnv))
+	if err != nil {
+		return "", err
+	}
+
+	return tokenstring, nil
+}
+
+func FindUserByUsername(mongoconn *mongo.Database, collection string, username string) (User, error) {
+	var user User
+	filter := bson.M{"username": username}
+	err := mongoconn.Collection(collection).FindOne(context.TODO(), filter).Decode(&user)
+	if err != nil {
+		return User{}, err
+	}
+	return user, nil
 }
