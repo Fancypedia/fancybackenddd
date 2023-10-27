@@ -390,7 +390,7 @@ func GCFCreateTokenAndSaveToDB(PASETOPRIVATEKEYENV, MONGOCONNSTRINGENV, dbname, 
 
 	return tokenstring, nil // Mengembalikan token dan nil untuk kesalahan jika sukses
 }
-func GCFRegister(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFCreteRegister(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
 	resp := new(Credential)
 	userdata := new(User)
 	resp.Status = false
