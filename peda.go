@@ -400,3 +400,37 @@ func GCFCreteRegister(MONGOCONNSTRINGENV, dbname, collectionname string, r *http
 	CreateUser(mconn, collectionname, userdata)
 	return GCFReturnStruct(userdata)
 }
+
+func GCFLoginAfterCreate(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var userdata User
+	err := json.NewDecoder(r.Body).Decode(&userdata)
+	if err != nil {
+		return err.Error()
+	}
+	if IsPasswordValid(mconn, collectionname, userdata) {
+		tokenstring, err := watoken.Encode(userdata.Username, os.Getenv("PASETOPRIVATEKEYENV"))
+		if err != nil {
+			return err.Error()
+		}
+		userdata.Token = tokenstring
+		return GCFReturnStruct(userdata)
+	} else {
+		return "Password Salah"
+	}
+}
+
+func GCFLoginAfterCreater(MONGOCONNSTRINGENV, dbname, collectionname, privateKeyEnv string, r *http.Request) (string, error) {
+	// Ambil data pengguna dari request, misalnya dari body JSON atau form data.
+	var userdata User
+	// Implement the logic to extract user data from the request (r) here.
+
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	// Lakukan otentikasi pengguna yang baru saja dibuat.
+	token, err := AuthenticateUserAndGenerateToken(privateKeyEnv, mconn, collectionname, userdata)
+	if err != nil {
+		return "", err
+	}
+	return token, nil
+}

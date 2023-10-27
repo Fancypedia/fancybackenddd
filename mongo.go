@@ -193,8 +193,10 @@ func CreateUserAndAddToken(privateKeyEnv string, mongoconn *mongo.Database, coll
 	return nil
 }
 
-func AuthenticateUserAndGenerateToken(privateKeyEnv string, mongoconn *mongo.Database, collection string, username, password string) (string, error) {
+func AuthenticateUserAndGenerateToken(privateKeyEnv string, mongoconn *mongo.Database, collection string, userdata User) (string, error) {
 	// Cari pengguna berdasarkan nama pengguna
+	username := userdata.Username
+	password := userdata.Password
 	userdata, err := FindUserByUsername(mongoconn, collection, username)
 	if err != nil {
 		return "", err
