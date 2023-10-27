@@ -305,3 +305,22 @@ func GCFCreateNewBlog(MONGOCONNSTRINGENV, dbname, collectionname string, r *http
 	CreateNewBlog(mconn, collectionname, blogdata)
 	return GCFReturnStruct(blogdata)
 }
+
+func GCFFindContentAllID(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	// Inisialisasi variabel datacontent
+	var datacontent Content
+
+	// Membaca data JSON dari permintaan HTTP ke dalam datacontent
+	err := json.NewDecoder(r.Body).Decode(&datacontent)
+	if err != nil {
+		return err.Error()
+	}
+
+	// Memanggil fungsi FindContentAllId
+	content := FindContentAllId(mconn, collectionname, datacontent)
+
+	// Mengembalikan hasil dalam bentuk JSON
+	return GCFReturnStruct(content)
+}
