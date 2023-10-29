@@ -531,8 +531,8 @@ func GCFDeletedCommnet(MONGOCONNSTRINGENV, dbname, collectionname string, r *htt
 	}
 
 	if err := DeleteComment(mconn, collectionname, commentdata); err != nil {
-		return GCFReturnStruct(CreateResponse(false, "Failed to delete comment", commentdata))
+		return GCFReturnStruct(CreateResponse(true, "Successfully deleted comment", commentdata))
 	}
 
-	return GCFReturnStruct(CreateResponse(true, "Successfully deleted comment", commentdata))
+	return GCFReturnStruct(CreateResponse(false, "Failed to delete comment", commentdata))
 }
