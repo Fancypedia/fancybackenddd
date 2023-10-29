@@ -444,7 +444,40 @@ func GCFLoginAfterCreatee(MONGOCONNSTRINGENV, dbname, collectionname string, r *
 	}
 	if IsPasswordValid(mconn, collectionname, userdata) {
 		// Password is valid, return a success message or some other response.
+		return "Login successful"
+
+	} else {
+		// Password is not valid, return an error message.
+		return "Password Salah"
+	}
+}
+
+func GCFLoginAfterCreateee(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var userdata User
+	err := json.NewDecoder(r.Body).Decode(&userdata)
+	if err != nil {
+		return err.Error()
+	}
+	if IsPasswordValid(mconn, collectionname, userdata) {
+		// Password is valid, return a success message or some other response.
 		return GCFReturnStruct(CreateResponse(true, "Berhasil Login", userdata))
+	} else {
+		// Password is not valid, return an error message.
+		return "Password Salah"
+	}
+}
+
+func GCFLoginAfterCreateeee(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var userdata User
+	err := json.NewDecoder(r.Body).Decode(&userdata)
+	if err != nil {
+		return err.Error()
+	}
+	if IsPasswordValid(mconn, collectionname, userdata) {
+		// Password is valid, return a success message or some other response.
+		return GCFReturnStruct(userdata)
 	} else {
 		// Password is not valid, return an error message.
 		return "Password Salah"
