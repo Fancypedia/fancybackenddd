@@ -483,3 +483,42 @@ func GCFLoginAfterCreateeee(MONGOCONNSTRINGENV, dbname, collectionname string, r
 		return "Password Salah"
 	}
 }
+
+func GCFCreteCommnet(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var commentdata Comment
+	err := json.NewDecoder(r.Body).Decode(&commentdata)
+	if err != nil {
+		return err.Error()
+	}
+	CreateComment(mconn, collectionname, commentdata)
+	return GCFReturnStruct(commentdata)
+}
+
+func GCFGetAllComment(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	datacomment := GetAllComment(mconn, collectionname)
+	return GCFReturnStruct(datacomment)
+}
+
+func GFCUpadatedCommnet(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var commentdata Comment
+	err := json.NewDecoder(r.Body).Decode(&commentdata)
+	if err != nil {
+		return err.Error()
+	}
+	UpdatedComment(mconn, collectionname, bson.M{"id": commentdata.ID}, commentdata)
+	return GCFReturnStruct(commentdata)
+}
+
+func GCFDeletedCommnet(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var commentdata Comment
+	err := json.NewDecoder(r.Body).Decode(&commentdata)
+	if err != nil {
+		return err.Error()
+	}
+	DeleteComment(mconn, collectionname, commentdata)
+	return GCFReturnStruct(commentdata)
+}

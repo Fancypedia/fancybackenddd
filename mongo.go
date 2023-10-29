@@ -244,3 +244,22 @@ func CreateLogin(mongoconn *mongo.Database, collection string, userdata User) in
 	// Insert the user data into the database
 	return atdb.InsertOneDoc(mongoconn, collection, userdata)
 }
+
+func CreateComment(mongoconn *mongo.Database, collection string, commentdata Comment) interface{} {
+	return atdb.InsertOneDoc(mongoconn, collection, commentdata)
+}
+
+func DeleteComment(mongoconn *mongo.Database, collection string, commentdata Comment) interface{} {
+	filter := bson.M{"id": commentdata.ID}
+	return atdb.DeleteOneDoc(mongoconn, collection, filter)
+}
+
+func UpdatedComment(mongoconn *mongo.Database, collection string, filter bson.M, commentdata Comment) interface{} {
+	filter = bson.M{"id": commentdata.ID}
+	return atdb.ReplaceOneDoc(mongoconn, collection, filter, commentdata)
+}
+
+func GetAllComment(mongoconn *mongo.Database, collection string) []Comment {
+	comment := atdb.GetAllDoc[[]Comment](mongoconn, collection)
+	return comment
+}
