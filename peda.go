@@ -460,14 +460,14 @@ func GCFLoginAfterCreateee(MONGOCONNSTRINGENV, dbname, collectionname string, r 
 		return err.Error()
 	}
 	if IsPasswordValid(mconn, collectionname, userdata) {
-		// Password is valid, return a success message or some other response.
-		return GCFReturnStruct(CreateResponse(true, "Berhasil Login", userdata))
+		// Password is valid, construct and return the GCFReturnStruct.
+		response := CreateResponse(true, "Berhasil Login", userdata)
+		return GCFReturnStruct(response) // Return GCFReturnStruct directly
 	} else {
 		// Password is not valid, return an error message.
 		return "Password Salah"
 	}
 }
-
 func GCFLoginAfterCreateeee(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	var userdata User
@@ -491,16 +491,23 @@ func GCFCreteCommnet(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.
 	if err != nil {
 		return err.Error()
 	}
-	CreateComment(mconn, collectionname, commentdata)
-	return GCFReturnStruct(commentdata)
+
+	if err := CreateComment(mconn, collectionname, commentdata); err != nil {
+		return GCFReturnStruct(CreateResponse(false, "Failed Create Comment", commentdata))
+	} else {
+		return GCFReturnStruct(CreateResponse(true, "Berhasil Create Comment", commentdata))
+	}
 }
 
 func GCFGetAllComment(MONGOCONNSTRINGENV, dbname, collectionname string) string {
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	datacomment := GetAllComment(mconn, collectionname)
-	return GCFReturnStruct(datacomment)
+	if datacomment != nil {
+		return GCFReturnStruct(CreateResponse(true, "success Get All Comment", datacomment))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Get All Comment", datacomment))
+	}
 }
-
 func GFCUpadatedCommnet(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	var commentdata Comment
@@ -508,17 +515,24 @@ func GFCUpadatedCommnet(MONGOCONNSTRINGENV, dbname, collectionname string, r *ht
 	if err != nil {
 		return err.Error()
 	}
-	UpdatedComment(mconn, collectionname, bson.M{"id": commentdata.ID}, commentdata)
-	return GCFReturnStruct(commentdata)
+
+	if err := UpdatedComment(mconn, collectionname, bson.M{"id": commentdata.ID}, commentdata); err != nil {
+		return GCFReturnStruct(CreateResponse(false, "Failed Updated Comment", commentdata))
+	} else {
+		return GCFReturnStruct(CreateResponse(true, "Success Updated Comment", commentdata))
+	}
 }
 
 func GCFDeletedCommnet(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	var commentdata Comment
-	err := json.NewDecoder(r.Body).Decode(&commentdata)
-	if err != nil {
-		return err.Error()
+	if err := json.NewDecoder(r.Body).Decode(&commentdata); err != nil {
+		return GCFReturnStruct(CreateResponse(false, "Failed to process request", commentdata))
 	}
-	DeleteComment(mconn, collectionname, commentdata)
-	return GCFReturnStruct(commentdata)
+
+	if err := DeleteComment(mconn, collectionname, commentdata); err != nil {
+		return GCFReturnStruct(CreateResponse(false, "Failed to delete comment", commentdata))
+	}
+
+	return GCFReturnStruct(CreateResponse(true, "Successfully deleted comment", commentdata))
 }
