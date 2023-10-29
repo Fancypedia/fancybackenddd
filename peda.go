@@ -493,9 +493,9 @@ func GCFCreteCommnet(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.
 	}
 
 	if err := CreateComment(mconn, collectionname, commentdata); err != nil {
-		return GCFReturnStruct(CreateResponse(false, "Failed Create Comment", commentdata))
+		return GCFReturnStruct(CreateResponse(true, "Succes Create Comment", commentdata))
 	} else {
-		return GCFReturnStruct(CreateResponse(true, "Berhasil Create Comment", commentdata))
+		return GCFReturnStruct(CreateResponse(false, "Failed Create Comment", commentdata))
 	}
 }
 
@@ -517,9 +517,9 @@ func GFCUpadatedCommnet(MONGOCONNSTRINGENV, dbname, collectionname string, r *ht
 	}
 
 	if err := UpdatedComment(mconn, collectionname, bson.M{"id": commentdata.ID}, commentdata); err != nil {
-		return GCFReturnStruct(CreateResponse(false, "Failed Updated Comment", commentdata))
-	} else {
 		return GCFReturnStruct(CreateResponse(true, "Success Updated Comment", commentdata))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Updated Comment", commentdata))
 	}
 }
 
