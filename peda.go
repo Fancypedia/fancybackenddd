@@ -444,8 +444,7 @@ func GCFLoginAfterCreatee(MONGOCONNSTRINGENV, dbname, collectionname string, r *
 	}
 	if IsPasswordValid(mconn, collectionname, userdata) {
 		// Password is valid, return a success message or some other response.
-		return GCFReturnStruct(userdata)
-
+		return GCFReturnStruct(CreateResponse(true, "Berhasil Login", userdata))
 	} else {
 		// Password is not valid, return an error message.
 		return "Password Salah"
