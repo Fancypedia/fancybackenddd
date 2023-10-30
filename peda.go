@@ -536,3 +536,35 @@ func GCFDeletedCommnet(MONGOCONNSTRINGENV, dbname, collectionname string, r *htt
 
 	return GCFReturnStruct(CreateResponse(false, "Failed to delete comment", commentdata))
 }
+
+func GCFCreatePostLineStringg(MONGOCONNSTRINGENV, dbname, collection string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var geojsonline GeoJsonLineString
+	err := json.NewDecoder(r.Body).Decode(&geojsonline)
+	if err != nil {
+		return err.Error()
+	}
+
+	// Mengambil nilai header PASETO dari permintaan HTTP
+	pasetoValue := r.Header.Get("PASETOPRIVATEKEYENV")
+
+	// Disini Anda dapat menggunakan nilai pasetoValue sesuai kebutuhan Anda
+	// Misalnya, menggunakannya untuk otentikasi atau enkripsi.
+	// Contoh sederhana menambahkan nilainya ke dalam pesan respons:
+	response := GCFReturnStruct(geojsonline)
+	response += " PASETO value: " + pasetoValue
+
+	PostLinestring(mconn, collection, geojsonline)
+	return response
+}
+
+func GCFCreatePostLineString(MONGOCONNSTRINGENV, dbname, collection string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var geojsonline GeoJsonLineString
+	err := json.NewDecoder(r.Body).Decode(&geojsonline)
+	if err != nil {
+		return err.Error()
+	}
+	PostLinestring(mconn, collection, geojsonline)
+	return GCFReturnStruct(geojsonline)
+}

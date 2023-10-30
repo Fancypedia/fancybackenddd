@@ -263,3 +263,170 @@ func GetAllComment(mongoconn *mongo.Database, collection string) []Comment {
 	comment := atdb.GetAllDoc[[]Comment](mongoconn, collection)
 	return comment
 }
+
+// event global function
+
+func CreateEventGlobal(mongoconn *mongo.Database, collection string, eventglobaldata EventGlobal) interface{} {
+	return atdb.InsertOneDoc(mongoconn, collection, eventglobaldata)
+}
+
+func DeleteEventGlobal(mongoconn *mongo.Database, collection string, eventglobaldata EventGlobal) interface{} {
+	filter := bson.M{"id": eventglobaldata.ID}
+	return atdb.DeleteOneDoc(mongoconn, collection, filter)
+}
+
+func UpdatedEventGlobal(mongoconn *mongo.Database, collection string, filter bson.M, eventglobaldata EventGlobal) interface{} {
+	filter = bson.M{"id": eventglobaldata.ID}
+	return atdb.ReplaceOneDoc(mongoconn, collection, filter, eventglobaldata)
+}
+
+func GetAllEventGlobal(mongoconn *mongo.Database, collection string) []EventGlobal {
+	eventglobal := atdb.GetAllDoc[[]EventGlobal](mongoconn, collection)
+	return eventglobal
+}
+
+func GetAllEventGlobalId(mongoconn *mongo.Database, collection string, eventglobaldata EventGlobal) []EventGlobal {
+	filter := bson.M{"id": eventglobaldata.ID}
+	eventglobal := atdb.GetOneDoc[[]EventGlobal](mongoconn, collection, filter)
+	return eventglobal
+}
+
+// event function
+
+func CreateEvent(mongoconn *mongo.Database, collection string, eventdata Event) interface{} {
+	return atdb.InsertOneDoc(mongoconn, collection, eventdata)
+}
+
+func DeleteEvent(mongoconn *mongo.Database, collection string, eventdata Event) interface{} {
+	filter := bson.M{"id": eventdata.ID}
+	return atdb.DeleteOneDoc(mongoconn, collection, filter)
+}
+
+func UpdatedEvent(mongoconn *mongo.Database, collection string, filter bson.M, eventdata Event) interface{} {
+	filter = bson.M{"id": eventdata.ID}
+	return atdb.ReplaceOneDoc(mongoconn, collection, filter, eventdata)
+}
+
+func GetAllEvent(mongoconn *mongo.Database, collection string) []Event {
+	event := atdb.GetAllDoc[[]Event](mongoconn, collection)
+	return event
+}
+
+func GetIDEvent(mongoconn *mongo.Database, collection string, eventdata Event) Event {
+	filter := bson.M{"id": eventdata.ID}
+	return atdb.GetOneDoc[Event](mongoconn, collection, filter)
+}
+
+// about function
+
+func CreateAbout(mongoconn *mongo.Database, collection string, aboutdata About) interface{} {
+	return atdb.InsertOneDoc(mongoconn, collection, aboutdata)
+}
+
+func DeleteAbout(mongoconn *mongo.Database, collection string, aboutdata About) interface{} {
+	filter := bson.M{"id": aboutdata.ID}
+	return atdb.DeleteOneDoc(mongoconn, collection, filter)
+}
+
+func UpdatedAbout(mongoconn *mongo.Database, collection string, filter bson.M, aboutdata About) interface{} {
+	filter = bson.M{"id": aboutdata.ID}
+	return atdb.ReplaceOneDoc(mongoconn, collection, filter, aboutdata)
+}
+
+func GetAllAbout(mongoconn *mongo.Database, collection string) []About {
+	about := atdb.GetAllDoc[[]About](mongoconn, collection)
+	return about
+}
+
+func GetIDAbout(mongoconn *mongo.Database, collection string, aboutdata About) About {
+	filter := bson.M{"id": aboutdata.ID}
+	return atdb.GetOneDoc[About](mongoconn, collection, filter)
+}
+
+// gallery function
+
+func CreateGallery(mongoconn *mongo.Database, collection string, gallerydata Gallery) interface{} {
+	return atdb.InsertOneDoc(mongoconn, collection, gallerydata)
+}
+
+func DeleteGallery(mongoconn *mongo.Database, collection string, gallerydata Gallery) interface{} {
+	filter := bson.M{"id": gallerydata.ID}
+	return atdb.DeleteOneDoc(mongoconn, collection, filter)
+}
+
+func UpdatedGallery(mongoconn *mongo.Database, collection string, filter bson.M, gallerydata Gallery) interface{} {
+	filter = bson.M{"id": gallerydata.ID}
+	return atdb.ReplaceOneDoc(mongoconn, collection, filter, gallerydata)
+}
+
+func GetAllGallery(mongoconn *mongo.Database, collection string) []Gallery {
+	gallery := atdb.GetAllDoc[[]Gallery](mongoconn, collection)
+	return gallery
+}
+
+func GetIDGallery(mongoconn *mongo.Database, collection string, gallerydata Gallery) Gallery {
+	filter := bson.M{"id": gallerydata.ID}
+	return atdb.GetOneDoc[Gallery](mongoconn, collection, filter)
+}
+
+// contact function
+
+func CreateContact(mongoconn *mongo.Database, collection string, contactdata Contack) interface{} {
+	return atdb.InsertOneDoc(mongoconn, collection, contactdata)
+}
+
+func DeleteContact(mongoconn *mongo.Database, collection string, contactdata Contack) interface{} {
+	filter := bson.M{"id": contactdata.ID}
+	return atdb.DeleteOneDoc(mongoconn, collection, filter)
+}
+
+func UpdatedContact(mongoconn *mongo.Database, collection string, filter bson.M, contactdata Contack) interface{} {
+	filter = bson.M{"id": contactdata.ID}
+	return atdb.ReplaceOneDoc(mongoconn, collection, filter, contactdata)
+}
+
+func GetAllContact(mongoconn *mongo.Database, collection string) []Contack {
+	contact := atdb.GetAllDoc[[]Contack](mongoconn, collection)
+	return contact
+}
+
+func GetIdContact(mongoconn *mongo.Database, collection string, contactdata Contack) Contack {
+	filter := bson.M{"id": contactdata.ID}
+	return atdb.GetOneDoc[Contack](mongoconn, collection, filter)
+}
+
+// CreateIklan function
+func CreateIklan(mongoconn *mongo.Database, collection string, iklandata Iklan) interface{} {
+	return atdb.InsertOneDoc(mongoconn, collection, iklandata)
+}
+
+func DeleteIklan(mongoconn *mongo.Database, collection string, iklandata Iklan) interface{} {
+	filter := bson.M{"id": iklandata.ID}
+	return atdb.DeleteOneDoc(mongoconn, collection, filter)
+}
+
+func UpdatedIklan(mongoconn *mongo.Database, collection string, filter bson.M, iklandata Iklan) interface{} {
+	filter = bson.M{"id": iklandata.ID}
+	return atdb.ReplaceOneDoc(mongoconn, collection, filter, iklandata)
+}
+
+func GetAllIklan(mongoconn *mongo.Database, collection string) []Iklan {
+	iklan := atdb.GetAllDoc[[]Iklan](mongoconn, collection)
+	return iklan
+}
+
+func GetIDIklan(mongoconn *mongo.Database, collection string, iklandata Iklan) Iklan {
+	filter := bson.M{"id": iklandata.ID}
+	return atdb.GetOneDoc[Iklan](mongoconn, collection, filter)
+}
+
+// gis function
+
+func PostLinestring(mongoconn *mongo.Database, collection string, linestringdata GeoJsonLineString) interface{} {
+	return atdb.InsertOneDoc(mongoconn, collection, linestringdata)
+}
+
+func GetByCoordinate(mongoconn *mongo.Database, collection string, linestringdata GeoJsonLineString) GeoJsonLineString {
+	filter := bson.M{"geometry.coordinates": linestringdata.Geometry.Coordinates}
+	return atdb.GetOneDoc[GeoJsonLineString](mongoconn, collection, filter)
+}
