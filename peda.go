@@ -577,18 +577,13 @@ func GCFLoginFixx(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Req
 		return err.Error()
 	}
 
-	foundUser, findErr := FindUserUserr(mconn, collectionname, userdata)
-	if findErr != nil {
-		return findErr.Error()
-	}
-
-	if IsPasswordValid(mconn, collectionname, foundUser) {
+	if IsPasswordValid(mconn, collectionname, userdata) {
 		// Password is valid, construct and return the GCFReturnStruct.
 		userMap := map[string]interface{}{
-			"Username": foundUser.Username,
-			"Password": foundUser.Password,
-			"Private":  foundUser.Private,
-			"Publick":  foundUser.Publick,
+			"Username": userdata.Username,
+			"Password": userdata.Password,
+			"Private":  userdata.Private,
+			"Publick":  userdata.Publick,
 		}
 		response := CreateResponse(true, "Berhasil Login", userMap)
 		return GCFReturnStruct(response) // Return GCFReturnStruct directly
