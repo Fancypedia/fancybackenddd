@@ -157,3 +157,12 @@ func TestUserFix(t *testing.T) {
 	userdata.Role = "admin"
 	CreateUser(mconn, "user", userdata)
 }
+
+func TestLoginn(t *testing.T) {
+	mconn := SetConnection("MONGOULBI", "petapedia")
+	var userdata User
+	userdata.Username = "pokpokpokpok123"
+	userdata.Password = "pokpokpokpok123"
+	IsPasswordValid(mconn, "user", userdata)
+	fmt.Println(userdata)
+}

@@ -123,6 +123,20 @@ func FindUserUser(mongoconn *mongo.Database, collection string, userdata User) U
 	return atdb.GetOneDoc[User](mongoconn, collection, filter)
 }
 
+func FindUserUserr(mongoconn *mongo.Database, collection string, userdata User) (User, error) {
+	filter := bson.M{
+		"username": userdata.Username,
+	}
+
+	var user User
+	err := mongoconn.Collection(collection).FindOne(context.Background(), filter).Decode(&user)
+	if err != nil {
+		return User{}, err
+	}
+
+	return user, nil
+}
+
 func IsPasswordValid(mongoconn *mongo.Database, collection string, userdata User) bool {
 	filter := bson.M{"username": userdata.Username}
 	res := atdb.GetOneDoc[User](mongoconn, collection, filter)

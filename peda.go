@@ -568,3 +568,32 @@ func GCFCreatePostLineString(MONGOCONNSTRINGENV, dbname, collection string, r *h
 	PostLinestring(mconn, collection, geojsonline)
 	return GCFReturnStruct(geojsonline)
 }
+
+func GCFLoginFixx(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var userdata User
+	err := json.NewDecoder(r.Body).Decode(&userdata)
+	if err != nil {
+		return err.Error()
+	}
+
+	foundUser, findErr := FindUserUserr(mconn, collectionname, userdata)
+	if findErr != nil {
+		return findErr.Error()
+	}
+
+	if IsPasswordValid(mconn, collectionname, foundUser) {
+		// Password is valid, construct and return the GCFReturnStruct.
+		userMap := map[string]interface{}{
+			"Username": foundUser.Username,
+			"Password": foundUser.Password,
+			"Private":  foundUser.Private,
+			"Publick":  foundUser.Publick,
+		}
+		response := CreateResponse(true, "Berhasil Login", userMap)
+		return GCFReturnStruct(response) // Return GCFReturnStruct directly
+	} else {
+		// Password is not valid, return an error message.
+		return "Password Salah"
+	}
+}
