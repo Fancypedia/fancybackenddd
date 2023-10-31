@@ -592,3 +592,22 @@ func GCFLoginFixx(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Req
 		return "Password Salah"
 	}
 }
+
+func GCFLoginFixxx(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var userdata User
+	err := json.NewDecoder(r.Body).Decode(&userdata)
+	if err != nil {
+		return err.Error()
+	}
+
+	foundUser, isValid := IsPasswordValidd(mconn, collectionname, userdata)
+	if isValid {
+		// Password is valid, construct and return the GCFReturnStruct.
+		response := CreateResponse(true, "Berhasil Login", foundUser)
+		return GCFReturnStruct(response)
+	} else {
+		// Password is not valid, return an error message.
+		return "Password Salah"
+	}
+}

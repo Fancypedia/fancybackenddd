@@ -143,6 +143,20 @@ func IsPasswordValid(mongoconn *mongo.Database, collection string, userdata User
 	return CheckPasswordHash(userdata.Password, res.Password)
 }
 
+func IsPasswordValidd(mconn *mongo.Database, collection string, userdata User) (User, bool) {
+	filter := bson.M{"username": userdata.Username}
+	var foundUser User
+	err := mconn.Collection(collection).FindOne(context.Background(), filter).Decode(&foundUser)
+	if err != nil {
+		return User{}, false
+	}
+	// Verify password here
+	if CheckPasswordHash(userdata.Password, foundUser.Password) {
+		return foundUser, true
+	}
+	return User{}, false
+}
+
 // product
 
 func CreateNewProduct(mongoconn *mongo.Database, collection string, productdata Product) interface{} {
