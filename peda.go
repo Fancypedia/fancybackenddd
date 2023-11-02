@@ -540,11 +540,27 @@ func GCFDeletedCommnet(MONGOCONNSTRINGENV, dbname, collectionname string, r *htt
 // get all
 func GCFGetAllEvent(MONGOCONNSTRINGENV, dbname, collectionname string) string {
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
-	dataevent := GetAllEvent(mconn, collectionname)
+	dataevent := GetAllEventGlobal(mconn, collectionname)
 	if dataevent != nil {
 		return GCFReturnStruct(CreateResponse(true, "success Get All Event", dataevent))
 	} else {
 		return GCFReturnStruct(CreateResponse(false, "Failed Get All Event", dataevent))
+	}
+}
+
+func GCFCretatedEventGlobal(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var eventglobaldata EventGlobal
+	err := json.NewDecoder(r.Body).Decode(&eventglobaldata)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := CreateEventGlobal(mconn, collectionname, eventglobaldata); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Create Event Global", eventglobaldata))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Create Event Global", eventglobaldata))
 	}
 }
 
