@@ -537,6 +537,17 @@ func GCFDeletedCommnet(MONGOCONNSTRINGENV, dbname, collectionname string, r *htt
 	return GCFReturnStruct(CreateResponse(false, "Failed to delete comment", commentdata))
 }
 
+// get all
+func GCFGetAllEvent(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	dataevent := GetAllEvent(mconn, collectionname)
+	if dataevent != nil {
+		return GCFReturnStruct(CreateResponse(true, "success Get All Event", dataevent))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Get All Event", dataevent))
+	}
+}
+
 func GCFCreatePostLineStringg(MONGOCONNSTRINGENV, dbname, collection string, r *http.Request) string {
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	var geojsonline GeoJsonLineString
