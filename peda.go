@@ -564,6 +564,23 @@ func GCFCretatedEventGlobal(MONGOCONNSTRINGENV, dbname, collectionname string, r
 	}
 }
 
+func GCFAllGlobalID(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var eventglobaldata EventGlobal
+	err := json.NewDecoder(r.Body).Decode(&eventglobaldata)
+	if err != nil {
+		return err.Error()
+	}
+
+	eventglobal := GetAllEventGlobalId(mconn, collectionname, eventglobaldata)
+	if eventglobal != nil {
+		return GCFReturnStruct(CreateResponse(true, "success Get All Event Global", eventglobal))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Get All Event Global", eventglobal))
+	}
+}
+
 func GCFCreatePostLineStringg(MONGOCONNSTRINGENV, dbname, collection string, r *http.Request) string {
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	var geojsonline GeoJsonLineString
