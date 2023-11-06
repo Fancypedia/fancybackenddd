@@ -716,10 +716,7 @@ func GCFCreateProducttWithpublickeyFix(MONGOCONNSTRINGENV, dbname, collectionnam
 		} else {
 			// Assuming `tokenstr` is defined or retrieved from somewhere
 			// Check if the token is valid
-			Payload, err := IsTokenValid(publickey, os.Getenv("PASETOPRIVATEKEYENV"))
-			if err == nil {
-				Response.Message = "Token Login tidak valid"
-			} else if Payload.Role != "admin" {
+			if r.Header.Get("Login") == os.Getenv("PASETOPRIVATEKEYENV") {
 				// Create a new product if the token is valid
 				CreateNewProduct(mconn, dbname, Product{
 					Nomorid:     dataproduct.Nomorid,
