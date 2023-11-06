@@ -698,7 +698,7 @@ func GCFCreateProducttWithpublickey(MONGOCONNSTRINGENV, dbname, collectionname s
 	return Response
 }
 
-func GCFCreateProducttWithpublickeyFix(MONGOCONNSTRINGENV, dbname, collectionname string, publickey string, r *http.Request) Credential {
+func GCFCreateProducttWithpublickeyFix(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) Credential {
 	var Response Credential
 	Response.Status = false
 
