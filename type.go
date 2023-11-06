@@ -1,6 +1,10 @@
 package peda
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type GeometryPolygon struct {
 	Coordinates [][][]float64 `json:"coordinates" bson:"coordinates"`
@@ -50,6 +54,14 @@ type User struct {
 	Token    string `json:"token,omitempty" bson:"token,omitempty"`
 	Private  string `json:"private,omitempty" bson:"private,omitempty"`
 	Publick  string `json:"publick,omitempty" bson:"publick,omitempty"`
+}
+
+type Payload struct {
+	User string    `json:"user"`
+	Role string    `json:"role"`
+	Exp  time.Time `json:"exp"`
+	Iat  time.Time `json:"iat"`
+	Nbf  time.Time `json:"nbf"`
 }
 
 type Credential struct {
