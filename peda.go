@@ -697,3 +697,45 @@ func GCFCreateProducttWithpublickey(MONGOCONNSTRINGENV, dbname, collectionname s
 	}
 	return Response
 }
+
+func GCFCreateProducttWithpublickeyFix(MONGOCONNSTRINGENV, dbname, collectionname string, publickey string, r *http.Request) Credential {
+	var Response Credential
+	Response.Status = false
+
+	// Retrieve the "Login" token from the request headers
+	tokenlogin := r.Header.Get("Login")
+	if tokenlogin == "" {
+		Response.Message = "Missing Login token in headers"
+	} else {
+		// Process the request with the "Login" token
+		mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+		var dataproduct Product
+		err := json.NewDecoder(r.Body).Decode(&dataproduct)
+		if err != nil {
+			Response.Message = "Error parsing application/json: " + err.Error()
+		} else {
+			// Assuming `tokenstr` is defined or retrieved from somewhere
+			// Check if the token is valid
+			Payload, err := IsTokenValid(publickey, os.Getenv("PASETOPRIVATEKEYENV"))
+			if err == nil {
+				Response.Message = "Token Login tidak valid"
+			} else if Payload.Role != "admin" {
+				// Create a new product if the token is valid
+				CreateNewProduct(mconn, dbname, Product{
+					Nomorid:     dataproduct.Nomorid,
+					Name:        dataproduct.Name,
+					Description: dataproduct.Description,
+					Price:       dataproduct.Price,
+					Stock:       dataproduct.Stock,
+					Size:        dataproduct.Size,
+					Image:       dataproduct.Image,
+				})
+				Response.Status = true
+				Response.Message = "Product creation successful"
+			} else {
+				Response.Message = "Invalid token"
+			}
+		}
+	}
+	return Response
+}
