@@ -279,12 +279,12 @@ func CreateProduct(mongoconn *mongo.Database, collection string, productdata Pro
 }
 
 func DeleteProduct(mongoconn *mongo.Database, collection string, productdata Product) interface{} {
-	filter := bson.M{"id": productdata.ID}
+	filter := bson.M{"nomorid": productdata.Nomorid}
 	return atdb.DeleteOneDoc(mongoconn, collection, filter)
 }
 
 func UpdatedProduct(mongoconn *mongo.Database, collection string, filter bson.M, productdata Product) interface{} {
-	filter = bson.M{"id": productdata.ID}
+	filter = bson.M{"nomorid": productdata.Nomorid}
 	return atdb.ReplaceOneDoc(mongoconn, collection, filter, productdata)
 }
 
@@ -294,7 +294,7 @@ func GetAllProductt(mongoconn *mongo.Database, collection string) []Product {
 }
 
 func GetAllProductID(mongoconn *mongo.Database, collection string, productdata Product) Product {
-	filter := bson.M{"id": productdata.ID}
+	filter := bson.M{"nomorid": productdata.Nomorid}
 	productID := atdb.GetOneDoc[Product](mongoconn, collection, filter)
 	return productID
 }
