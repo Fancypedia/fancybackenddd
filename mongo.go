@@ -273,6 +273,85 @@ func CreateLogin(mongoconn *mongo.Database, collection string, userdata User) in
 	return atdb.InsertOneDoc(mongoconn, collection, userdata)
 }
 
+// product function
+func CreateProduct(mongoconn *mongo.Database, collection string, productdata Product) interface{} {
+	return atdb.InsertOneDoc(mongoconn, collection, productdata)
+}
+
+func DeleteProduct(mongoconn *mongo.Database, collection string, productdata Product) interface{} {
+	filter := bson.M{"id": productdata.ID}
+	return atdb.DeleteOneDoc(mongoconn, collection, filter)
+}
+
+func UpdatedProduct(mongoconn *mongo.Database, collection string, filter bson.M, productdata Product) interface{} {
+	filter = bson.M{"id": productdata.ID}
+	return atdb.ReplaceOneDoc(mongoconn, collection, filter, productdata)
+}
+
+func GetAllProductt(mongoconn *mongo.Database, collection string) []Product {
+	product := atdb.GetAllDoc[[]Product](mongoconn, collection)
+	return product
+}
+
+func GetAllProductID(mongoconn *mongo.Database, collection string, productdata Product) Product {
+	filter := bson.M{"id": productdata.ID}
+	productID := atdb.GetOneDoc[Product](mongoconn, collection, filter)
+	return productID
+}
+
+// content function
+
+func CreateContentt(mongoconn *mongo.Database, collection string, contentdata Content) interface{} {
+	return atdb.InsertOneDoc(mongoconn, collection, contentdata)
+}
+
+func DeleteContentt(mongoconn *mongo.Database, collection string, contentdata Content) interface{} {
+	filter := bson.M{"id": contentdata.ID}
+	return atdb.DeleteOneDoc(mongoconn, collection, filter)
+}
+
+func UpdatedContentt(mongoconn *mongo.Database, collection string, filter bson.M, contentdata Content) interface{} {
+	filter = bson.M{"id": contentdata.ID}
+	return atdb.ReplaceOneDoc(mongoconn, collection, filter, contentdata)
+}
+
+func GetAllContentt(mongoconn *mongo.Database, collection string) []Content {
+	content := atdb.GetAllDoc[[]Content](mongoconn, collection)
+	return content
+}
+
+func GetIDContentt(mongoconn *mongo.Database, collection string, contentdata Content) Content {
+	filter := bson.M{"id": contentdata.ID}
+	return atdb.GetOneDoc[Content](mongoconn, collection, filter)
+}
+
+// blog function
+func CreateBlog(mongoconn *mongo.Database, collection string, blogdata Blog) interface{} {
+	return atdb.InsertOneDoc(mongoconn, collection, blogdata)
+}
+
+func DeleteBlog(mongoconn *mongo.Database, collection string, blogdata Blog) interface{} {
+	filter := bson.M{"id": blogdata.ID}
+	return atdb.DeleteOneDoc(mongoconn, collection, filter)
+}
+
+func UpdatedBlog(mongoconn *mongo.Database, collection string, filter bson.M, blogdata Blog) interface{} {
+	filter = bson.M{"id": blogdata.ID}
+	return atdb.ReplaceOneDoc(mongoconn, collection, filter, blogdata)
+}
+
+func GetAllBlog(mongoconn *mongo.Database, collection string) []Blog {
+	blog := atdb.GetAllDoc[[]Blog](mongoconn, collection)
+	return blog
+}
+
+func GetIDBloggg(mongoconn *mongo.Database, collection string, blogdata Blog) Blog {
+	filter := bson.M{"id": blogdata.ID}
+	Blog := atdb.GetOneDoc[Blog](mongoconn, collection, filter)
+	return Blog
+}
+
+// comment function
 func CreateComment(mongoconn *mongo.Database, collection string, commentdata Comment) interface{} {
 	return atdb.InsertOneDoc(mongoconn, collection, commentdata)
 }
@@ -290,6 +369,11 @@ func UpdatedComment(mongoconn *mongo.Database, collection string, filter bson.M,
 func GetAllComment(mongoconn *mongo.Database, collection string) []Comment {
 	comment := atdb.GetAllDoc[[]Comment](mongoconn, collection)
 	return comment
+}
+
+func GetIDComment(mongoconn *mongo.Database, collection string, commentdata Comment) Comment {
+	filter := bson.M{"id": commentdata.ID}
+	return atdb.GetOneDoc[Comment](mongoconn, collection, filter)
 }
 
 // event global function

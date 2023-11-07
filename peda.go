@@ -736,3 +736,792 @@ func GCFCreateProducttWithpublickeyFix(MONGOCONNSTRINGENV, dbname, collectionnam
 	}
 	return Response
 }
+
+// <--- ini product --->
+
+// product post
+
+func GCFCreateProductt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var dataproduct Product
+	err := json.NewDecoder(r.Body).Decode(&dataproduct)
+	if err != nil {
+		return err.Error()
+	}
+	if err := CreateProduct(mconn, collectionname, dataproduct); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Create Product", dataproduct))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Create Product", dataproduct))
+	}
+}
+
+// delete product
+func GCFDeleteProduct(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var dataproduct Product
+	err := json.NewDecoder(r.Body).Decode(&dataproduct)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := DeleteProduct(mconn, collectionname, dataproduct); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Delete Product", dataproduct))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Delete Product", dataproduct))
+	}
+}
+
+// update product
+
+func GCFUpdateProduct(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var dataproduct Product
+	err := json.NewDecoder(r.Body).Decode(&dataproduct)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := UpdatedProduct(mconn, collectionname, bson.M{"id": dataproduct.ID}, dataproduct); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Update Product", dataproduct))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Update Product", dataproduct))
+	}
+}
+
+// get all product
+func GCFGetAllProductt(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	dataproduct := GetAllProduct(mconn, collectionname)
+	if dataproduct != nil {
+		return GCFReturnStruct(CreateResponse(true, "success Get All Product", dataproduct))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Get All Product", dataproduct))
+	}
+}
+
+// get all product by id
+func GCFGetAllProducttID(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var dataproduct Product
+	err := json.NewDecoder(r.Body).Decode(&dataproduct)
+	if err != nil {
+		return err.Error()
+	}
+
+	product := GetAllProductID(mconn, collectionname, dataproduct)
+	if product != (Product{}) {
+		return GCFReturnStruct(CreateResponse(true, "Success: Get ID Product", dataproduct))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed to Get ID Product", dataproduct))
+	}
+}
+
+// <--- ini content --->
+
+// content post
+func GCFCreateContentt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var datacontent Content
+	err := json.NewDecoder(r.Body).Decode(&datacontent)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := CreateContentt(mconn, collectionname, datacontent); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Create Content", datacontent))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Create Content", datacontent))
+	}
+}
+
+// delete content
+func GCFDeleteContent(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var datacontent Content
+	err := json.NewDecoder(r.Body).Decode(&datacontent)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := DeleteContent(mconn, collectionname, datacontent); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Delete Content", datacontent))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Delete Content", datacontent))
+	}
+}
+
+// update content
+func GCFUpdateContent(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var datacontent Content
+	err := json.NewDecoder(r.Body).Decode(&datacontent)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := UpdatedContentt(mconn, collectionname, bson.M{"id": datacontent.ID}, datacontent); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Update Content", datacontent))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Update Content", datacontent))
+	}
+}
+
+// get all content
+func GCFGetAllContentt(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	datacontent := GetAllContent(mconn, collectionname)
+	if datacontent != nil {
+		return GCFReturnStruct(CreateResponse(true, "success Get All Content", datacontent))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Get All Content", datacontent))
+	}
+}
+
+// get all content by id
+func GCFGetAllContenttID(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var datacontent Content
+	err := json.NewDecoder(r.Body).Decode(&datacontent)
+	if err != nil {
+		return err.Error()
+	}
+
+	content := GetIDContentt(mconn, collectionname, datacontent)
+	if content != (Content{}) {
+		return GCFReturnStruct(CreateResponse(true, "Success: Get ID Content", datacontent))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed to Get ID Content", datacontent))
+	}
+}
+
+// <--- ini blog --->
+
+// blog post
+func GCFCreateBlogg(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var datablog Blog
+	err := json.NewDecoder(r.Body).Decode(&datablog)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := CreateBlog(mconn, collectionname, datablog); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Create Blog", datablog))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Create Blog", datablog))
+	}
+}
+
+// delete blog
+func GCFDeleteBlog(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var datablog Blog
+	err := json.NewDecoder(r.Body).Decode(&datablog)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := DeleteBlog(mconn, collectionname, datablog); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Delete Blog", datablog))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Delete Blog", datablog))
+	}
+}
+
+// update blog
+func GCFUpdateBlog(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var datablog Blog
+	err := json.NewDecoder(r.Body).Decode(&datablog)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := UpdatedBlog(mconn, collectionname, bson.M{"id": datablog.ID}, datablog); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Update Blog", datablog))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Update Blog", datablog))
+	}
+}
+
+// get all blog
+func GCFGetAllBlogg(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	datablog := GetAllBlogAll(mconn, collectionname)
+	if datablog != nil {
+		return GCFReturnStruct(CreateResponse(true, "success Get All Blog", datablog))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Get All Blog", datablog))
+	}
+}
+
+// <--- ini comment --->
+
+// comment post
+
+func GCFCreateCommentt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var datacomment Comment
+	err := json.NewDecoder(r.Body).Decode(&datacomment)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := CreateComment(mconn, collectionname, datacomment); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Create Comment", datacomment))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Create Comment", datacomment))
+	}
+}
+
+// delete comment
+func GCFDeleteCommentt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var datacomment Comment
+	err := json.NewDecoder(r.Body).Decode(&datacomment)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := DeleteComment(mconn, collectionname, datacomment); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Delete Comment", datacomment))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Delete Comment", datacomment))
+	}
+}
+
+// update comment
+func GCFUpdateCommentt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var datacomment Comment
+	err := json.NewDecoder(r.Body).Decode(&datacomment)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := UpdatedComment(mconn, collectionname, bson.M{"id": datacomment.ID}, datacomment); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Update Comment", datacomment))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Update Comment", datacomment))
+	}
+}
+
+// get all comment
+func GCFGetAllCommentt(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	datacomment := GetAllComment(mconn, collectionname)
+	if datacomment != nil {
+		return GCFReturnStruct(CreateResponse(true, "success Get All Comment", datacomment))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Get All Comment", datacomment))
+	}
+}
+
+// get all comment by id
+func GCFGetAllCommenttID(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var datacomment Comment
+	err := json.NewDecoder(r.Body).Decode(&datacomment)
+	if err != nil {
+		return err.Error()
+	}
+
+	comment := GetIDComment(mconn, collectionname, datacomment)
+	if comment != (Comment{}) {
+		return GCFReturnStruct(CreateResponse(true, "Success: Get ID Comment", datacomment))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed to Get ID Comment", datacomment))
+	}
+}
+
+// <--- ini event global--->
+
+// event global post
+func GCFCreateEventGlobal(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var dataevent EventGlobal
+	err := json.NewDecoder(r.Body).Decode(&dataevent)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := CreateEventGlobal(mconn, collectionname, dataevent); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Create Event Global", dataevent))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Create Event Global", dataevent))
+	}
+}
+
+// delete event global
+func GCFDeleteEventGlobal(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var dataevent EventGlobal
+	err := json.NewDecoder(r.Body).Decode(&dataevent)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := DeleteEventGlobal(mconn, collectionname, dataevent); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Delete Event Global", dataevent))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Delete Event Global", dataevent))
+	}
+}
+
+// update event global
+func GCFUpdateEventGlobal(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var dataevent EventGlobal
+	err := json.NewDecoder(r.Body).Decode(&dataevent)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := UpdatedEventGlobal(mconn, collectionname, bson.M{"id": dataevent.ID}, dataevent); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Update Event Global", dataevent))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Update Event Global", dataevent))
+	}
+}
+
+// get all event global
+func GCFGetAllEventGlobal(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	dataevent := GetAllEventGlobal(mconn, collectionname)
+	if dataevent != nil {
+		return GCFReturnStruct(CreateResponse(true, "success Get All Event Global", dataevent))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Get All Event Global", dataevent))
+	}
+}
+
+// get all event global by id
+func GCFGetAllEventGlobalID(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var dataevent EventGlobal
+	err := json.NewDecoder(r.Body).Decode(&dataevent)
+	if err != nil {
+		return err.Error()
+	}
+
+	eventglobal := GetAllEventGlobalId(mconn, collectionname, dataevent)
+	if eventglobal != nil {
+		return GCFReturnStruct(CreateResponse(true, "success Get All Event Global", eventglobal))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Get All Event Global", eventglobal))
+	}
+}
+
+// <--- ini event --->
+// event post
+func GCFCreateEventt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var dataevent Event
+	err := json.NewDecoder(r.Body).Decode(&dataevent)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := CreateEvent(mconn, collectionname, dataevent); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Create Event", dataevent))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Create Event", dataevent))
+	}
+}
+
+// delete event
+func GCFDeleteEventt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var dataevent Event
+	err := json.NewDecoder(r.Body).Decode(&dataevent)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := DeleteEvent(mconn, collectionname, dataevent); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Delete Event", dataevent))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Delete Event", dataevent))
+	}
+}
+
+// update event
+func GCFUpdateEventt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var dataevent Event
+	err := json.NewDecoder(r.Body).Decode(&dataevent)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := UpdatedEvent(mconn, collectionname, bson.M{"id": dataevent.ID}, dataevent); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Update Event", dataevent))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Update Event", dataevent))
+	}
+}
+
+// get all event
+func GCFGetAllEventt(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	dataevent := GetAllEvent(mconn, collectionname)
+	if dataevent != nil {
+		return GCFReturnStruct(CreateResponse(true, "success Get All Event", dataevent))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Get All Event", dataevent))
+	}
+}
+
+// get all event by id
+func GCFGetAllEventtID(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var dataevent Event
+	err := json.NewDecoder(r.Body).Decode(&dataevent)
+	if err != nil {
+		return err.Error()
+	}
+
+	event := GetIDEvent(mconn, collectionname, dataevent)
+	if event != (Event{}) {
+		return GCFReturnStruct(CreateResponse(true, "Success: Get ID Event", dataevent))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed to Get ID Event", dataevent))
+	}
+}
+
+// <--- ini about --->
+
+// about post
+func GCFCreateAboutt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var dataabout About
+	err := json.NewDecoder(r.Body).Decode(&dataabout)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := CreateAbout(mconn, collectionname, dataabout); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Create About", dataabout))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Create About", dataabout))
+	}
+}
+
+// delete about
+func GCFDeleteAboutt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var dataabout About
+	err := json.NewDecoder(r.Body).Decode(&dataabout)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := DeleteAbout(mconn, collectionname, dataabout); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Delete About", dataabout))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Delete About", dataabout))
+	}
+}
+
+// update about
+func GCFUpdateAboutt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var dataabout About
+	err := json.NewDecoder(r.Body).Decode(&dataabout)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := UpdatedAbout(mconn, collectionname, bson.M{"id": dataabout.ID}, dataabout); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Update About", dataabout))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Update About", dataabout))
+	}
+}
+
+// get all about
+func GCFGetAllAboutt(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	dataabout := GetAllAbout(mconn, collectionname)
+	if dataabout != nil {
+		return GCFReturnStruct(CreateResponse(true, "success Get All About", dataabout))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Get All About", dataabout))
+	}
+}
+
+// get all about by id
+func GCFGetAllAbouttID(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var dataabout About
+	err := json.NewDecoder(r.Body).Decode(&dataabout)
+	if err != nil {
+		return err.Error()
+	}
+
+	about := GetIDAbout(mconn, collectionname, dataabout)
+	if about != (About{}) {
+		return GCFReturnStruct(CreateResponse(true, "Success: Get ID About", dataabout))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed to Get ID About", dataabout))
+	}
+}
+
+// <--- ini gallery --->
+
+// gallery post
+func GCFCreateGalleryy(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var datagallery Gallery
+	err := json.NewDecoder(r.Body).Decode(&datagallery)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := CreateGallery(mconn, collectionname, datagallery); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Create Gallery", datagallery))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Create Gallery", datagallery))
+	}
+}
+
+// delete gallery
+func GCFDeleteGalleryy(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var datagallery Gallery
+	err := json.NewDecoder(r.Body).Decode(&datagallery)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := DeleteGallery(mconn, collectionname, datagallery); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Delete Gallery", datagallery))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Delete Gallery", datagallery))
+	}
+}
+
+// update gallery
+func GCFUpdateGalleryy(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var datagallery Gallery
+	err := json.NewDecoder(r.Body).Decode(&datagallery)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := UpdatedGallery(mconn, collectionname, bson.M{"id": datagallery.ID}, datagallery); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Update Gallery", datagallery))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Update Gallery", datagallery))
+	}
+}
+
+// get all gallery
+func GCFGetAllGalleryy(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	datagallery := GetAllGallery(mconn, collectionname)
+	if datagallery != nil {
+		return GCFReturnStruct(CreateResponse(true, "success Get All Gallery", datagallery))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Get All Gallery", datagallery))
+	}
+}
+
+// get all gallery by id
+func GCFGetAllGalleryyID(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var datagallery Gallery
+	err := json.NewDecoder(r.Body).Decode(&datagallery)
+	if err != nil {
+		return err.Error()
+	}
+
+	gallery := GetIDGallery(mconn, collectionname, datagallery)
+	if gallery != (Gallery{}) {
+		return GCFReturnStruct(CreateResponse(true, "Success: Get ID Gallery", datagallery))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed to Get ID Gallery", datagallery))
+	}
+}
+
+// <--- ini contact --->
+
+// contact post
+func GCFCreateContactt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var datacontact Contack
+	err := json.NewDecoder(r.Body).Decode(&datacontact)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := CreateContact(mconn, collectionname, datacontact); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Create Contact", datacontact))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Create Contact", datacontact))
+	}
+}
+
+// delete contact
+func GCFDeleteContactt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var datacontact Contack
+	err := json.NewDecoder(r.Body).Decode(&datacontact)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := DeleteContact(mconn, collectionname, datacontact); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Delete Contact", datacontact))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Delete Contact", datacontact))
+	}
+}
+
+// update contact
+func GCFUpdateContactt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var datacontact Contack
+	err := json.NewDecoder(r.Body).Decode(&datacontact)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := UpdatedContact(mconn, collectionname, bson.M{"id": datacontact.ID}, datacontact); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Update Contact", datacontact))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Update Contact", datacontact))
+	}
+}
+
+// get all contact
+func GCFGetAllContactt(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	datacontact := GetAllContact(mconn, collectionname)
+	if datacontact != nil {
+		return GCFReturnStruct(CreateResponse(true, "success Get All Contact", datacontact))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Get All Contact", datacontact))
+	}
+}
+
+// get all contact by id
+func GCFGetAllContacttID(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var datacontact Contack
+	err := json.NewDecoder(r.Body).Decode(&datacontact)
+	if err != nil {
+		return err.Error()
+	}
+
+	contact := GetIdContact(mconn, collectionname, datacontact)
+	if contact != (Contack{}) {
+		return GCFReturnStruct(CreateResponse(true, "Success: Get ID Contact", datacontact))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed to Get ID Contact", datacontact))
+	}
+}
+
+// <--- ini iklan --->
+
+// iklan post
+func GCFCreateIklann(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var dataiklan Iklan
+	err := json.NewDecoder(r.Body).Decode(&dataiklan)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := CreateIklan(mconn, collectionname, dataiklan); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Create Iklan", dataiklan))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Create Iklan", dataiklan))
+	}
+}
+
+// delete iklan
+func GCFDeleteIklann(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var dataiklan Iklan
+	err := json.NewDecoder(r.Body).Decode(&dataiklan)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := DeleteIklan(mconn, collectionname, dataiklan); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Delete Iklan", dataiklan))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Delete Iklan", dataiklan))
+	}
+}
+
+// update iklan
+func GCFUpdateIklann(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var dataiklan Iklan
+	err := json.NewDecoder(r.Body).Decode(&dataiklan)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := UpdatedIklan(mconn, collectionname, bson.M{"id": dataiklan.ID}, dataiklan); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Update Iklan", dataiklan))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Update Iklan", dataiklan))
+	}
+}
+
+// get all iklan
+func GCFGetAllIklann(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	dataiklan := GetAllIklan(mconn, collectionname)
+	if dataiklan != nil {
+		return GCFReturnStruct(CreateResponse(true, "success Get All Iklan", dataiklan))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Get All Iklan", dataiklan))
+	}
+}
+
+// get all iklan by id
+func GCFGetAllIklannID(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var dataiklan Iklan
+	err := json.NewDecoder(r.Body).Decode(&dataiklan)
+	if err != nil {
+		return err.Error()
+	}
+
+	iklan := GetIDIklan(mconn, collectionname, dataiklan)
+	if iklan != (Iklan{}) {
+		return GCFReturnStruct(CreateResponse(true, "Success: Get ID Iklan", dataiklan))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed to Get ID Iklan", dataiklan))
+	}
+}
