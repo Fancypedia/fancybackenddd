@@ -79,6 +79,7 @@ type Product struct {
 	Stock       int                `json:"stock" bson:"stock"`
 	Size        string             `json:"size" bson:"size"`
 	Image       string             `json:"image" bson:"image"`
+	Status      bool               `json:"status" bson:"status"`
 }
 
 type Response struct {
@@ -92,6 +93,7 @@ type Content struct {
 	Content     string `json:"content" bson:"content"`
 	Image       string `json:"image" bson:"image"`
 	Description string `json:"description" bson:"description"`
+	Status      bool   `json:"status" bson:"status"`
 }
 
 type Blog struct {
@@ -100,14 +102,16 @@ type Blog struct {
 	Tanggal     string    `json:"tanggal" bson:"tanggal"`
 	Description string    `json:"judul" bson:"judul"`
 	Content     []Content `json:"content" bson:"content"`
+	Status      bool      `json:"status" bson:"status"`
 }
 
 type Tags struct {
-	Tags []string `json:"tags" bson:"tags"`
+	Tags string `json:"tags" bson:"tags"`
 }
 
 type Category struct {
-	Category []string `json:"category" bson:"category"`
+	Category string `json:"category" bson:"category"`
+	Status   bool   `json:"status" bson:"status"`
 }
 
 type Comment struct {
@@ -116,10 +120,12 @@ type Comment struct {
 	Answer    string `json:"comment" bson:"comment"`
 	Questions string `json:"questions" bson:"questions"`
 	Tanggal   string `json:"tanggal" bson:"tanggal"`
+	Status    bool   `json:"status" bson:"status"`
 }
 
 type Share struct {
-	Share []string `json:"share" bson:"share"`
+	Share  string `json:"share" bson:"share"`
+	Status bool   `json:"status" bson:"status"`
 }
 
 type EventGlobal struct {
@@ -129,6 +135,7 @@ type EventGlobal struct {
 	Tanggal     string `json:"tanggal" bson:"tanggal"`
 	Image       string `json:"image" bson:"image"`
 	Harga       int    `json:"harga" bson:"harga"`
+	Status      bool   `json:"status" bson:"status"`
 }
 
 type Event struct {
@@ -139,6 +146,7 @@ type Event struct {
 	Image       string `json:"image" bson:"image"`
 	Harga       int    `json:"harga" bson:"harga"`
 	LinkYoutube string `json:"linkyoutube" bson:"linkyoutube"`
+	Status      bool   `json:"status" bson:"status"`
 }
 
 type About struct {
@@ -146,6 +154,7 @@ type About struct {
 	Title       string `json:"title" bson:"title"`
 	Description string `json:"description" bson:"description"`
 	Image       string `json:"image" bson:"image"`
+	Status      bool   `json:"status" bson:"status"`
 }
 
 type Gallery struct {
@@ -153,6 +162,7 @@ type Gallery struct {
 	Title       string `json:"title" bson:"title"`
 	Description string `json:"description" bson:"description"`
 	Image       string `json:"image" bson:"image"`
+	Status      bool   `json:"status" bson:"status"`
 }
 
 type Contack struct {
@@ -162,6 +172,7 @@ type Contack struct {
 	Message string `json:"image" bson:"image"`
 	Email   string `json:"email" bson:"email"`
 	Phone   string `json:"phone" bson:"phone"`
+	Status  bool   `json:"status" bson:"status"`
 }
 
 type Iklan struct {
@@ -169,4 +180,5 @@ type Iklan struct {
 	Title       string `json:"title" bson:"title"`
 	Description string `json:"description" bson:"description"`
 	Image       string `json:"image" bson:"image"`
+	Status      bool   `json:"status" bson:"status"`
 }
