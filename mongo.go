@@ -294,7 +294,15 @@ func GetAllProductt(mongoconn *mongo.Database, collection string) []Product {
 }
 
 func GetAllProductID(mongoconn *mongo.Database, collection string, productdata Product) Product {
-	filter := bson.M{"nomorid": productdata.Nomorid}
+	filter := bson.M{
+		"nomorid":     productdata.Nomorid,
+		"name":        productdata.Name,
+		"description": productdata.Description,
+		"price":       productdata.Price,
+		"size":        productdata.Size,
+		"stock":       productdata.Stock,
+		"image":       productdata.Image,
+	}
 	productID := atdb.GetOneDoc[Product](mongoconn, collection, filter)
 	return productID
 }
