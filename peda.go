@@ -17,12 +17,6 @@ import (
 // 	return GCFReturnStruct(datagedung)
 // }
 
-func GCFHandler(MONGOCONNSTRINGENV, dbname, collectionname string) string {
-	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
-	datagedung := GetAllBangunanLineString(mconn, collectionname)
-	return GCFReturnStruct(datagedung)
-}
-
 func GCFFindUserByID(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	var datauser User
@@ -551,6 +545,16 @@ func GCFGetAllEvent(MONGOCONNSTRINGENV, dbname, collectionname string) string {
 		return GCFReturnStruct(CreateResponse(true, "success Get All Event", dataevent))
 	} else {
 		return GCFReturnStruct(CreateResponse(false, "Failed Get All Event", dataevent))
+	}
+}
+func GCFHandler(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	datagedung := GetAllBangunanLineString(mconn, collectionname)
+	if datagedung != nil {
+		return GCFReturnStruct(CreateResponse(false, "Succes Get All Bangunan", datagedung))
+	} else {
+		return GCFReturnStruct(CreateResponse(true, "Failed Get All Bangunan", datagedung))
+
 	}
 }
 
