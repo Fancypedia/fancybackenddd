@@ -17,6 +17,12 @@ import (
 // 	return GCFReturnStruct(datagedung)
 // }
 
+func GCFHandler(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	datagedung := GetAllBangunanLineString(mconn, collectionname)
+	return GCFReturnStruct(datagedung)
+}
+
 func GCFFindUserByID(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	var datauser User
