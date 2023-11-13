@@ -1552,17 +1552,22 @@ func GCFDeleteLineString(MONGOCONNSTRINGENV, dbname, collectionname string, r *h
 }
 
 func GCFUpdateLinestring(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
-	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname) // Assuming SetConnection is defined somewhere
+
 	var dataline GeoJsonLineString
 	err := json.NewDecoder(r.Body).Decode(&dataline)
 	if err != nil {
-		return err.Error()
+		return GCFReturnStruct(CreateResponse(false, "Failed to decode request body", nil))
 	}
 
-	if err := UpdatedLinestring(mconn, collectionname, bson.M{"properties.coordinates": dataline.Geometry.Coordinates}, dataline); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Update LineString", dataline))
+	if r.Header.Get("Secret") == os.Getenv("SECRET") {
+		if err := UpdatedLinestring(mconn, collectionname, bson.M{"properties.coordinates": dataline.Geometry.Coordinates}, dataline); err == nil {
+			return GCFReturnStruct(CreateResponse(true, "Success: LineString updated", dataline))
+		} else {
+			return GCFReturnStruct(CreateResponse(false, "Failed to update LineString", nil))
+		}
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Update LineString", dataline))
+		return GCFReturnStruct(CreateResponse(false, "Unauthorized: Secret header does not match", nil))
 	}
 }
 
@@ -1573,11 +1578,14 @@ func GCFCreatePolygone(MONGOCONNSTRINGENV, dbname, collectionname string, r *htt
 	if err != nil {
 		return err.Error()
 	}
-
-	if err := PostPolygone(mconn, collectionname, datapolygone); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Create Polygone", datapolygone))
+	if r.Header.Get("Secret") == os.Getenv("SECRET") {
+		if err := PostPolygone(mconn, collectionname, datapolygone); err != nil {
+			return GCFReturnStruct(CreateResponse(true, "Success Create Polygone", datapolygone))
+		} else {
+			return GCFReturnStruct(CreateResponse(false, "Failed Create Polygone", datapolygone))
+		}
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Create Polygone", datapolygone))
+		return GCFReturnStruct(CreateResponse(false, "Unauthorized: Secret header does not match", nil))
 	}
 }
 
@@ -1588,10 +1596,13 @@ func GCFPoint(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request
 	if err != nil {
 		return err.Error()
 	}
-
-	if err := PostPoint(mconn, collectionname, datapoint); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Create Point", datapoint))
+	if r.Header.Get("Secret") == os.Getenv("SECRET") {
+		if err := PostPoint(mconn, collectionname, datapoint); err != nil {
+			return GCFReturnStruct(CreateResponse(true, "Success Create Point", datapoint))
+		} else {
+			return GCFReturnStruct(CreateResponse(false, "Failed Create Point", datapoint))
+		}
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Create Point", datapoint))
+		return GCFReturnStruct(CreateResponse(false, "Unauthorized: Secret header does not match", nil))
 	}
 }
