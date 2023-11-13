@@ -1565,3 +1565,33 @@ func GCFUpdateLinestring(MONGOCONNSTRINGENV, dbname, collectionname string, r *h
 		return GCFReturnStruct(CreateResponse(false, "Failed Update LineString", dataline))
 	}
 }
+
+func GCFCreatePolygone(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var datapolygone GeoJsonPolygon
+	err := json.NewDecoder(r.Body).Decode(&datapolygone)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := PostPolygone(mconn, collectionname, datapolygone); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Create Polygone", datapolygone))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Create Polygone", datapolygone))
+	}
+}
+
+func GCFPoint(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var datapoint GeometryPoint
+	err := json.NewDecoder(r.Body).Decode(&datapoint)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := PostPoint(mconn, collectionname, datapoint); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Create Point", datapoint))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Create Point", datapoint))
+	}
+}

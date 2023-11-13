@@ -546,6 +546,14 @@ func PostLinestring(mongoconn *mongo.Database, collection string, linestringdata
 	return atdb.InsertOneDoc(mongoconn, collection, linestringdata)
 }
 
+func PostPolygone(mongoconn *mongo.Database, collection string, polygonedata GeoJsonPolygon) interface{} {
+	return atdb.InsertOneDoc(mongoconn, collection, polygonedata)
+}
+
+func PostPoint(mongoconn *mongo.Database, collection string, pointdata GeometryPoint) interface{} {
+	return atdb.InsertOneDoc(mongoconn, collection, pointdata)
+}
+
 func GetByCoordinate(mongoconn *mongo.Database, collection string, linestringdata GeoJsonLineString) GeoJsonLineString {
 	filter := bson.M{"geometry.coordinates": linestringdata.Geometry.Coordinates}
 	return atdb.GetOneDoc[GeoJsonLineString](mongoconn, collection, filter)
