@@ -1571,6 +1571,33 @@ func GCFUpdateLinestring(MONGOCONNSTRINGENV, dbname, collectionname string, r *h
 		return GCFReturnStruct(CreateResponse(false, "Unauthorized: Secret header does not match", nil))
 	}
 }
+func GCFCreateLineStringgg(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	// MongoDB Connection Setup
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	// Parsing Request Body
+	var dataline GeoJsonLineString
+	err := json.NewDecoder(r.Body).Decode(&dataline)
+	if err != nil {
+		return err.Error()
+	}
+
+	if r.Header.Get("Secret") == os.Getenv("SECRET") {
+		// Handling Authorization
+		err := PostLinestring(mconn, collectionname, dataline)
+		if err != nil {
+			// Success
+			return GCFReturnStruct(CreateResponse(true, "Success: LineString created", dataline))
+		} else {
+			return GCFReturnStruct(CreateResponse(false, "Error", nil))
+		}
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Unauthorized: Secret header does not match", nil))
+	}
+
+	// This part is unreachable, so you might want to remove it
+	// return GCFReturnStruct(CreateResponse(false, "Success to create LineString", nil))
+}
 
 func GCFCreatePolygone(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
 	// MongoDB Connection Setup
