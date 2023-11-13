@@ -1573,20 +1573,23 @@ func GCFUpdateLinestring(MONGOCONNSTRINGENV, dbname, collectionname string, r *h
 }
 
 func GCFCreatePolygone(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	// MongoDB Connection Setup
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	// Parsing Request Body
 	var datapolygone GeoJsonPolygon
 	err := json.NewDecoder(r.Body).Decode(&datapolygone)
 	if err != nil {
 		return err.Error()
 	}
-	if r.Header.Get("Secret") == os.Getenv("SECRET") {
-		if err := PostPolygone(mconn, collectionname, datapolygone); err != nil {
-			return GCFReturnStruct(CreateResponse(true, "Success Create Polygone", datapolygone))
-		} else {
-			return GCFReturnStruct(CreateResponse(false, "Failed Create Polygone", datapolygone))
-		}
+
+	// Handling Authorization
+	if err := PostPolygone(mconn, collectionname, datapolygone); err != nil {
+		// Success
+		return GCFReturnStruct(CreateResponse(true, "Success Create Polygone", datapolygone))
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Unauthorized: Secret header does not match", nil))
+		// Failure
+		return GCFReturnStruct(CreateResponse(false, "Failed Create Polygone", datapolygone))
 	}
 }
 
@@ -1617,4 +1620,71 @@ func GCFPoint(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request
 
 	log.Println("Success: Point created")
 	return GCFReturnStruct(CreateResponse(true, "Success: Point created", datapoint))
+}
+
+func GCFlineStingCreate(MONGOCONNSTRINGENV, dbname, collection string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var geojsonline GeoJsonLineString
+	err := json.NewDecoder(r.Body).Decode(&geojsonline)
+	if err != nil {
+		return err.Error()
+	}
+	PostLinestring(mconn, collection, geojsonline)
+	return GCFReturnStruct(geojsonline)
+}
+
+func GCFlineStingCreatea(MONGOCONNSTRINGENV, dbname, collection string, r *http.Request) string {
+	// MongoDB Connection Setup
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	// Parsing Request Body
+	var geojsonline GeoJsonLineString
+	err := json.NewDecoder(r.Body).Decode(&geojsonline)
+	if err != nil {
+		return GCFReturnStruct(CreateResponse(false, "Bad Request: Invalid JSON", nil))
+	}
+
+	// Checking Secret Header
+	secretHeader := r.Header.Get("Secret")
+	expectedSecret := os.Getenv("SECRET")
+
+	if secretHeader != expectedSecret {
+		log.Printf("Unauthorized: Secret header does not match. Expected: %s, Actual: %s", expectedSecret, secretHeader)
+		return GCFReturnStruct(CreateResponse(false, "Unauthorized: Secret header does not match", nil))
+	}
+
+	// Handling Authorization
+	PostLinestring(mconn, collection, geojsonline)
+
+	return GCFReturnStruct(CreateResponse(true, "Success: LineString created", geojsonline))
+}
+
+func GCFCreatePolygonee(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	// MongoDB Connection Setup
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	// Parsing Request Body
+	var datapolygone GeoJsonPolygon
+	err := json.NewDecoder(r.Body).Decode(&datapolygone)
+	if err != nil {
+		return GCFReturnStruct(CreateResponse(false, "Bad Request: Invalid JSON", nil))
+	}
+
+	// Checking Secret Header
+	secretHeader := r.Header.Get("Secret")
+	expectedSecret := os.Getenv("SECRET")
+
+	if secretHeader != expectedSecret {
+		log.Printf("Unauthorized: Secret header does not match. Expected: %s, Actual: %s", expectedSecret, secretHeader)
+		return GCFReturnStruct(CreateResponse(false, "Unauthorized: Secret header does not match", nil))
+	}
+
+	// Handling Authorization
+	if err := PostPolygone(mconn, collectionname, datapolygone); err != nil {
+		log.Printf("Error creating polygon: %v", err)
+		return GCFReturnStruct(CreateResponse(false, "Failed Create Polygone", nil))
+	}
+
+	log.Println("Success: Polygon created")
+	return GCFReturnStruct(CreateResponse(true, "Success Create Polygone", datapolygone))
 }
