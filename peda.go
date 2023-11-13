@@ -3,6 +3,7 @@ package peda
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -1592,17 +1593,28 @@ func GCFCreatePolygone(MONGOCONNSTRINGENV, dbname, collectionname string, r *htt
 func GCFPoint(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	var datapoint GeometryPoint
-	err := json.NewDecoder(r.Body).Decode(&datapoint)
-	if err != nil {
-		return err.Error()
+
+	// Decode the request body
+	if err := json.NewDecoder(r.Body).Decode(&datapoint); err != nil {
+		log.Printf("Error decoding request body: %v", err)
+		return GCFReturnStruct(CreateResponse(false, "Bad Request: Invalid JSON", nil))
 	}
-	if r.Header.Get("Secret") == os.Getenv("SECRET") {
-		if err := PostPoint(mconn, collectionname, datapoint); err != nil {
-			return GCFReturnStruct(CreateResponse(true, "Success Create Point", datapoint))
-		} else {
-			return GCFReturnStruct(CreateResponse(false, "Failed Create Point", datapoint))
-		}
-	} else {
+
+	// Check for the "Secret" header
+	secretHeader := r.Header.Get("Secret")
+	expectedSecret := os.Getenv("SECRET")
+
+	if secretHeader != expectedSecret {
+		log.Printf("Unauthorized: Secret header does not match. Expected: %s, Actual: %s", expectedSecret, secretHeader)
 		return GCFReturnStruct(CreateResponse(false, "Unauthorized: Secret header does not match", nil))
 	}
+
+	// Attempt to post the data point to MongoDB
+	if err := PostPoint(mconn, collectionname, datapoint); err != nil {
+		log.Printf("Error posting data point to MongoDB: %v", err)
+		return GCFReturnStruct(CreateResponse(false, "Failed to create point", nil))
+	}
+
+	log.Println("Success: Point created")
+	return GCFReturnStruct(CreateResponse(true, "Success: Point created", datapoint))
 }
