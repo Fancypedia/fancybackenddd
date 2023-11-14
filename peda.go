@@ -1205,22 +1205,22 @@ func GCFGetAllEventt(MONGOCONNSTRINGENV, dbname, collectionname string) string {
 }
 
 // get all event by id
-func GCFGetAllEventtID(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
-	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+// func GCFGetAllEventtID(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+// 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 
-	var dataevent Event
-	err := json.NewDecoder(r.Body).Decode(&dataevent)
-	if err != nil {
-		return err.Error()
-	}
+// 	var dataevent Event
+// 	err := json.NewDecoder(r.Body).Decode(&dataevent)
+// 	if err != nil {
+// 		return err.Error()
+// 	}
 
-	event := GetIDEvent(mconn, collectionname, dataevent)
-	if event != (Event{}) {
-		return GCFReturnStruct(CreateResponse(true, "Success: Get ID Event", dataevent))
-	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed to Get ID Event", dataevent))
-	}
-}
+// 	event := GetIDEvent(mconn, collectionname, dataevent)
+// 	if event != (Event{}) {
+// 		return GCFReturnStruct(CreateResponse(true, "Success: Get ID Event", dataevent))
+// 	} else {
+// 		return GCFReturnStruct(CreateResponse(false, "Failed to Get ID Event", dataevent))
+// 	}
+// }
 
 // <--- ini about --->
 
@@ -1285,23 +1285,23 @@ func GCFGetAllAboutt(MONGOCONNSTRINGENV, dbname, collectionname string) string {
 	}
 }
 
-// get all about by id
-func GCFGetAllAbouttID(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
-	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+// // get all about by id
+// func GCFGetAllAbouttID(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+// 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 
-	var dataabout About
-	err := json.NewDecoder(r.Body).Decode(&dataabout)
-	if err != nil {
-		return err.Error()
-	}
+// 	var dataabout About
+// 	err := json.NewDecoder(r.Body).Decode(&dataabout)
+// 	if err != nil {
+// 		return err.Error()
+// 	}
 
-	about := GetIDAbout(mconn, collectionname, dataabout)
-	if about != (About{}) {
-		return GCFReturnStruct(CreateResponse(true, "Success: Get ID About", dataabout))
-	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed to Get ID About", dataabout))
-	}
-}
+// 	about := GetIDAbout(mconn, collectionname, dataabout)
+// 	if about != (About{}) {
+// 		return GCFReturnStruct(CreateResponse(true, "Success: Get ID About", dataabout))
+// 	} else {
+// 		return GCFReturnStruct(CreateResponse(false, "Failed to Get ID About", dataabout))
+// 	}
+// }
 
 // <--- ini gallery --->
 
@@ -1571,6 +1571,22 @@ func GCFUpdateLinestring(MONGOCONNSTRINGENV, dbname, collectionname string, r *h
 		return GCFReturnStruct(CreateResponse(false, "Unauthorized: Secret header does not match", nil))
 	}
 }
+
+func GCFCreateIklannN(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var dataiklan Iklan
+	err := json.NewDecoder(r.Body).Decode(&dataiklan)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := CreateIklan(mconn, collectionname, dataiklan); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Create Iklan", dataiklan))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Create Iklan", dataiklan))
+	}
+}
+
 func GCFCreateLineStringgg(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
 	// MongoDB Connection Setup
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
@@ -1584,13 +1600,12 @@ func GCFCreateLineStringgg(MONGOCONNSTRINGENV, dbname, collectionname string, r 
 
 	if r.Header.Get("Secret") == os.Getenv("SECRET") {
 		// Handling Authorization
-		err := PostLinestring(mconn, collectionname, dataline)
-		if err != nil {
-			// Success
+		if err != PostLinestring(mconn, collectionname, dataline) {
 			return GCFReturnStruct(CreateResponse(true, "Success: LineString created", dataline))
 		} else {
-			return GCFReturnStruct(CreateResponse(false, "Error", nil))
+			return GCFReturnStruct(CreateResponse(false, "Failed to create LineString", nil))
 		}
+
 	} else {
 		return GCFReturnStruct(CreateResponse(false, "Unauthorized: Secret header does not match", nil))
 	}

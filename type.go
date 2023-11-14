@@ -129,32 +129,38 @@ type Share struct {
 }
 
 type EventGlobal struct {
-	ID          int    `json:"id" bson:"id"`
-	Title       string `json:"title" bson:"title"`
-	Description string `json:"description" bson:"description"`
-	Tanggal     string `json:"tanggal" bson:"tanggal"`
-	Image       string `json:"image" bson:"image"`
-	Harga       int    `json:"harga" bson:"harga"`
-	Status      bool   `json:"status" bson:"status"`
+	ID          int       `json:"id" bson:"id"`
+	Title       string    `json:"title" bson:"title"`
+	Description string    `json:"description" bson:"description"`
+	Tanggal     string    `json:"tanggal" bson:"tanggal"`
+	Image       string    `json:"image" bson:"image"`
+	Harga       int       `json:"harga" bson:"harga"`
+	Content     []Content `json:"content" bson:"content"`
+	Product     []Product `json:"product" bson:"product"`
+	Status      bool      `json:"status" bson:"status"`
 }
 
 type Event struct {
-	ID          int    `json:"id" bson:"id"`
-	Title       string `json:"title" bson:"title"`
-	Description string `json:"description" bson:"description"`
-	Tanggal     string `json:"tanggal" bson:"tanggal"`
-	Image       string `json:"image" bson:"image"`
-	Harga       int    `json:"harga" bson:"harga"`
-	LinkYoutube string `json:"linkyoutube" bson:"linkyoutube"`
-	Status      bool   `json:"status" bson:"status"`
+	ID          int       `json:"id" bson:"id"`
+	Title       string    `json:"title" bson:"title"`
+	Description string    `json:"description" bson:"description"`
+	Tanggal     string    `json:"tanggal" bson:"tanggal"`
+	Image       string    `json:"image" bson:"image"`
+	Harga       int       `json:"harga" bson:"harga"`
+	LinkYoutube string    `json:"linkyoutube" bson:"linkyoutube"`
+	Content     []Content `json:"content" bson:"content"`
+	Product     []Product `json:"product" bson:"product"`
+	Status      bool      `json:"status" bson:"status"`
 }
 
 type About struct {
-	ID          int    `json:"id" bson:"id"`
-	Title       string `json:"title" bson:"title"`
-	Description string `json:"description" bson:"description"`
-	Image       string `json:"image" bson:"image"`
-	Status      bool   `json:"status" bson:"status"`
+	ID          int       `json:"id" bson:"id"`
+	Title       string    `json:"title" bson:"title"`
+	Description string    `json:"description" bson:"description"`
+	Image       string    `json:"image" bson:"image"`
+	Content     []Content `json:"content" bson:"content"`
+	Product     []Product `json:"product" bson:"product"`
+	Status      bool      `json:"status" bson:"status"`
 }
 
 type Gallery struct {
