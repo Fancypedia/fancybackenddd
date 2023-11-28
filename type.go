@@ -188,3 +188,22 @@ type Iklan struct {
 	Image       string `json:"image" bson:"image"`
 	Status      bool   `json:"status" bson:"status"`
 }
+
+type Location struct {
+	Type        string      `bson:"type"`
+	Coordinates [][]float64 `bson:"coordinates"`
+	CRS         struct {
+		Type       string `bson:"type"`
+		Properties struct {
+			Name string `bson:"name"`
+		} `bson:"properties"`
+	} `bson:"crs"`
+}
+
+type Query struct {
+	LocationField struct {
+		GeoIntersects struct {
+			Geometry Location `bson:"$geometry"`
+		} `bson:"$geoIntersects"`
+	} `bson:"locationField"`
+}

@@ -569,3 +569,7 @@ func UpdatedLinestring(mongoconn *mongo.Database, collection string, filter bson
 	filter = bson.M{"geometry.coordinates": linestringdata.Geometry.Coordinates}
 	return atdb.ReplaceOneDoc(mongoconn, collection, filter, linestringdata)
 }
+
+func PostLocation(mongoconn *mongo.Database, collection string, locationdata Location) interface{} {
+	return atdb.InsertOneDoc(mongoconn, collection, locationdata)
+}

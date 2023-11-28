@@ -752,18 +752,48 @@ func GCFCreateProducttWithpublickeyFix(MONGOCONNSTRINGENV, dbname, collectionnam
 
 // product post
 
-func GCFCreateProductt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFCreateProductt(publickey, MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
-	var dataproduct Product
-	err := json.NewDecoder(r.Body).Decode(&dataproduct)
-	if err != nil {
-		return err.Error()
-	}
-	if err := CreateProduct(mconn, collectionname, dataproduct); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Create Product", dataproduct))
+	var authdata User
+
+	gettoken := r.Header.Get("token")
+
+	if gettoken == "" {
+		response.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Create Product", dataproduct))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, collectionname, authdata)
+			if auth2.Role == "admin" {
+				var dataproduct Product
+				err := json.NewDecoder(r.Body).Decode(&dataproduct)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+				} else {
+					CreateNewProduct(mconn, dbname, Product{
+						Nomorid:     dataproduct.Nomorid,
+						Name:        dataproduct.Name,
+						Description: dataproduct.Description,
+						Price:       dataproduct.Price,
+						Stock:       dataproduct.Stock,
+						Size:        dataproduct.Size,
+						Image:       dataproduct.Image,
+					})
+					response.Status = true
+					response.Message = "Product creation successful"
+				}
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
 // delete product
@@ -1729,4 +1759,34 @@ func GCFCreatePolygonee(MONGOCONNSTRINGENV, dbname, collectionname string, r *ht
 
 	log.Println("Success: Polygon created")
 	return GCFReturnStruct(CreateResponse(true, "Success Create Polygone", datapolygone))
+}
+
+func GCFCreatePostLocation(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	// MongoDB Connection Setup
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	// Parsing Request Body
+	var datapostlocation Location
+	err := json.NewDecoder(r.Body).Decode(&datapostlocation)
+	if err != nil {
+		return GCFReturnStruct(CreateResponse(false, "Bad Request: Invalid JSON", nil))
+	}
+
+	// Checking Secret Header
+	secretHeader := r.Header.Get("Secret")
+	expectedSecret := os.Getenv("SECRET")
+
+	if secretHeader != expectedSecret {
+		log.Printf("Unauthorized: Secret header does not match. Expected: %s, Actual: %s", expectedSecret, secretHeader)
+		return GCFReturnStruct(CreateResponse(false, "Unauthorized: Secret header does not match", nil))
+	}
+
+	// Handling Authorization
+	if err := PostLocation(mconn, collectionname, datapostlocation); err != nil {
+		log.Printf("Error creating polygon: %v", err)
+		return GCFReturnStruct(CreateResponse(false, "Failed Create Post Location", nil))
+	}
+
+	log.Println("Success: Polygon created")
+	return GCFReturnStruct(CreateResponse(true, "Success Create Post Location", datapostlocation))
 }
