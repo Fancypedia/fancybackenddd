@@ -784,6 +784,7 @@ func GCFCreateProductt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collprod
 						Stock:       dataproduct.Stock,
 						Size:        dataproduct.Size,
 						Image:       dataproduct.Image,
+						Status:      dataproduct.Status,
 					})
 					response.Status = true
 					response.Message = "Product creation successful"
@@ -797,38 +798,79 @@ func GCFCreateProductt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collprod
 }
 
 // delete product
-func GCFDeleteProduct(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFDeleteProduct(publickey, MONGOCONNSTRINGENV, dbname, colluser, collproduct string, r *http.Request) string {
+
+	var respon Credential
+	respon.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var authdata User
 
-	var dataproduct Product
-	err := json.NewDecoder(r.Body).Decode(&dataproduct)
-	if err != nil {
-		return err.Error()
-	}
-
-	if err := DeleteProduct(mconn, collectionname, dataproduct); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Delete Product", dataproduct))
+	gettoken := r.Header.Get("token")
+	if gettoken == "" {
+		respon.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Delete Product", dataproduct))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			respon.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var dataproduct Product
+				err := json.NewDecoder(r.Body).Decode(&dataproduct)
+				if err != nil {
+					respon.Message = "Error parsing application/json: " + err.Error()
+				} else {
+					DeleteProduct(mconn, collproduct, dataproduct)
+					respon.Status = true
+					respon.Message = "Product Delete successful"
+				}
+			} else {
+				respon.Message = "ANDA BUKAN ADMIN"
+			}
+		}
 	}
+	return GCFReturnStruct(respon)
 }
 
 // update product
 
-func GCFUpdateProduct(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFUpdateProduct(publickey, MONGOCONNSTRINGENV, dbname, colluser, collproduct string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var authdata User
 
-	var dataproduct Product
-	err := json.NewDecoder(r.Body).Decode(&dataproduct)
-	if err != nil {
-		return err.Error()
-	}
-
-	if err := UpdatedProduct(mconn, collectionname, bson.M{"id": dataproduct.ID}, dataproduct); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Update Product", dataproduct))
+	gettoken := r.Header.Get("token")
+	if gettoken == "" {
+		response.Message = "Missing token in Headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Update Product", dataproduct))
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var dataproduct Product
+				err := json.NewDecoder(r.Body).Decode(&dataproduct)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+
+				} else {
+					UpdatedProduct(mconn, collproduct, bson.M{"id": dataproduct.ID}, dataproduct)
+					response.Status = true
+					response.Message = "Product Updated Succescfull"
+					GCFReturnStruct(CreateResponse(true, "Success Update Product", dataproduct))
+				}
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
 // get all product
@@ -863,54 +905,123 @@ func GCFGetAllProducttID(MONGOCONNSTRINGENV, dbname, collectionname string, r *h
 // <--- ini content --->
 
 // content post
-func GCFCreateContentt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFCreateContentt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collcontent string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var authdata User
 
-	var datacontent Content
-	err := json.NewDecoder(r.Body).Decode(&datacontent)
-	if err != nil {
-		return err.Error()
-	}
+	gettoken := r.Header.Get("token")
 
-	if err := CreateContentt(mconn, collectionname, datacontent); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Create Content", datacontent))
+	if gettoken == "" {
+		response.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Create Content", datacontent))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var datacontet Content
+				err := json.NewDecoder(r.Body).Decode(&datacontet)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+
+				} else {
+					CreateNewContent(mconn, collcontent, Content{
+						ID:          datacontet.ID,
+						Content:     datacontet.Content,
+						Description: datacontet.Description,
+						Image:       datacontet.Image,
+						Status:      datacontet.Status,
+					})
+					response.Status = true
+					response.Message = "Content creation successful"
+				}
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
 // delete content
-func GCFDeleteContent(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFDeleteContent(publickey, MONGOCONNSTRINGENV, dbname, colluser, collcontent string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var authdata User
 
-	var datacontent Content
-	err := json.NewDecoder(r.Body).Decode(&datacontent)
-	if err != nil {
-		return err.Error()
-	}
+	gettoken := r.Header.Get("token")
 
-	if err := DeleteContent(mconn, collectionname, datacontent); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Delete Content", datacontent))
+	if gettoken == "" {
+		response.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Delete Content", datacontent))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var datacontent Content
+				err := json.NewDecoder(r.Body).Decode(&datacontent)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+				} else {
+					DeleteContent(mconn, collcontent, datacontent)
+					response.Status = true
+					response.Message = "Content Delete successful"
+					CreateResponse(true, "Success Delete Content", datacontent)
+				}
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
 // update content
-func GCFUpdateContent(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFUpdateContent(publickey, MONGOCONNSTRINGENV, dbname, colluser, collcontent string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var authdata User
 
-	var datacontent Content
-	err := json.NewDecoder(r.Body).Decode(&datacontent)
-	if err != nil {
-		return err.Error()
-	}
+	gettoken := r.Header.Get("token")
 
-	if err := UpdatedContentt(mconn, collectionname, bson.M{"id": datacontent.ID}, datacontent); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Update Content", datacontent))
+	if gettoken == "" {
+		response.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Update Content", datacontent))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var datacontent Content
+				err := json.NewDecoder(r.Body).Decode(&datacontent)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+				} else {
+					UpdatedContentt(mconn, collcontent, bson.M{"id": datacontent.ID}, datacontent)
+					response.Status = true
+					response.Message = "Content Updated Succescfull"
+					CreateResponse(true, "Success Update Content", datacontent)
+				}
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
 // get all content
@@ -945,54 +1056,124 @@ func GCFGetAllContenttID(MONGOCONNSTRINGENV, dbname, collectionname string, r *h
 // <--- ini blog --->
 
 // blog post
-func GCFCreateBlogg(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFCreateBlogg(publickey, MONGOCONNSTRINGENV, dbname, colluser, collblog string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var authdata User
 
-	var datablog Blog
-	err := json.NewDecoder(r.Body).Decode(&datablog)
-	if err != nil {
-		return err.Error()
-	}
+	gettoken := r.Header.Get("token")
 
-	if err := CreateBlog(mconn, collectionname, datablog); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Create Blog", datablog))
+	if gettoken == "" {
+		response.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Create Blog", datablog))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+
+				var datablog Blog
+				err := json.NewDecoder(r.Body).Decode(&datablog)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+				} else {
+					CreateNewBlog(mconn, collblog, Blog{
+						ID:          datablog.ID,
+						Title:       datablog.Title,
+						Description: datablog.Description,
+						Tanggal:     datablog.Tanggal,
+						Content:     datablog.Content,
+						Status:      datablog.Status,
+					})
+					response.Status = true
+					response.Message = "Blog creation successful"
+				}
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
 // delete blog
-func GCFDeleteBlog(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFDeleteBlog(publickey, MONGOCONNSTRINGENV, dbname, colluser, collblog string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var authdata User
 
-	var datablog Blog
-	err := json.NewDecoder(r.Body).Decode(&datablog)
-	if err != nil {
-		return err.Error()
-	}
-
-	if err := DeleteBlog(mconn, collectionname, datablog); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Delete Blog", datablog))
+	gettoken := r.Header.Get("token")
+	if gettoken == "" {
+		response.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Delete Blog", datablog))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var datablog Blog
+				err := json.NewDecoder(r.Body).Decode(&datablog)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+				} else {
+					DeleteBlog(mconn, collblog, datablog)
+					response.Status = true
+					response.Message = "Blog Delete successful"
+					CreateResponse(true, "Success Delete Blog", datablog)
+				}
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
 // update blog
-func GCFUpdateBlog(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFUpdateBlog(publickey, MONGOCONNSTRINGENV, dbname, colluser, collblog string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var authdata User
 
-	var datablog Blog
-	err := json.NewDecoder(r.Body).Decode(&datablog)
-	if err != nil {
-		return err.Error()
-	}
+	gettoken := r.Header.Get("token")
 
-	if err := UpdatedBlog(mconn, collectionname, bson.M{"id": datablog.ID}, datablog); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Update Blog", datablog))
+	if gettoken == "" {
+		response.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Update Blog", datablog))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var datablog Blog
+
+				err := json.NewDecoder(r.Body).Decode(&datablog)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+				}
+				UpdatedBlog(mconn, collblog, bson.M{"id": datablog.ID}, datablog)
+				response.Status = true
+				response.Message = "Blog Updated Succescfull"
+				CreateResponse(true, "Success Update Blog", datablog)
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
 // get all blog
@@ -1010,54 +1191,116 @@ func GCFGetAllBlogg(MONGOCONNSTRINGENV, dbname, collectionname string) string {
 
 // comment post
 
-func GCFCreateCommentt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFCreateCommentt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collcomment string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var authdata User
 
-	var datacomment Comment
-	err := json.NewDecoder(r.Body).Decode(&datacomment)
-	if err != nil {
-		return err.Error()
-	}
+	gettoken := r.Header.Get("token")
 
-	if err := CreateComment(mconn, collectionname, datacomment); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Create Comment", datacomment))
+	if gettoken == "" {
+		response.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Create Comment", datacomment))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var datacomment Comment
+				err := json.NewDecoder(r.Body).Decode(&datacomment)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+				} else {
+					CreateComment(mconn, collcomment, datacomment)
+					response.Status = true
+					response.Message = "Comment creation successful"
+				}
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
 	}
+	return GCFReturnStruct(response)
+
 }
 
 // delete comment
-func GCFDeleteCommentt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFDeleteCommentt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collcomment string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var authdata User
 
-	var datacomment Comment
-	err := json.NewDecoder(r.Body).Decode(&datacomment)
-	if err != nil {
-		return err.Error()
-	}
-
-	if err := DeleteComment(mconn, collectionname, datacomment); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Delete Comment", datacomment))
+	gettoken := r.Header.Get("token")
+	if gettoken == "" {
+		response.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Delete Comment", datacomment))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var datacomment Comment
+				err := json.NewDecoder(r.Body).Decode(&datacomment)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+				}
+				DeleteComment(mconn, collcomment, datacomment)
+				response.Status = true
+				response.Message = "Comment Delete successful"
+				CreateResponse(true, "Success Delete Comment", datacomment)
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
 // update comment
-func GCFUpdateCommentt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFUpdateCommentt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collcomment string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var authdata User
 
-	var datacomment Comment
-	err := json.NewDecoder(r.Body).Decode(&datacomment)
-	if err != nil {
-		return err.Error()
-	}
+	gettoken := r.Header.Get("token")
 
-	if err := UpdatedComment(mconn, collectionname, bson.M{"id": datacomment.ID}, datacomment); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Update Comment", datacomment))
+	if gettoken == "" {
+		response.Message = "Missing token in Headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Update Comment", datacomment))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var datacomment Comment
+				err := json.NewDecoder(r.Body).Decode(&datacomment)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+				}
+
+				UpdatedComment(mconn, collcomment, bson.M{"id": datacomment.ID}, datacomment)
+				response.Status = true
+				response.Message = "Comment Updated Succescfull"
+				CreateResponse(true, "Success Update Comment", datacomment)
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
 // get all comment
@@ -1092,54 +1335,128 @@ func GCFGetAllCommenttID(MONGOCONNSTRINGENV, dbname, collectionname string, r *h
 // <--- ini event global--->
 
 // event global post
-func GCFCreateEventGlobal(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFCreateEventGlobal(publickey, MONGOCONNSTRINGENV, dbname, colluser, colleventglobal string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var authdata User
 
-	var dataevent EventGlobal
-	err := json.NewDecoder(r.Body).Decode(&dataevent)
-	if err != nil {
-		return err.Error()
-	}
+	gettoken := r.Header.Get("token")
 
-	if err := CreateEventGlobal(mconn, collectionname, dataevent); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Create Event Global", dataevent))
+	if gettoken == "" {
+		response.Message = "Missing token in Headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Create Event Global", dataevent))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var dataevent EventGlobal
+				err := json.NewDecoder(r.Body).Decode(&dataevent)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+
+				}
+				CreateEventGlobal(mconn, colleventglobal, EventGlobal{
+					ID:          dataevent.ID,
+					Title:       dataevent.Title,
+					Description: dataevent.Description,
+					Tanggal:     dataevent.Tanggal,
+					Content:     dataevent.Content,
+					Image:       dataevent.Image,
+					Harga:       dataevent.Harga,
+					Product:     dataevent.Product,
+					Status:      dataevent.Status,
+				})
+				response.Status = true
+				response.Message = "Event Global creation successful"
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+
+			}
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
 // delete event global
-func GCFDeleteEventGlobal(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFDeleteEventGlobal(publickey, MONGOCONNSTRINGENV, dbname, colluser, colleventglobal string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var authdata User
 
-	var dataevent EventGlobal
-	err := json.NewDecoder(r.Body).Decode(&dataevent)
-	if err != nil {
-		return err.Error()
-	}
-
-	if err := DeleteEventGlobal(mconn, collectionname, dataevent); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Delete Event Global", dataevent))
+	gettoken := r.Header.Get("token")
+	if gettoken == "" {
+		response.Message = "Missing token in Headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Delete Event Global", dataevent))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+
+				var dataevent EventGlobal
+				err := json.NewDecoder(r.Body).Decode(&dataevent)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+
+				}
+				DeleteEventGlobal(mconn, colleventglobal, dataevent)
+				response.Status = true
+				response.Message = "Event Global Delete successful"
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
 // update event global
-func GCFUpdateEventGlobal(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFUpdateEventGlobal(publickey, MONGOCONNSTRINGENV, dbname, colluser, colleventglobal string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var authdata User
 
-	var dataevent EventGlobal
-	err := json.NewDecoder(r.Body).Decode(&dataevent)
-	if err != nil {
-		return err.Error()
-	}
+	gettoken := r.Header.Get("token")
 
-	if err := UpdatedEventGlobal(mconn, collectionname, bson.M{"id": dataevent.ID}, dataevent); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Update Event Global", dataevent))
+	if gettoken == "" {
+		response.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Update Event Global", dataevent))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var dataevent EventGlobal
+				err := json.NewDecoder(r.Body).Decode(&dataevent)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+				} else {
+					UpdatedEventGlobal(mconn, colleventglobal, bson.M{"id": dataevent.ID}, dataevent)
+					response.Status = true
+					response.Message = "Event Global Updated Succescfull"
+					CreateResponse(true, "Success Update Event Global", dataevent)
+				}
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
 // get all event global
@@ -1173,54 +1490,128 @@ func GCFGetAllEventGlobalID(MONGOCONNSTRINGENV, dbname, collectionname string, r
 
 // <--- ini event --->
 // event post
-func GCFCreateEventt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFCreateEventt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collevent string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var authdata User
 
-	var dataevent Event
-	err := json.NewDecoder(r.Body).Decode(&dataevent)
-	if err != nil {
-		return err.Error()
-	}
+	gettoken := r.Header.Get("token")
 
-	if err := CreateEvent(mconn, collectionname, dataevent); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Create Event", dataevent))
+	if gettoken == "" {
+		response.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Create Event", dataevent))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var dataevent Event
+				err := json.NewDecoder(r.Body).Decode(&dataevent)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+				} else {
+					CreateEvent(mconn, collevent, Event{
+						ID:          dataevent.ID,
+						Title:       dataevent.Title,
+						Description: dataevent.Description,
+						Tanggal:     dataevent.Tanggal,
+						Content:     dataevent.Content,
+						Image:       dataevent.Image,
+						Harga:       dataevent.Harga,
+						Product:     dataevent.Product,
+						LinkYoutube: dataevent.LinkYoutube,
+						Status:      dataevent.Status,
+					})
+					response.Status = true
+					response.Message = "Event creation successful"
+
+				}
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
 // delete event
-func GCFDeleteEventt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFDeleteEventt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collevent string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var authdata User
 
-	var dataevent Event
-	err := json.NewDecoder(r.Body).Decode(&dataevent)
-	if err != nil {
-		return err.Error()
-	}
+	gettoken := r.Header.Get("token")
 
-	if err := DeleteEvent(mconn, collectionname, dataevent); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Delete Event", dataevent))
+	if gettoken == "" {
+		response.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Delete Event", dataevent))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var dataevent Event
+				err := json.NewDecoder(r.Body).Decode(&dataevent)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+				}
+				DeleteEvent(mconn, collevent, dataevent)
+				response.Status = true
+				response.Message = "Event Delete successful"
+
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
 // update event
-func GCFUpdateEventt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFUpdateEventt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collevent string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var authdata User
 
-	var dataevent Event
-	err := json.NewDecoder(r.Body).Decode(&dataevent)
-	if err != nil {
-		return err.Error()
-	}
+	gettoken := r.Header.Get("token")
 
-	if err := UpdatedEvent(mconn, collectionname, bson.M{"id": dataevent.ID}, dataevent); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Update Event", dataevent))
+	if gettoken == "" {
+		response.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Update Event", dataevent))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+
+				var dataevent Event
+				err := json.NewDecoder(r.Body).Decode(&dataevent)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+
+				}
+				UpdatedEvent(mconn, collevent, bson.M{"id": dataevent.ID}, dataevent)
+				response.Status = true
+				response.Message = "Event Updated Succescfull"
+
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
 // get all event
@@ -1255,53 +1646,127 @@ func GCFGetAllEventt(MONGOCONNSTRINGENV, dbname, collectionname string) string {
 // <--- ini about --->
 
 // about post
-func GCFCreateAboutt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFCreateAboutt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collabout string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var authdata User
 
-	var dataabout About
-	err := json.NewDecoder(r.Body).Decode(&dataabout)
-	if err != nil {
-		return err.Error()
-	}
+	gettoken := r.Header.Get("token")
 
-	if err := CreateAbout(mconn, collectionname, dataabout); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Create About", dataabout))
+	if gettoken == "" {
+		response.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Create About", dataabout))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+
+				var dataabout About
+				err := json.NewDecoder(r.Body).Decode(&dataabout)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+				} else {
+					CreateAbout(mconn, collabout, About{
+						ID:          dataabout.ID,
+						Title:       dataabout.Title,
+						Description: dataabout.Description,
+						Content:     dataabout.Content,
+						Image:       dataabout.Image,
+						Product:     dataabout.Product,
+						Status:      dataabout.Status,
+					})
+					response.Status = true
+					response.Message = "About creation successful"
+				}
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
 	}
+	return GCFReturnStruct(response)
+
 }
 
 // delete about
-func GCFDeleteAboutt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFDeleteAboutt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collabout string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var authdata User
 
-	var dataabout About
-	err := json.NewDecoder(r.Body).Decode(&dataabout)
-	if err != nil {
-		return err.Error()
-	}
+	gettoken := r.Header.Get("token")
 
-	if err := DeleteAbout(mconn, collectionname, dataabout); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Delete About", dataabout))
+	if gettoken == "" {
+		response.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Delete About", dataabout))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+
+				var dataabout About
+				err := json.NewDecoder(r.Body).Decode(&dataabout)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+				} else {
+					DeleteAbout(mconn, collabout, dataabout)
+					response.Status = true
+					response.Message = "About Delete successful"
+					CreateResponse(true, "Success Delete About", dataabout)
+				}
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
 // update about
-func GCFUpdateAboutt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFUpdateAboutt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collabout string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
-	var dataabout About
-	err := json.NewDecoder(r.Body).Decode(&dataabout)
-	if err != nil {
-		return err.Error()
-	}
+	var authdata User
 
-	if err := UpdatedAbout(mconn, collectionname, bson.M{"id": dataabout.ID}, dataabout); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Update About", dataabout))
+	gettoken := r.Header.Get("token")
+
+	if gettoken == "" {
+		response.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Update About", dataabout))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var dataabout About
+				err := json.NewDecoder(r.Body).Decode(&dataabout)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+				} else {
+					UpdatedAbout(mconn, collabout, bson.M{"id": dataabout.ID}, dataabout)
+					response.Status = true
+					response.Message = "About Updated Succescfull"
+					CreateResponse(true, "Success Update About", dataabout)
+				}
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
 // get all about
