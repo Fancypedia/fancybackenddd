@@ -752,7 +752,7 @@ func GCFCreateProducttWithpublickeyFix(MONGOCONNSTRINGENV, dbname, collectionnam
 
 // product post
 
-func GCFCreateProductt(publickey, MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFCreateProductt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collproduct string, r *http.Request) string {
 	var response Credential
 	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
@@ -769,14 +769,14 @@ func GCFCreateProductt(publickey, MONGOCONNSTRINGENV, dbname, collectionname str
 		if checktoken == "" {
 			response.Message = "Invalid token"
 		} else {
-			auth2 := FindUser(mconn, collectionname, authdata)
+			auth2 := FindUser(mconn, colluser, authdata)
 			if auth2.Role == "admin" {
 				var dataproduct Product
 				err := json.NewDecoder(r.Body).Decode(&dataproduct)
 				if err != nil {
 					response.Message = "Error parsing application/json: " + err.Error()
 				} else {
-					CreateNewProduct(mconn, dbname, Product{
+					CreateNewProduct(mconn, collproduct, Product{
 						Nomorid:     dataproduct.Nomorid,
 						Name:        dataproduct.Name,
 						Description: dataproduct.Description,
