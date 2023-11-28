@@ -82,6 +82,22 @@ func CreateNewUserRole(mongoconn *mongo.Database, collection string, userdata Us
 	// Insert the user data into the database
 	return atdb.InsertOneDoc(mongoconn, collection, userdata)
 }
+func usernameExists(mongoenv, dbname string, userdata User) bool {
+	mconn := SetConnection(mongoenv, dbname).Collection("user")
+	filter := bson.M{"username": userdata.Username}
+
+	var user User
+	err := mconn.FindOne(context.Background(), filter).Decode(&user)
+	return err == nil
+}
+
+func InsertUserdata(mongoconn *mongo.Database, collname, username, password, no_whatsapp string) (InsertedID interface{}) {
+	req := new(User)
+	req.Username = username
+	req.Password = password
+	req.No_whatsapp = no_whatsapp
+	return atdb.InsertOneDoc(mongoconn, collname, req)
+}
 func CreateUserAndAddedToeken(PASETOPRIVATEKEYENV string, mongoconn *mongo.Database, collection string, userdata User) interface{} {
 	// Hash the password before storing it
 	hashedPassword, err := HashPassword(userdata.Password)

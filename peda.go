@@ -7,7 +7,10 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/aiteung/atapi"
 	"github.com/aiteung/atdb"
+	"github.com/aiteung/atmessage"
+	"github.com/whatsauth/wa"
 	"github.com/whatsauth/watoken"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -2460,4 +2463,39 @@ func GCFCreatePostLocation(MONGOCONNSTRINGENV, dbname, collectionname string, r 
 
 	log.Println("Success: Polygon created")
 	return GCFReturnStruct(CreateResponse(true, "Success Create Post Location", datapostlocation))
+}
+
+func Registrasi(mongoenv, dbname, collname string, r *http.Request) string {
+	var response Credential
+	response.Status = false
+	mconn := SetConnection(mongoenv, dbname)
+	var datauser User
+	err := json.NewDecoder(r.Body).Decode(&datauser)
+	if usernameExists(mongoenv, dbname, datauser) {
+		response.Message = "Username telah dipakai"
+	} else {
+		if err != nil {
+			response.Message = "error parsing application/json: " + err.Error()
+		} else {
+			hash, hashErr := HashPassword(datauser.Password)
+			if hashErr != nil {
+				response.Message = "Gagal Hash Password" + err.Error()
+			}
+			InsertUserdata(mconn, collname, datauser.Username, datauser.No_whatsapp, hash)
+			response.Message = "Berhasil Input data"
+
+			var username = datauser.Username
+			var password = datauser.Password
+			var nohp = datauser.No_whatsapp
+
+			dt := &wa.TextMessage{
+				To:       nohp,
+				IsGroup:  false,
+				Messages: "Selamat anda berhasil registrasi, berikut adalah username anda: " + username + " dan ini adalah password anda: " + password + "\nDisimpan baik baik ya",
+			}
+
+			atapi.PostStructWithToken[atmessage.Response]("Token", r.Header.Get("token"), dt, "https://api.wa.my.id/api/send/message/text")
+		}
+	}
+	return GCFReturnStruct(response)
 }
