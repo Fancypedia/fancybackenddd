@@ -757,9 +757,7 @@ func GCFCreateProductt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collprod
 	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	var authdata User
-
 	gettoken := r.Header.Get("token")
-
 	if gettoken == "" {
 		response.Message = "Missing token in headers"
 	} else {
@@ -1801,51 +1799,122 @@ func GCFGetAllAboutt(MONGOCONNSTRINGENV, dbname, collectionname string) string {
 // <--- ini gallery --->
 
 // gallery post
-func GCFCreateGalleryy(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFCreateGalleryy(publickey, MONGOCONNSTRINGENV, dbname, colluser, collgallery string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
-	var datagallery Gallery
-	err := json.NewDecoder(r.Body).Decode(&datagallery)
-	if err != nil {
-		return err.Error()
-	}
+	var authdata User
 
-	if err := CreateGallery(mconn, collectionname, datagallery); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Create Gallery", datagallery))
+	gettoken := r.Header.Get("token")
+
+	if gettoken == "" {
+		response.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Create Gallery", datagallery))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var datagallery Gallery
+				err := json.NewDecoder(r.Body).Decode(&datagallery)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+
+				} else {
+					CreateGallery(mconn, collgallery, Gallery{
+						ID:          datagallery.ID,
+						Title:       datagallery.Title,
+						Description: datagallery.Description,
+						Image:       datagallery.Image,
+						Status:      datagallery.Status,
+					})
+					response.Status = true
+					response.Message = "Gallery creation successful"
+				}
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
 // delete gallery
-func GCFDeleteGalleryy(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFDeleteGalleryy(publickey, MONGOCONNSTRINGENV, dbname, colluser, collgallery string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
-	var datagallery Gallery
-	err := json.NewDecoder(r.Body).Decode(&datagallery)
-	if err != nil {
-		return err.Error()
-	}
 
-	if err := DeleteGallery(mconn, collectionname, datagallery); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Delete Gallery", datagallery))
+	var authdata User
+
+	gettoken := r.Header.Get("token")
+	if gettoken == "" {
+		response.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Delete Gallery", datagallery))
+		// Process the request with the "Login" token
+
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+
+			if auth2.Role == "admin" {
+				var datagallery Gallery
+				err := json.NewDecoder(r.Body).Decode(&datagallery)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+				} else {
+					DeleteGallery(mconn, collgallery, datagallery)
+					response.Status = true
+					response.Message = "Gallery Delete successful"
+					CreateResponse(true, "Success Delete Gallery", datagallery)
+				}
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
-// update gallery
-func GCFUpdateGalleryy(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+// // update gallery
+func GCFUpdateGalleryy(publickey, MONGOCONNSTRINGENV, dbname, colluser, collgallery string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
-	var datagallery Gallery
-	err := json.NewDecoder(r.Body).Decode(&datagallery)
-	if err != nil {
-		return err.Error()
-	}
-
-	if err := UpdatedGallery(mconn, collectionname, bson.M{"id": datagallery.ID}, datagallery); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Update Gallery", datagallery))
+	var authdata User
+	gettoken := r.Header.Get("token")
+	if gettoken == "" {
+		response.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Update Gallery", datagallery))
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		}
+		auth2 := FindUser(mconn, colluser, authdata)
+		if auth2.Role == "admin" {
+			var datagallery Gallery
+			err := json.NewDecoder(r.Body).Decode(&datagallery)
+			if err != nil {
+				response.Message = "Error parsing application/json: " + err.Error()
+			} else {
+				UpdatedGallery(mconn, collgallery, bson.M{"id": datagallery.ID}, datagallery)
+				response.Status = true
+				response.Message = "Gallery Updated Succescfull"
+				CreateResponse(true, "Success Update Gallery", datagallery)
+			}
+		} else {
+			response.Message = "ANDA BUKAN ADMIN"
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
 // get all gallery
@@ -1879,51 +1948,122 @@ func GCFGetAllGalleryyID(MONGOCONNSTRINGENV, dbname, collectionname string, r *h
 // <--- ini contact --->
 
 // contact post
-func GCFCreateContactt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFCreateContactt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collcontact string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
-	var datacontact Contack
-	err := json.NewDecoder(r.Body).Decode(&datacontact)
-	if err != nil {
-		return err.Error()
-	}
+	var authdata User
 
-	if err := CreateContact(mconn, collectionname, datacontact); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Create Contact", datacontact))
+	gettoken := r.Header.Get("token")
+
+	if gettoken == "" {
+		response.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Create Contact", datacontact))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var datacontact Contack
+				err := json.NewDecoder(r.Body).Decode(&datacontact)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+				} else {
+					CreateContact(mconn, collcontact, Contack{
+						ID:      datacontact.ID,
+						Subject: datacontact.Subject,
+						Message: datacontact.Message,
+						Email:   datacontact.Email,
+						Phone:   datacontact.Phone,
+						Status:  datacontact.Status,
+					})
+					response.Status = true
+					response.Message = "Contact creation successful"
+				}
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
 // delete contact
-func GCFDeleteContactt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFDeleteContactt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collcontact string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
-	var datacontact Contack
-	err := json.NewDecoder(r.Body).Decode(&datacontact)
-	if err != nil {
-		return err.Error()
-	}
+	var authdata User
 
-	if err := DeleteContact(mconn, collectionname, datacontact); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Delete Contact", datacontact))
+	gettoken := r.Header.Get("token")
+
+	if gettoken == "" {
+		response.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Delete Contact", datacontact))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var datacontact Contack
+				err := json.NewDecoder(r.Body).Decode(&datacontact)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+				} else {
+					DeleteContact(mconn, colluser, datacontact)
+					response.Status = true
+					response.Message = "Product Delete successful"
+				}
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
 // update contact
-func GCFUpdateContactt(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFUpdateContactt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collcontact string, r *http.Request) string {
+	var respon Credential
+	respon.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
-	var datacontact Contack
-	err := json.NewDecoder(r.Body).Decode(&datacontact)
-	if err != nil {
-		return err.Error()
-	}
+	var authdata User
 
-	if err := UpdatedContact(mconn, collectionname, bson.M{"id": datacontact.ID}, datacontact); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Update Contact", datacontact))
+	gettoken := r.Header.Get("token")
+	if gettoken == "" {
+		respon.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Update Contact", datacontact))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			respon.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var datacontact Contack
+				err := json.NewDecoder(r.Body).Decode(&datacontact)
+				if err != nil {
+					respon.Message = "Error parsing application/json: " + err.Error()
+				} else {
+					UpdatedContact(mconn, colluser, bson.M{"id": datacontact.ID}, datacontact)
+					respon.Status = true
+					respon.Message = "About Product Succescfull"
+					GCFReturnStruct(CreateResponse(true, "Success Update Product", datacontact))
+				}
+			} else {
+				respon.Message = "ANDA BUKAN ADMIN"
+			}
+
+		}
 	}
+	return GCFReturnStruct(respon)
 }
 
 // get all contact
@@ -1957,51 +2097,117 @@ func GCFGetAllContacttID(MONGOCONNSTRINGENV, dbname, collectionname string, r *h
 // <--- ini iklan --->
 
 // iklan post
-func GCFCreateIklann(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func GCFCreateIklann(publickey, MONGOCONNSTRINGENV, dbname, colluser, collectioniklan string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
-	var dataiklan Iklan
-	err := json.NewDecoder(r.Body).Decode(&dataiklan)
-	if err != nil {
-		return err.Error()
-	}
-
-	if err := CreateIklan(mconn, collectionname, dataiklan); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Create Iklan", dataiklan))
+	var authdata User
+	gettoken := r.Header.Get("token")
+	if gettoken == "" {
+		response.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Create Iklan", dataiklan))
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var dataiklan Iklan
+				err := json.NewDecoder(r.Body).Decode(&dataiklan)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+				} else {
+					CreateIklan(mconn, collectioniklan, Iklan{
+						ID:          dataiklan.ID,
+						Title:       dataiklan.Title,
+						Description: dataiklan.Description,
+						Image:       dataiklan.Image,
+						Status:      dataiklan.Status,
+					})
+					response.Status = true
+					response.Message = "Iklan creation successful"
+				}
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
-// delete iklan
-func GCFDeleteIklann(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+// // delete iklan
+func GCFDeleteIklann(publickey, MONGOCONNSTRINGENV, dbname, colluser, collectioniklan string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
-	var dataiklan Iklan
-	err := json.NewDecoder(r.Body).Decode(&dataiklan)
-	if err != nil {
-		return err.Error()
-	}
-
-	if err := DeleteIklan(mconn, collectionname, dataiklan); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Delete Iklan", dataiklan))
+	var authdata User
+	gettoken := r.Header.Get("token")
+	if gettoken == "" {
+		response.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Delete Iklan", dataiklan))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var dataiklan Iklan
+				err := json.NewDecoder(r.Body).Decode(&dataiklan)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+				} else {
+					DeleteIklan(mconn, collectioniklan, dataiklan)
+					response.Status = true
+					response.Message = "Iklan Delete successful"
+					CreateResponse(true, "Success Delete Iklan", dataiklan)
+				}
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
-// update iklan
-func GCFUpdateIklann(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+// // update iklan
+func GCFUpdateIklann(publickey, MONGOCONNSTRINGENV, dbname, colluser, collectioniklan string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
-	var dataiklan Iklan
-	err := json.NewDecoder(r.Body).Decode(&dataiklan)
-	if err != nil {
-		return err.Error()
-	}
+	var authdata User
+	gettoken := r.Header.Get("token")
 
-	if err := UpdatedIklan(mconn, collectionname, bson.M{"id": dataiklan.ID}, dataiklan); err != nil {
-		return GCFReturnStruct(CreateResponse(true, "Success Update Iklan", dataiklan))
+	if gettoken == "" {
+		response.Message = "Missing token in headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Update Iklan", dataiklan))
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var dataiklan Iklan
+				err := json.NewDecoder(r.Body).Decode(&dataiklan)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+				} else {
+					UpdatedIklan(mconn, collectioniklan, bson.M{"id": dataiklan.ID}, dataiklan)
+					response.Status = true
+					response.Message = "Iklan Updated Succescfull"
+					CreateResponse(true, "Success Update Iklan", dataiklan)
+				}
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
 // get all iklan
