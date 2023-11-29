@@ -105,7 +105,7 @@ type Blog struct {
 	Title             string `json:"title" bson:"title"`
 	Title_two         string `json:"title_two" bson:"title_two"`
 	Description       string `json:"description" bson:"description"`
-	Description_two   string `json:"description_two" bson:"description_two"`
+	Description_twoo  string `json:"description_two" bson:"description_two"`
 	Description_three string `json:"description_3" bson:"description_3"`
 	Status            bool   `json:"status" bson:"status"`
 }
