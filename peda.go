@@ -2485,7 +2485,7 @@ func Registrasi(token, mongoenv, dbname, collname string, r *http.Request) strin
 			if hashErr != nil {
 				response.Message = "Gagal Hash Password" + err.Error()
 			}
-			InsertUserdata(mconn, collname, datauser.Username, datauser.No_whatsapp, hash)
+			InsertUserdata(mconn, collname, datauser.Username, hash, datauser.No_whatsapp)
 			response.Message = "Berhasil Input data"
 
 			var username = datauser.Username
