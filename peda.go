@@ -2469,7 +2469,7 @@ func GCFCreatePostLocation(MONGOCONNSTRINGENV, dbname, collectionname string, r 
 	return GCFReturnStruct(CreateResponse(true, "Success Create Post Location", datapostlocation))
 }
 
-func Registrasi(mongoenv, dbname, collname string, r *http.Request) string {
+func Registrasi(token, mongoenv, dbname, collname string, r *http.Request) string {
 	var response Credential
 	response.Status = false
 	mconn := SetConnection(mongoenv, dbname)
