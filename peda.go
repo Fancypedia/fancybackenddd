@@ -1090,7 +1090,7 @@ func GCFCreateBlogg(publickey, MONGOCONNSTRINGENV, dbname, colluser, collblog st
 						Title:             datablog.Title,
 						Title_two:         datablog.Title_two,
 						Description:       datablog.Description,
-						Description_two:   datablog.Description_two,
+						Description_twoo:  datablog.Description_twoo,
 						Description_three: datablog.Description_three,
 						Status:            datablog.Status,
 					})
