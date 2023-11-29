@@ -2498,7 +2498,7 @@ func Registrasi(token, mongoenv, dbname, collname string, r *http.Request) strin
 				Messages: "Selamat anda berhasil registrasi, berikut adalah username anda: " + username + " dan ini adalah password anda: " + password + "\nDisimpan baik baik ya",
 			}
 
-			atapi.PostStructWithToken[atmessage.Response]("Token", r.Header.Get("token"), dt, "https://api.wa.my.id/api/send/message/text")
+			atapi.PostStructWithToken[atmessage.Response]("Token", r.Header.Get(token), dt, "https://api.wa.my.id/api/send/message/text")
 		}
 	}
 	return GCFReturnStruct(response)
