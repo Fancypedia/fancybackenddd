@@ -1083,12 +1083,16 @@ func GCFCreateBlogg(publickey, MONGOCONNSTRINGENV, dbname, colluser, collblog st
 					response.Message = "Error parsing application/json: " + err.Error()
 				} else {
 					CreateNewBlog(mconn, collblog, Blog{
-						ID:          datablog.ID,
-						Title:       datablog.Title,
-						Description: datablog.Description,
-						Tanggal:     datablog.Tanggal,
-						Content:     datablog.Content,
-						Status:      datablog.Status,
+						ID:                datablog.ID,
+						Content:           datablog.Content,
+						Content_two:       datablog.Content_two,
+						Image:             datablog.Image,
+						Title:             datablog.Title,
+						Title_two:         datablog.Title_two,
+						Description:       datablog.Description,
+						Description_two:   datablog.Description_two,
+						Description_three: datablog.Description_three,
+						Status:            datablog.Status,
 					})
 					response.Status = true
 					response.Message = "Blog creation successful"

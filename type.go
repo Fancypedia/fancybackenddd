@@ -98,12 +98,16 @@ type Content struct {
 }
 
 type Blog struct {
-	ID          int       `json:"id" bson:"id"`
-	Title       string    `json:"title" bson:"title"`
-	Tanggal     string    `json:"tanggal" bson:"tanggal"`
-	Description string    `json:"judul" bson:"judul"`
-	Content     []Content `json:"content" bson:"content"`
-	Status      bool      `json:"status" bson:"status"`
+	ID                int    `json:"id" bson:"id"`
+	Content           string `json:"content_one" bson:"content_one"`
+	Content_two       string `json:"content_two" bson:"content_two"`
+	Image             string `json:"image" bson:"image"`
+	Title             string `json:"title" bson:"title"`
+	Title_two         string `json:"title_two" bson:"title_two"`
+	Description       string `json:"description" bson:"description"`
+	Description_two   string `json:"description_two" bson:"description_two"`
+	Description_three string `json:"description_3" bson:"description_3"`
+	Status            bool   `json:"status" bson:"status"`
 }
 
 type Tags struct {
