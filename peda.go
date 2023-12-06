@@ -595,6 +595,16 @@ func GCFAllGlobalID(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.R
 	}
 }
 
+func GCFGetAllUser(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	datauser := GetAllUser(mconn, collectionname)
+	if datauser != nil {
+		return GCFReturnStruct(CreateResponse(true, "success Get All User", datauser))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Get All User", datauser))
+	}
+}
+
 func GCFCreatePostLineStringg(MONGOCONNSTRINGENV, dbname, collection string, r *http.Request) string {
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	var geojsonline GeoJsonLineString
@@ -2502,4 +2512,59 @@ func Registrasi(token, mongoenv, dbname, collname string, r *http.Request) strin
 		}
 	}
 	return GCFReturnStruct(response)
+}
+
+func GCFCreateTesting(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var datatesting Testing
+	err := json.NewDecoder(r.Body).Decode(&datatesting)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := PostTesting(mconn, collectionname, datatesting); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Create Testing", datatesting))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Create Testing", datatesting))
+	}
+}
+
+func GCFGetallTesting(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	datatesting := GetAllTesting(mconn, collectionname)
+	if datatesting != nil {
+		return GCFReturnStruct(CreateResponse(true, "success Get All Testing", datatesting))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Get All Testing", datatesting))
+	}
+}
+
+func GCFDeleteTesting(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var datatesting Testing
+	err := json.NewDecoder(r.Body).Decode(&datatesting)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := DeleteTesting(mconn, collectionname, datatesting); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Delete Testing", datatesting))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Delete Testing", datatesting))
+	}
+}
+
+func GCFUpdatedTesting(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var datatesting Testing
+	err := json.NewDecoder(r.Body).Decode(&datatesting)
+	if err != nil {
+		return err.Error()
+	}
+
+	if err := UpdatedTesting(mconn, collectionname, bson.M{"id": datatesting.ID}, datatesting); err != nil {
+		return GCFReturnStruct(CreateResponse(true, "Success Update Testing", datatesting))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Update Testing", datatesting))
+	}
 }

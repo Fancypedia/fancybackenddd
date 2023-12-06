@@ -66,6 +66,10 @@ func GetAllContent(mongoconn *mongo.Database, collection string) []Content {
 	content := atdb.GetAllDoc[[]Content](mongoconn, collection)
 	return content
 }
+func GetAllUser(mongoconn *mongo.Database, collection string) []User {
+	user := atdb.GetAllDoc[[]User](mongoconn, collection)
+	return user
+}
 
 //	func GetAllUser(mongoconn *mongo.Database, collection string) []User {
 //		user := atdb.GetAllDoc[[]User](mongoconn, collection)
@@ -588,4 +592,24 @@ func UpdatedLinestring(mongoconn *mongo.Database, collection string, filter bson
 
 func PostLocation(mongoconn *mongo.Database, collection string, locationdata Location) interface{} {
 	return atdb.InsertOneDoc(mongoconn, collection, locationdata)
+}
+
+// testing crud
+func PostTesting(mongoconn *mongo.Database, collection string, testingdata Testing) interface{} {
+	return atdb.InsertOneDoc(mongoconn, collection, testingdata)
+}
+
+func DeleteTesting(mongoconn *mongo.Database, collection string, testingdata Testing) interface{} {
+	filter := bson.M{"id": testingdata.ID}
+	return atdb.DeleteOneDoc(mongoconn, collection, filter)
+}
+
+func UpdatedTesting(mongoconn *mongo.Database, collection string, filter bson.M, testingdata Testing) interface{} {
+	filter = bson.M{"id": testingdata.ID}
+	return atdb.ReplaceOneDoc(mongoconn, collection, filter, testingdata)
+}
+
+func GetAllTesting(mongoconn *mongo.Database, collection string) []Testing {
+	testing := atdb.GetAllDoc[[]Testing](mongoconn, collection)
+	return testing
 }

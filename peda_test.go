@@ -166,3 +166,38 @@ func TestLoginn(t *testing.T) {
 	IsPasswordValid(mconn, "user", userdata)
 	fmt.Println(userdata)
 }
+
+func TestTing(t *testing.T) {
+	mconn := SetConnection("MONGOULBI", "petapedia")
+	var userdata Testing
+	userdata.ID = 1
+	userdata.Title = "raul"
+	userdata.Description = "mahya"
+	userdata.Image = "https://images3.alphacoders.com/165/thumb-1920-165265.jpg"
+	userdata.Status = true
+	userdata.Nama = "raul"
+	userdata.alamat = "mahya"
+	PostTesting(mconn, "testing", userdata)
+	fmt.Println(userdata)
+}
+
+func TestTingUpdated(t *testing.T) {
+	mconn := SetConnection("MONGOULBI", "petapedia")
+	var userdata Testing
+	userdata.ID = 1
+	userdata.Title = "raul"
+	userdata.Description = "mahya"
+	userdata.Image = "https://images3.alphacoders.com/165/thumb-1920-165265.jpg"
+	userdata.Status = true
+	userdata.Nama = "raul"
+	userdata.alamat = "mahya"
+	DeleteTesting(mconn, "testing", userdata)
+	fmt.Println(userdata)
+}
+
+func TestTingGet(t *testing.T) {
+	mconn := SetConnection("MONGOULBI", "petapedia")
+	var userdata Testing
+	GetAllTesting(mconn, "testing")
+	fmt.Println(userdata)
+}

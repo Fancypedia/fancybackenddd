@@ -212,3 +212,14 @@ type Query struct {
 		} `bson:"$geoIntersects"`
 	} `bson:"locationField"`
 }
+
+type Testing struct {
+	ID          int       `json:"id" bson:"id"`
+	Title       string    `json:title bson:"title"`
+	Description string    `json:description bson:"description"`
+	Image       string    `json:image bson:"image"`
+	Status      bool      `json:status bson:"status"`
+	Nama        string    `json:nama bson:"nama"`
+	alamat      string    `json:alamat bson:"alamat"`
+	tanggal     time.Time `json:tanggal bson:"tanggal"`
+}
