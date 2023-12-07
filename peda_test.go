@@ -195,9 +195,20 @@ func TestTingUpdated(t *testing.T) {
 	fmt.Println(userdata)
 }
 
-func TestTingGet(t *testing.T) {
+func TestTingLogin(t *testing.T) {
 	mconn := SetConnection("MONGOULBI", "petapedia")
-	var userdata Testing
-	GetAllTesting(mconn, "testing")
+	var userdata User
+	userdata.Username = "asdasdasd"
+	userdata.Password = "testing1asdglaskudgfashjdfashgdfasf23"
+	userdata.Role = "user"
+	CreateUser(mconn, "user", userdata)
+	fmt.Println(userdata)
+}
+
+func TestPrivateToken(t *testing.T) {
+	mconn := SetConnection("MONGOULBI", "petapedia")
+	var userdata User
+	userdata.Private = "f53af63d6200096e9c0faf30e2b2dc28ae6414a7807773886cad0797355d1c22fb4b120a45fb877e93d567c11d547f5d99ef2b933ba8be2c5d83a050756682d5"
+	FindPrivate(mconn, "user", userdata)
 	fmt.Println(userdata)
 }

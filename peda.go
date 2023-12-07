@@ -807,6 +807,43 @@ func GCFCreateProductt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collprod
 	}
 	return GCFReturnStruct(response)
 }
+func GCFEndCodepaseto(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	var response Credential
+	response.Status = false
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var authdata User
+
+	// Mengecek user lewat private key
+	gettoken := r.Header.Get("private")
+	if gettoken == "" {
+		response.Message = "Nama token tidak ada"
+	} else {
+		// Decode nama lewat token
+		checktoken := watoken.DecodeGetId(os.Getenv("private"), gettoken)
+		authdata.Private = checktoken
+		if checktoken == "" {
+			response.Message = "Nama token tidak valid"
+		} else {
+			// Cek keberadaan user di database berdasarkan private key
+			authUser, err := FindUserByPrivate(mconn, collectionname, authdata)
+			if err != nil {
+				// Handle the error, e.g., log it or set an appropriate response message
+				response.Message = "Error while checking user: " + err.Error()
+			} else if authUser.Private == "" {
+				response.Message = "User tidak ditemukan"
+			} else {
+				// Authentication successful, set the response status and message
+				response.Status = true
+				response.Message = "User berhasil diotentikasi"
+				GCFReturnStruct(CreateResponse(true, "Success Update Product", authUser))
+			}
+		}
+	}
+
+	// You may want to return a JSON response or something similar
+	// For now, assuming Credential is a struct with fields Status, Message, UserName, and UserRole
+	return response.Message
+}
 
 // delete product
 func GCFDeleteProduct(publickey, MONGOCONNSTRINGENV, dbname, colluser, collproduct string, r *http.Request) string {
@@ -911,6 +948,30 @@ func GCFGetAllProducttID(MONGOCONNSTRINGENV, dbname, collectionname string, r *h
 	} else {
 		return GCFReturnStruct(CreateResponse(false, "Failed to Get ID Product", dataproduct))
 	}
+}
+
+func GCFGetAllPrivateID(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+
+	var dataproduct User
+	err := json.NewDecoder(r.Body).Decode(&dataproduct)
+	if err != nil {
+		return err.Error()
+	}
+
+	product := FindPrivate(mconn, collectionname, dataproduct)
+	if product != (User{}) {
+		// Password is valid, construct and return the GCFReturnStruct.
+		userMap := map[string]interface{}{
+			"Username": dataproduct.Username,
+		}
+		response := CreateResponse(true, "Berhasil Login", userMap)
+		return GCFReturnStruct(response) // Return GCFReturnStruct directly
+	} else {
+		// Password is not valid, return an error message.
+		return "Nama Di token tidak ada"
+	}
+
 }
 
 // <--- ini content --->

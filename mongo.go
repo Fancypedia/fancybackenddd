@@ -52,6 +52,16 @@ func CreateUser(mongoconn *mongo.Database, collection string, userdata User) int
 	return atdb.InsertOneDoc(mongoconn, collection, userdata)
 }
 
+func FindUserByPrivate(mongoconn *mongo.Database, collection string, userdata User) (User, error) {
+	var user User
+	filter := bson.M{"private": userdata.Private}
+	err := mongoconn.Collection(collection).FindOne(context.Background(), filter).Decode(&user)
+	if err != nil {
+		return User{}, err
+	}
+	return user, nil
+}
+
 func GetAllProduct(mongoconn *mongo.Database, collection string) []Product {
 	product := atdb.GetAllDoc[[]Product](mongoconn, collection)
 	return product
@@ -139,6 +149,13 @@ func FindUser(mongoconn *mongo.Database, collection string, userdata User) User 
 func FindUserUser(mongoconn *mongo.Database, collection string, userdata User) User {
 	filter := bson.M{
 		"username": userdata.Username,
+	}
+	return atdb.GetOneDoc[User](mongoconn, collection, filter)
+}
+
+func FindPrivate(mongoconn *mongo.Database, collection string, userdata User) User {
+	filter := bson.M{
+		"private": userdata.Private,
 	}
 	return atdb.GetOneDoc[User](mongoconn, collection, filter)
 }
