@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/aiteung/atdb"
@@ -157,9 +158,23 @@ func FindPrivate(mongoconn *mongo.Database, collection string, userdata User) Us
 	filter := bson.M{
 		"private": userdata.Private,
 	}
-	return atdb.GetOneDoc[User](mongoconn, collection, filter)
-}
 
+	var result User
+
+	// Use the FindOne method to retrieve a single document
+	err := mongoconn.Collection(collection).FindOne(context.TODO(), filter).Decode(&result)
+	//resulnya hanya nama saja
+	result = User{
+		Username: result.Username,
+	}
+
+	if err != nil {
+		log.Printf("Error finding user: %v\n", err)
+		return User{}
+	}
+
+	return result
+}
 func FindUserUserr(mongoconn *mongo.Database, collection string, userdata User) (User, error) {
 	filter := bson.M{
 		"username": userdata.Username,
