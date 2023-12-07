@@ -986,9 +986,10 @@ func GCFPostHandlerrr(PASETOPRIVATEKEYENV, MONGOCONNSTRINGENV, dbname, collectio
 			if err != nil {
 				Response.Message = "Gagal Encode Token : " + err.Error()
 			} else {
-				Response.Message = "Selamat Datang"
-				Response.Token = tokenstring
-				Response.Username = datauser.Username
+				CreateResponse(true, "Berhasil Login", tokenstring)
+				// Response.Message = "Selamat Datang"
+				// Response.Token = tokenstring
+				// Response.Username = datauser.Username
 			}
 		} else {
 			Response.Message = "Password Salah"
