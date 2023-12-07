@@ -988,6 +988,7 @@ func GCFPostHandlerrr(PASETOPRIVATEKEYENV, MONGOCONNSTRINGENV, dbname, collectio
 			} else {
 				Response.Message = "Selamat Datang"
 				Response.Token = tokenstring
+				Response.Username = datauser.Username
 			}
 		} else {
 			Response.Message = "Password Salah"
@@ -997,7 +998,7 @@ func GCFPostHandlerrr(PASETOPRIVATEKEYENV, MONGOCONNSTRINGENV, dbname, collectio
 	return GCFReturnStruct(Response)
 }
 
-func GCFPostHandlerr(PASETOPRIVATEKEYENV, MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
+func v(PASETOPRIVATEKEYENV, MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
 	var Response Credential
 	Response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
