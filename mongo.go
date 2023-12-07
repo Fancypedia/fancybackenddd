@@ -2,11 +2,13 @@ package peda
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
 	"os"
 
+	"aidanwoods.dev/go-paseto"
 	"github.com/aiteung/atdb"
 	"github.com/whatsauth/watoken"
 	"go.mongodb.org/mongo-driver/bson"
@@ -152,6 +154,37 @@ func FindUserUser(mongoconn *mongo.Database, collection string, userdata User) U
 		"username": userdata.Username,
 	}
 	return atdb.GetOneDoc[User](mongoconn, collection, filter)
+}
+func Decode(publickey, tokenstr string) (payload Payload, err error) {
+	var token *paseto.Token
+	var pubKey paseto.V4AsymmetricPublicKey
+
+	// Pastikan bahwa kunci publik dalam format heksadesimal yang benar
+	pubKey, err = paseto.NewV4AsymmetricPublicKeyFromHex(publickey)
+	if err != nil {
+		return payload, fmt.Errorf("failed to create public key: %s", err)
+	}
+
+	parser := paseto.NewParser()
+
+	// Pastikan bahwa token memiliki format yang benar
+	token, err = parser.ParseV4Public(pubKey, tokenstr, nil)
+	if err != nil {
+		return payload, fmt.Errorf("failed to parse token: %s", err)
+	} else {
+		// Handle token claims
+		json.Unmarshal(token.ClaimsJSON(), &payload)
+	}
+
+	return payload, nil
+}
+
+func DecodeGetRole(publickey string, tokenstring string) string {
+	payload, err := Decode(publickey, tokenstring)
+	if err != nil {
+		fmt.Println("Decode DecodeGetId : ", err)
+	}
+	return payload.Role
 }
 
 func FindPrivate(mongoconn *mongo.Database, collection string, userdata User) User {

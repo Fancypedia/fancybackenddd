@@ -1028,6 +1028,42 @@ func v(PASETOPRIVATEKEYENV, MONGOCONNSTRINGENV, dbname, collectionname string, r
 
 // <--- ini content --->
 
+func Authorization(publickey, mongoenv, dbname, collname string, r *http.Request) string {
+	var response Credential
+	var auth User
+	response.Status = false
+
+	// Extract token from the request header
+	header := r.Header.Get("token")
+	if header == "" {
+		response.Message = "Header login tidak ditemukan"
+		return GCFReturnStruct(response)
+	}
+
+	// Decode token values
+	tokenname := watoken.DecodeGetId(os.Getenv(publickey), header)
+
+	// Create User struct with the decoded username
+	auth.Username = tokenname
+
+	// Check if decoding results are valid
+	if tokenname == "" {
+		response.Message = "Hasil decode tidak ditemukan"
+		return GCFReturnStruct(response)
+	}
+
+	// Check if the user exists
+	if !usernameExists(mongoenv, dbname, auth) {
+		response.Message = "Akun tidak ditemukan"
+		return GCFReturnStruct(response)
+	}
+	// Successful token decoding and user validation
+	response.Message = "Berhasil decode token"
+	response.Status = true
+	response.Username = tokenname
+	return GCFReturnStruct(response)
+}
+
 // content post
 func GCFCreateContentt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collcontent string, r *http.Request) string {
 	var response Credential
