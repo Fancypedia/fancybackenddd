@@ -963,7 +963,7 @@ func GCFGetAllPrivateID(MONGOCONNSTRINGENV, dbname, collectionname string, r *ht
 	if product != (User{}) {
 		// Password is valid, construct and return the GCFReturnStruct.
 		userMap := map[string]interface{}{
-			"Username": dataproduct.Username,
+			"username": dataproduct.Username,
 		}
 		response := CreateResponse(true, "Berhasil Login", userMap)
 		return GCFReturnStruct(response) // Return GCFReturnStruct directly
