@@ -49,12 +49,16 @@ type Properties struct {
 
 type User struct {
 	Username    string `json:"username" bson:"username"`
-	Password    string `json:"password" bson:"password"`
+	Password    string `json:"password" bson:"password,omitempty"`
 	Role        string `json:"role,omitempty" bson:"role,omitempty"`
 	Token       string `json:"token,omitempty" bson:"token,omitempty"`
 	Private     string `json:"private,omitempty" bson:"private,omitempty"`
 	Publick     string `json:"publick,omitempty" bson:"publick,omitempty"`
 	No_whatsapp string `json:"no_whatsapp,omitempty" bson:"no_whatsapp,omitempty"`
+}
+
+type UserToken struct {
+	Username User `json:"username" bson:"username"`
 }
 
 type Payload struct {
