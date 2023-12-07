@@ -956,22 +956,19 @@ func GCFGetAllPrivateID(MONGOCONNSTRINGENV, dbname, collectionname string, r *ht
 	var dataproduct User
 	err := json.NewDecoder(r.Body).Decode(&dataproduct)
 	if err != nil {
-		return err.Error()
+		return fmt.Sprintf("Error decoding request body: %s", err)
 	}
 
 	product := FindPrivate(mconn, collectionname, dataproduct)
 	if product != (User{}) {
 		// Password is valid, construct and return the GCFReturnStruct.
-		userMap := map[string]interface{}{
-			"username": dataproduct.Username,
-		}
+		userMap := map[string]interface{}{"username": dataproduct.Username}
 		response := CreateResponse(true, "Berhasil Login", userMap)
 		return GCFReturnStruct(response) // Return GCFReturnStruct directly
 	} else {
 		// Password is not valid, return an error message.
 		return "Nama Di token tidak ada"
 	}
-
 }
 
 // <--- ini content --->
