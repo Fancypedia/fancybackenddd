@@ -228,3 +228,15 @@ type Testing struct {
 	alamat      string    `json:alamat bson:"alamat"`
 	tanggal     time.Time `json:tanggal bson:"tanggal"`
 }
+
+type InputSidang struct {
+	Npm                int    `json:npm bson:"npm"`
+	Endpoint_token     string `jsong:"endpoint_token" bson:"endpoint_token"`
+	Package            string `json:"package" bson:"package"`
+	Endpoint_indonesia string `json:"endpoint_indonesia" bson:"endpoint_indonesia"`
+	Wamyid             string `json:"wamyid" bson:"wamyid"`
+	RilisJsv           string `json:"rilis_jsv" bson:"rilis_jsv"`
+	TypeModule         string `json:"type_module" bson:"type_module"`
+	Kelengkapan_css    string `json:"kelengkapan_css" bson:"kelengkapan_css"`
+	GithubPages        string `json:"github_pages" bson:"github_pages"`
+}

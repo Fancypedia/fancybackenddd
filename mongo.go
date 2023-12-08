@@ -70,6 +70,25 @@ func GetAllProduct(mongoconn *mongo.Database, collection string) []Product {
 	return product
 }
 
+func GetAllSidang(mongoconn *mongo.Database, collection string) []InputSidang {
+	sidang := atdb.GetAllDoc[[]InputSidang](mongoconn, collection)
+	return sidang
+}
+
+func CreateSidang(mongoconn *mongo.Database, collection string, sidangdata InputSidang) interface{} {
+	return atdb.InsertOneDoc(mongoconn, collection, sidangdata)
+}
+
+func UpdateSidang(mongoconn *mongo.Database, collection string, filter bson.M, sidangdata InputSidang) interface{} {
+	filter = bson.M{"id": sidangdata.Npm}
+	return atdb.ReplaceOneDoc(mongoconn, collection, filter, sidangdata)
+}
+
+func DeleteSidang(mongoconn *mongo.Database, collection string, sidangdata InputSidang) interface{} {
+	filter := bson.M{"id": sidangdata.Npm}
+	return atdb.DeleteOneDoc(mongoconn, collection, filter)
+}
+
 func GetNameAndPassowrd(mongoconn *mongo.Database, collection string) []User {
 	user := atdb.GetAllDoc[[]User](mongoconn, collection)
 	return user
@@ -371,6 +390,10 @@ func DeleteProduct(mongoconn *mongo.Database, collection string, productdata Pro
 func UpdatedProduct(mongoconn *mongo.Database, collection string, filter bson.M, productdata Product) interface{} {
 	filter = bson.M{"nomorid": productdata.Nomorid}
 	return atdb.ReplaceOneDoc(mongoconn, collection, filter, productdata)
+}
+func UpdateSidangFix(mongoconn *mongo.Database, collection string, filter bson.M, inputsidang Product) interface{} {
+	filter = bson.M{"nomorid": inputsidang.Nomorid}
+	return atdb.ReplaceOneDoc(mongoconn, collection, filter, inputsidang)
 }
 
 func GetAllProductt(mongoconn *mongo.Database, collection string) []Product {

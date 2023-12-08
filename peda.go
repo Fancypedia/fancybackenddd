@@ -605,6 +605,16 @@ func GCFGetAllUser(MONGOCONNSTRINGENV, dbname, collectionname string) string {
 	}
 }
 
+func GCFGetSidang(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	datasidang := GetAllSidang(mconn, collectionname)
+	if datasidang != nil {
+		return GCFReturnStruct(CreateResponse(true, "success Get All Sidang", datasidang))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Get All Sidang", datasidang))
+	}
+}
+
 func GCFCreatePostLineStringg(MONGOCONNSTRINGENV, dbname, collection string, r *http.Request) string {
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	var geojsonline GeoJsonLineString
@@ -762,6 +772,126 @@ func GCFCreateProducttWithpublickeyFix(MONGOCONNSTRINGENV, dbname, collectionnam
 }
 
 // <--- ini product --->
+
+func GCFCreateSidang(publickey, MONGOCONNSTRINGENV, dbname, colluser, collproduct string, r *http.Request) string {
+	var response Credential
+	response.Status = false
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var authdata User
+	gettoken := r.Header.Get("token")
+	if gettoken == "" {
+		response.Message = "Missing token in headers"
+	} else {
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var sidang InputSidang
+				err := json.NewDecoder(r.Body).Decode(&sidang)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+				} else {
+					CreateSidang(mconn, collproduct, InputSidang{
+						Npm:                sidang.Npm,
+						Endpoint_token:     sidang.Endpoint_token,
+						Package:            sidang.Package,
+						Endpoint_indonesia: sidang.Endpoint_indonesia,
+						Wamyid:             sidang.Wamyid,
+						RilisJsv:           sidang.RilisJsv,
+						TypeModule:         sidang.TypeModule,
+						Kelengkapan_css:    sidang.Kelengkapan_css,
+						GithubPages:        sidang.GithubPages,
+					})
+					response.Status = true
+					response.Message = "Product creation successful"
+				}
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
+	}
+	return GCFReturnStruct(response)
+}
+
+func GCFDeleteSidang(publickey, MONGOCONNSTRINGENV, dbname, colluser, collproduct string, r *http.Request) string {
+
+	var respon Credential
+	respon.Status = false
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var authdata User
+
+	gettoken := r.Header.Get("token")
+	if gettoken == "" {
+		respon.Message = "Missing token in headers"
+	} else {
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			respon.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var sidang InputSidang
+				err := json.NewDecoder(r.Body).Decode(&sidang)
+				if err != nil {
+					respon.Message = "Error parsing application/json: " + err.Error()
+				} else {
+					DeleteSidang(mconn, collproduct, sidang)
+					respon.Status = true
+					respon.Message = "Product Delete successful"
+				}
+			} else {
+				respon.Message = "ANDA BUKAN ADMIN"
+			}
+		}
+	}
+	return GCFReturnStruct(respon)
+}
+
+func GCFUpdateSidang(publickey, MONGOCONNSTRINGENV, dbname, colluser, collproduct string, r *http.Request) string {
+	var response Credential
+	response.Status = false
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	var authdata User
+
+	gettoken := r.Header.Get("token")
+	if gettoken == "" {
+		response.Message = "Missing token in Headers"
+	} else {
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var sidang InputSidang
+				err := json.NewDecoder(r.Body).Decode(&sidang)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+				} else {
+					UpdateSidang(mconn, collproduct, bson.M{"npm": sidang.Npm}, sidang)
+					response.Status = true
+					response.Message = "Product Update successful"
+				}
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
+	}
+	return GCFReturnStruct(response)
+}
+
+func GCFGetAllSidang(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
+	datasidang := GetAllSidang(mconn, collectionname)
+	return GCFReturnStruct(datasidang)
+}
 
 // product post
 
@@ -1028,12 +1158,11 @@ func v(PASETOPRIVATEKEYENV, MONGOCONNSTRINGENV, dbname, collectionname string, r
 
 // <--- ini content --->
 
-func Authorization(publickey, mongoenv, dbname, collname string, r *http.Request) string {
+func Authorization(publickey, MONGOCONNSTRINGENV, dbname, collname string, r *http.Request) string {
 	var response Credential
 	var auth User
 	response.Status = false
 
-	// Extract token from the request header
 	header := r.Header.Get("token")
 	if header == "" {
 		response.Message = "Header login tidak ditemukan"
@@ -1053,10 +1182,11 @@ func Authorization(publickey, mongoenv, dbname, collname string, r *http.Request
 	}
 
 	// Check if the user exists
-	if !usernameExists(mongoenv, dbname, auth) {
+	if !usernameExists(MONGOCONNSTRINGENV, dbname, auth) {
 		response.Message = "Akun tidak ditemukan"
 		return GCFReturnStruct(response)
 	}
+
 	// Successful token decoding and user validation
 	response.Message = "Berhasil decode token"
 	response.Status = true
