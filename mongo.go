@@ -87,6 +87,26 @@ func UpdateSidang(mongoconn *mongo.Database, collection string, filter bson.M, s
 func DeleteSidang(mongoconn *mongo.Database, collection string, sidangdata InputSidang) interface{} {
 	filter := bson.M{"id": sidangdata.Npm}
 	return atdb.DeleteOneDoc(mongoconn, collection, filter)
+
+}
+
+func GetAllFrontend(mongoconn *mongo.Database, collection string) []Frontend {
+	sidang := atdb.GetAllDoc[[]Frontend](mongoconn, collection)
+	return sidang
+}
+
+func CreateFronent(mongoconn *mongo.Database, collection string, sidangdata Frontend) interface{} {
+	return atdb.InsertOneDoc(mongoconn, collection, sidangdata)
+}
+
+func UpdateFrontend(mongoconn *mongo.Database, collection string, filter bson.M, sidangdata Frontend) interface{} {
+	filter = bson.M{"id": sidangdata.id}
+	return atdb.ReplaceOneDoc(mongoconn, collection, filter, sidangdata)
+}
+
+func DeleteFrondent(mongoconn *mongo.Database, collection string, sidangdata Frontend) interface{} {
+	filter := bson.M{"id": sidangdata.id}
+	return atdb.DeleteOneDoc(mongoconn, collection, filter)
 }
 
 func GetNameAndPassowrd(mongoconn *mongo.Database, collection string) []User {

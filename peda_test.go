@@ -29,11 +29,61 @@ import (
 // 		Role:     "user",
 // 	}
 
-// 	// Call the handler function
-// 	result := GCFCreateHandler(MONGOCONNSTRINGENV, dbname, collectionname, datauser)
-// 	fmt.Println(result)
-// 	// You can add assertions here to validate the result, or check the database for the created user.
-// }
+//		// Call the handler function
+//		result := GCFCreateHandler(MONGOCONNSTRINGENV, dbname, collectionname, datauser)
+//		fmt.Println(result)
+//		// You can add assertions here to validate the result, or check the database for the created user.
+//	}
+func TestUpdateGetData(t *testing.T) {
+	mconn := SetConnection("MONGOULBI", "petapedia")
+	datagedung := GetAllBangunanLineString(mconn, "petapedia")
+	fmt.Println(datagedung)
+}
+
+func TestGeneratePasswordHash(t *testing.T) {
+	password := "admin123"
+	hash, _ := HashPassword(password) // ignore error for the sake of simplicity
+
+	fmt.Println("Password:", password)
+	fmt.Println("Hash:    ", hash)
+
+	match := CheckPasswordHash(password, hash)
+	fmt.Println("Match:   ", match)
+}
+func TestGeneratePrivateKeyPaseto(t *testing.T) {
+	privateKey, publicKey := watoken.GenerateKey()
+	fmt.Println(privateKey)
+	fmt.Println(publicKey)
+	hasil, err := watoken.Encode("admin123", privateKey)
+	fmt.Println(hasil, err)
+}
+
+func TestHashFunction(t *testing.T) {
+	mconn := SetConnection("MONGOULBI", "proyek3")
+	var userdata User
+	userdata.Username = "rolly"
+	userdata.Password = "admin123"
+	userdata.Role = "admin"
+
+	filter := bson.M{"username": userdata.Username}
+	res := atdb.GetOneDoc[User](mconn, "dosen", filter)
+	fmt.Println("Mongo User Result: ", res)
+	hash, _ := HashPassword(userdata.Password)
+	fmt.Println("Hash Password : ", hash)
+	match := CheckPasswordHash(userdata.Password, res.Password)
+	fmt.Println("Match:   ", match)
+
+}
+
+func TestIsPasswordValid(t *testing.T) {
+	mconn := SetConnection("MONGOULBI", "petapedia")
+	var userdata User
+	userdata.Username = "petped"
+	userdata.Password = "secret"
+
+	anu := IsPasswordValid(mconn, "user", userdata)
+	fmt.Println(anu)
+}
 
 func TestCreateNewUserRole(t *testing.T) {
 	var userdata User
@@ -94,49 +144,6 @@ func TestAllProduct(t *testing.T) {
 	mconn := SetConnection("MONGOULBI", "petapedia")
 	product := GetAllProduct(mconn, "product")
 	fmt.Println(product)
-}
-
-func TestGeneratePasswordHash(t *testing.T) {
-	password := "ganteng"
-	hash, _ := HashPassword(password) // ignore error for the sake of simplicity
-
-	fmt.Println("Password:", password)
-	fmt.Println("Hash:    ", hash)
-	match := CheckPasswordHash(password, hash)
-	fmt.Println("Match:   ", match)
-}
-func TestGeneratePrivateKeyPaseto(t *testing.T) {
-	privateKey, publicKey := watoken.GenerateKey()
-	fmt.Println(privateKey)
-	fmt.Println(publicKey)
-	hasil, err := watoken.Encode("bangsat", privateKey)
-	fmt.Println(hasil, err)
-}
-
-func TestHashFunction(t *testing.T) {
-	mconn := SetConnection("mongodb://raulgantengbanget:0nGCVlPPoCsXNhqG@ac-oilbpwk-shard-00-00.9ofhjs3.mongodb.net:27017,ac-oilbpwk-shard-00-01.9ofhjs3.mongodb.net:27017,ac-oilbpwk-shard-00-02.9ofhjs3.mongodb.net:27017/test?replicaSet=atlas-13x7kp-shard-0&ssl=true&authSource=admin", "petapedia")
-	var userdata User
-	userdata.Username = "bangsat"
-	userdata.Password = "ganteng"
-
-	filter := bson.M{"username": userdata.Username}
-	res := atdb.GetOneDoc[User](mconn, "user", filter)
-	fmt.Println("Mongo User Result: ", res)
-	hash, _ := HashPassword(userdata.Password)
-	fmt.Println("Hash Password : ", hash)
-	match := CheckPasswordHash(userdata.Password, res.Password)
-	fmt.Println("Match:   ", match)
-
-}
-
-func TestIsPasswordValid(t *testing.T) {
-	mconn := SetConnection("mongodb://raulgantengbanget:0nGCVlPPoCsXNhqG@ac-oilbpwk-shard-00-00.9ofhjs3.mongodb.net:27017,ac-oilbpwk-shard-00-01.9ofhjs3.mongodb.net:27017,ac-oilbpwk-shard-00-02.9ofhjs3.mongodb.net:27017/test?replicaSet=atlas-13x7kp-shard-0&ssl=true&authSource=admin", "petapedia")
-	var userdata User
-	userdata.Username = "bangsat"
-	userdata.Password = "ganteng"
-
-	anu := IsPasswordValid(mconn, "user", userdata)
-	fmt.Println(anu)
 }
 
 func CreateContent(t *testing.T) {

@@ -3,6 +3,7 @@ package peda
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"aidanwoods.dev/go-paseto"
 	"golang.org/x/crypto/bcrypt"
@@ -43,4 +44,23 @@ func IsTokenValid(publickey, tokenstr string) (payload Payload, err error) {
 		json.Unmarshal(token.ClaimsJSON(), &payload)
 	}
 	return payload, err
+}
+
+func GenerateKey() (privatekey, publickey string) {
+	secretKey := paseto.NewV4AsymmetricSecretKey() // don't share this!!!
+	privatekey = secretKey.ExportHex()             // DO share this one
+	publickey = secretKey.Public().ExportHex()
+	return privatekey, publickey
+}
+
+func Encode(name, username, role, privatekey string) (string, error) {
+	token := paseto.NewToken()
+	token.SetIssuedAt(time.Now())
+	token.SetNotBefore(time.Now())
+	token.SetExpiration(time.Now().Add(2 * time.Hour))
+	token.SetString("name", name)
+	token.SetString("username", username)
+	token.SetString("role", role)
+	key, err := paseto.NewV4AsymmetricSecretKeyFromHex(privatekey)
+	return token.V4Sign(key, nil), err
 }

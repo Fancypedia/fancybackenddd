@@ -240,3 +240,14 @@ type InputSidang struct {
 	Kelengkapan_css    string `json:"kelengkapan_css" bson:"kelengkapan_css"`
 	GithubPages        string `json:"github_pages" bson:"github_pages"`
 }
+
+type Frontend struct {
+	id             int    `json:id bson:"id"`
+	Npm            int    `json:npm bson:"npm"`
+	Nama           string `json:nama bson:"nama"`
+	Rilisjs        string `json:rilisjs bson:"rilisjs"`
+	Pemanggilanjs  string `json:pemanggilanjs bson:"pemanggilanjs"`
+	Kelengkapancss string `json:kelengkapancss bson:"kelengkapancss"`
+	CustomDomain   string `json:customdomain bson:"customdomain"`
+	status         bool   `json:status bson:"status"`
+}
