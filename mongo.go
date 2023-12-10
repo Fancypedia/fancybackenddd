@@ -100,12 +100,31 @@ func CreateFronent(mongoconn *mongo.Database, collection string, sidangdata Fron
 }
 
 func UpdateFrontend(mongoconn *mongo.Database, collection string, filter bson.M, sidangdata Frontend) interface{} {
-	filter = bson.M{"id": sidangdata.id}
+	filter = bson.M{"npm": sidangdata.Npm}
 	return atdb.ReplaceOneDoc(mongoconn, collection, filter, sidangdata)
 }
 
 func DeleteFrondent(mongoconn *mongo.Database, collection string, sidangdata Frontend) interface{} {
-	filter := bson.M{"id": sidangdata.id}
+	filter := bson.M{"npm": sidangdata.Npm}
+	return atdb.DeleteOneDoc(mongoconn, collection, filter)
+}
+
+func GetAllBackend(mongoconn *mongo.Database, collection string) []Backend {
+	sidang := atdb.GetAllDoc[[]Backend](mongoconn, collection)
+	return sidang
+}
+
+func CreateBackend(mongoconn *mongo.Database, collection string, sidangdata Backend) interface{} {
+	return atdb.InsertOneDoc(mongoconn, collection, sidangdata)
+}
+
+func UpdateBackend(mongoconn *mongo.Database, collection string, filter bson.M, sidangdata Backend) interface{} {
+	filter = bson.M{"npm": sidangdata.Npm}
+	return atdb.ReplaceOneDoc(mongoconn, collection, filter, sidangdata)
+}
+
+func DeleteBackend(mongoconn *mongo.Database, collection string, sidangdata Backend) interface{} {
+	filter := bson.M{"npm": sidangdata.Npm}
 	return atdb.DeleteOneDoc(mongoconn, collection, filter)
 }
 

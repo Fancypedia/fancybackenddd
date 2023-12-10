@@ -242,7 +242,6 @@ type InputSidang struct {
 }
 
 type Frontend struct {
-	id             int    `json:id bson:"id"`
 	Npm            int    `json:npm bson:"npm"`
 	Nama           string `json:nama bson:"nama"`
 	Rilisjs        string `json:rilisjs bson:"rilisjs"`
@@ -250,4 +249,14 @@ type Frontend struct {
 	Kelengkapancss string `json:kelengkapancss bson:"kelengkapancss"`
 	CustomDomain   string `json:customdomain bson:"customdomain"`
 	status         bool   `json:status bson:"status"`
+}
+
+type Backend struct {
+	Npm                int    `json:npm bson:"npm"`
+	Nama               string `json:nama bson:"nama"`
+	Autentikasitoken   string `json:autentikasitoken bson:"autentikasitoken"`
+	Packagesendiri     string `json:packagesendiri bson:"packagesendiri"`
+	Endpointgcfjakarta string `json:endpointgcfjakarta bson:"endpointgcfjakarta"`
+	Integrasiwamyid    string `json:integrasiwamyid bson:"integrasiwamyid"`
+	Status             bool   `json:status bson:"status"`
 }
