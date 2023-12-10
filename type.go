@@ -248,7 +248,7 @@ type Frontend struct {
 	Pemanggilanjs  string `json:pemanggilanjs bson:"pemanggilanjs"`
 	Kelengkapancss string `json:kelengkapancss bson:"kelengkapancss"`
 	CustomDomain   string `json:customdomain bson:"customdomain"`
-	status         bool   `json:status bson:"status"`
+	Status         bool   `json:status bson:"status"`
 }
 
 type Backend struct {

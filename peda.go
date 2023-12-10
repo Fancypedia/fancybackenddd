@@ -800,7 +800,7 @@ func GCFCreateFE(publickey, MONGOCONNSTRINGENV, dbname, colluser, collfe string,
 						Pemanggilanjs:  sidang.Pemanggilanjs,
 						Kelengkapancss: sidang.Kelengkapancss,
 						CustomDomain:   sidang.CustomDomain,
-						status:         sidang.status,
+						Status:         sidang.Status,
 					})
 					response.Status = true
 					response.Message = "Create successful"
