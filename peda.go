@@ -997,13 +997,21 @@ func GCFUpdateBE(publickey, MONGOCONNSTRINGENV, dbname, colluser, collproduct st
 func GCFGetAllBE(MONGOCONNSTRINGENV, dbname, collectionname string) string {
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	datafe := GetAllBackend(mconn, collectionname)
-	return GCFReturnStruct(datafe)
+	if datafe != nil {
+		return GCFReturnStruct(CreateResponse(true, "success Get All ", datafe))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Get All ", datafe))
+	}
 }
 
 func GCFGetAllFE(MONGOCONNSTRINGENV, dbname, collectionname string) string {
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	datafe := GetAllFrontend(mconn, collectionname)
-	return GCFReturnStruct(datafe)
+	if datafe != nil {
+		return GCFReturnStruct(CreateResponse(true, "success Get All ", datafe))
+	} else {
+		return GCFReturnStruct(CreateResponse(false, "Failed Get All ", datafe))
+	}
 }
 
 // <--- ini product --->
