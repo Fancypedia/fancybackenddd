@@ -158,7 +158,7 @@ func CreateNewUserRole(mongoconn *mongo.Database, collection string, userdata Us
 	return atdb.InsertOneDoc(mongoconn, collection, userdata)
 }
 func usernameExists(mongoenv, dbname string, userdata User) bool {
-	mconn := SetConnection(mongoenv, dbname).Collection("user")
+	mconn := SetConnection(mongoenv, dbname).Collection("dosen")
 	filter := bson.M{"notelp": userdata.Username}
 
 	var user User

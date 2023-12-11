@@ -221,3 +221,11 @@ func TestPrivateToken(t *testing.T) {
 
 	fmt.Println(result)
 }
+
+func TestUsername(t *testing.T) {
+	var userdata User
+	userdata.Username = "6281312000300"
+	userdata.Password = "admin123"
+	usernameExists("mongodb+srv://workfield2308:SLKltAPVArpJeAyk@cluster0.wfrms4g.mongodb.net/", "dosen", userdata)
+	fmt.Println(userdata)
+}
