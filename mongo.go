@@ -159,7 +159,7 @@ func CreateNewUserRole(mongoconn *mongo.Database, collection string, userdata Us
 }
 func usernameExists(mongoenv, dbname string, userdata User) bool {
 	mconn := SetConnection(mongoenv, dbname).Collection("user")
-	filter := bson.M{"username": userdata.Username}
+	filter := bson.M{"notelp": userdata.Username}
 
 	var user User
 	err := mconn.FindOne(context.Background(), filter).Decode(&user)

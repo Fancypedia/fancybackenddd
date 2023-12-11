@@ -1414,7 +1414,6 @@ func Authorization(publickey, MONGOCONNSTRINGENV, dbname, collname string, r *ht
 
 	// Decode token values
 	tokenname := watoken.DecodeGetId(os.Getenv(publickey), header)
-
 	// Create User struct with the decoded username
 	auth.Username = tokenname
 
