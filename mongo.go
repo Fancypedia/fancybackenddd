@@ -196,14 +196,14 @@ func CreateUserAndAddedToeken(PASETOPRIVATEKEYENV string, mongoconn *mongo.Datab
 }
 
 func DeleteUser(mongoconn *mongo.Database, collection string, userdata User) interface{} {
-	filter := bson.M{"username": userdata.Username}
+	filter := bson.M{"notelp": userdata.Username}
 	return atdb.DeleteOneDoc(mongoconn, collection, filter)
 }
 func ReplaceOneDoc(mongoconn *mongo.Database, collection string, filter bson.M, userdata User) interface{} {
 	return atdb.ReplaceOneDoc(mongoconn, collection, filter, userdata)
 }
 func FindUser(mongoconn *mongo.Database, collection string, userdata User) User {
-	filter := bson.M{"username": userdata.Username}
+	filter := bson.M{"notelp": userdata.Username}
 	return atdb.GetOneDoc[User](mongoconn, collection, filter)
 }
 
