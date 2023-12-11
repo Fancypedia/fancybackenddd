@@ -1015,6 +1015,7 @@ func GCFGetAllBE(publickey, MONGOCONNSTRINGENV, dbname, colluser, collproduct st
 				response.Status = true
 				response.Message = "Get All successful"
 				response.Username = authdata.Username
+				GCFReturnStruct(GetAllBackend)
 			} else {
 				response.Message = "ANDA BUKAN ADMIN"
 			}
