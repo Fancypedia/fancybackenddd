@@ -994,14 +994,39 @@ func GCFUpdateBE(publickey, MONGOCONNSTRINGENV, dbname, colluser, collproduct st
 	return GCFReturnStruct(response)
 }
 
-func GCFGetAllBE(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+func GCFGetAllBE(publickey, MONGOCONNSTRINGENV, dbname, colluser, collproduct string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
-	datafe := GetAllBackend(mconn, collectionname)
-	if datafe != nil {
-		return GCFReturnStruct(CreateResponse(true, "success Get All ", datafe))
+	var authdata User
+
+	gettoken := r.Header.Get("token")
+	if gettoken == "" {
+		response.Message = "Missing token in Headers"
 	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Get All ", datafe))
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var sidang Backend
+				err := json.NewDecoder(r.Body).Decode(&sidang)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+				} else {
+					GetAllBackend(mconn, collproduct)
+					response.Status = true
+					response.Message = "Get All successful"
+					response.Username = authdata.Username
+				}
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
 	}
+	return GCFReturnStruct(response)
 }
 
 func GCFGetAllFE(MONGOCONNSTRINGENV, dbname, collectionname string) string {
