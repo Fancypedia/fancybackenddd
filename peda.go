@@ -1011,16 +1011,10 @@ func GCFGetAllBE(publickey, MONGOCONNSTRINGENV, dbname, colluser, collproduct st
 		} else {
 			auth2 := FindUser(mconn, colluser, authdata)
 			if auth2.Role == "admin" {
-				var sidang Backend
-				err := json.NewDecoder(r.Body).Decode(&sidang)
-				if err != nil {
-					response.Message = "Error parsing application/json: " + err.Error()
-				} else {
-					GetAllBackend(mconn, collproduct)
-					response.Status = true
-					response.Message = "Get All successful"
-					response.Username = authdata.Username
-				}
+				GetAllBackend(mconn, collproduct)
+				response.Status = true
+				response.Message = "Get All successful"
+				response.Username = authdata.Username
 			} else {
 				response.Message = "ANDA BUKAN ADMIN"
 			}
