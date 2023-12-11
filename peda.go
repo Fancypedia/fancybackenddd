@@ -1011,11 +1011,11 @@ func GCFGetAllBE(publickey, MONGOCONNSTRINGENV, dbname, colluser, collproduct st
 		} else {
 			auth2 := FindUser(mconn, colluser, authdata)
 			if auth2.Role == "admin" {
-				GetAllBackend(mconn, collproduct)
+				get := GetAllBackend(mconn, collproduct)
 				response.Status = true
 				response.Message = "Get All successful"
 				response.Username = authdata.Username
-				GCFReturnStruct(GetAllBackend)
+				response.Data = get
 			} else {
 				response.Message = "ANDA BUKAN ADMIN"
 			}

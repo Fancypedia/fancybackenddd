@@ -70,10 +70,11 @@ type Payload struct {
 }
 
 type Credential struct {
-	Status   bool   `json:"status" bson:"status"`
-	Token    string `json:"token,omitempty" bson:"token,omitempty"`
-	Message  string `json:"message,omitempty" bson:"message,omitempty"`
-	Username string `json:"username,omitempty" bson:"username,omitempty"`
+	Status   bool        `json:"status" bson:"status"`
+	Token    string      `json:"token,omitempty" bson:"token,omitempty"`
+	Message  string      `json:"message,omitempty" bson:"message,omitempty"`
+	Username string      `json:"username,omitempty" bson:"username,omitempty"`
+	Data     interface{} `json:"data,omitempty" bson:"data,omitempty"`
 }
 
 type Product struct {
