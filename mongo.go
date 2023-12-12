@@ -210,6 +210,10 @@ func FindUser(mongoconn *mongo.Database, collection string, userdata User) User 
 	filter := bson.M{"notelp": userdata.Username}
 	return atdb.GetOneDoc[User](mongoconn, collection, filter)
 }
+func FindUserByname(mongoconn *mongo.Database, collection string, userdata User) User {
+	filter := bson.M{"username": userdata.Username}
+	return atdb.GetOneDoc[User](mongoconn, collection, filter)
+}
 
 func FindUserUser(mongoconn *mongo.Database, collection string, userdata User) User {
 	filter := bson.M{

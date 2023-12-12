@@ -796,7 +796,7 @@ func GCFCreateFE(publickey, MONGOCONNSTRINGENV, dbname, colluser, collfe string,
 					CreateFronent(mconn, collfe, Frontend{
 						Npm:            sidang.Npm,
 						Nama:           sidang.Nama,
-						NamaDosen:      sidang.NamaDosen,
+						NamaDosen:      auth2.Username,
 						Rilisjs:        sidang.Rilisjs,
 						Pemanggilanjs:  sidang.Pemanggilanjs,
 						Kelengkapancss: sidang.Kelengkapancss,
@@ -839,7 +839,7 @@ func GCFCreateBE(publickey, MONGOCONNSTRINGENV, dbname, colluser, collfe string,
 					CreateBackend(mconn, collfe, Backend{
 						Npm:                sidang.Npm,
 						Nama:               sidang.Nama,
-						NamaDosen:          sidang.NamaDosen,
+						NamaDosen:          auth2.Username,
 						Autentikasitoken:   sidang.Autentikasitoken,
 						Packagesendiri:     sidang.Packagesendiri,
 						Endpointgcfjakarta: sidang.Endpointgcfjakarta,
@@ -1055,6 +1055,7 @@ func GCFGetAllFE(publickey, MONGOCONNSTRINGENV, dbname, colluser, collproduct st
 	}
 	return GCFReturnStruct(response)
 }
+
 // <--- ini product --->
 
 func GCFCreateSidang(publickey, MONGOCONNSTRINGENV, dbname, colluser, collproduct string, r *http.Request) string {
