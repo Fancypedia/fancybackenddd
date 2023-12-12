@@ -796,6 +796,7 @@ func GCFCreateFE(publickey, MONGOCONNSTRINGENV, dbname, colluser, collfe string,
 					CreateFronent(mconn, collfe, Frontend{
 						Npm:            sidang.Npm,
 						Nama:           sidang.Nama,
+						NamaDosen:      sidang.NamaDosen,
 						Rilisjs:        sidang.Rilisjs,
 						Pemanggilanjs:  sidang.Pemanggilanjs,
 						Kelengkapancss: sidang.Kelengkapancss,
@@ -838,6 +839,7 @@ func GCFCreateBE(publickey, MONGOCONNSTRINGENV, dbname, colluser, collfe string,
 					CreateBackend(mconn, collfe, Backend{
 						Npm:                sidang.Npm,
 						Nama:               sidang.Nama,
+						NamaDosen:          sidang.NamaDosen,
 						Autentikasitoken:   sidang.Autentikasitoken,
 						Packagesendiri:     sidang.Packagesendiri,
 						Endpointgcfjakarta: sidang.Endpointgcfjakarta,
@@ -1024,16 +1026,35 @@ func GCFGetAllBE(publickey, MONGOCONNSTRINGENV, dbname, colluser, collproduct st
 	return GCFReturnStruct(response)
 }
 
-func GCFGetAllFE(MONGOCONNSTRINGENV, dbname, collectionname string) string {
+func GCFGetAllFE(publickey, MONGOCONNSTRINGENV, dbname, colluser, collproduct string, r *http.Request) string {
+	var response Credential
+	response.Status = false
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
-	datafe := GetAllFrontend(mconn, collectionname)
-	if datafe != nil {
-		return GCFReturnStruct(CreateResponse(true, "success Get All ", datafe))
-	} else {
-		return GCFReturnStruct(CreateResponse(false, "Failed Get All ", datafe))
-	}
-}
+	var authdata User
 
+	gettoken := r.Header.Get("token")
+	if gettoken == "" {
+		response.Message = "Missing token in Headers"
+	} else {
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				get := GetallFrontend(mconn, collproduct)
+				response.Status = true
+				response.Message = "Get All successful"
+				response.Username = authdata.Username
+				response.Data = get
+			} else {
+				response.Message = "ANDA BUKAN ADMIN"
+			}
+		}
+	}
+	return GCFReturnStruct(response)
+}
 // <--- ini product --->
 
 func GCFCreateSidang(publickey, MONGOCONNSTRINGENV, dbname, colluser, collproduct string, r *http.Request) string {

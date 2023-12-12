@@ -113,6 +113,10 @@ func GetAllBackend(mongoconn *mongo.Database, collection string) []Backend {
 	sidang := atdb.GetAllDoc[[]Backend](mongoconn, collection)
 	return sidang
 }
+func GetallFrontend(mongoconn *mongo.Database, collection string) []Frontend {
+	sidang := atdb.GetAllDoc[[]Frontend](mongoconn, collection)
+	return sidang
+}
 
 func CreateBackend(mongoconn *mongo.Database, collection string, sidangdata Backend) interface{} {
 	return atdb.InsertOneDoc(mongoconn, collection, sidangdata)

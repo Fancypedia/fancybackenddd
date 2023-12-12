@@ -245,6 +245,7 @@ type InputSidang struct {
 type Frontend struct {
 	Npm            int    `json:npm bson:"npm"`
 	Nama           string `json:nama bson:"nama"`
+	NamaDosen      string `json:namadosen bson:"namadosen"`
 	Rilisjs        string `json:rilisjs bson:"rilisjs"`
 	Pemanggilanjs  string `json:pemanggilanjs bson:"pemanggilanjs"`
 	Kelengkapancss string `json:kelengkapancss bson:"kelengkapancss"`
@@ -255,6 +256,7 @@ type Frontend struct {
 type Backend struct {
 	Npm                int    `json:npm bson:"npm"`
 	Nama               string `json:nama bson:"nama"`
+	NamaDosen          string `json:namadosen bson:"namadosen"`
 	Autentikasitoken   string `json:autentikasitoken bson:"autentikasitoken"`
 	Packagesendiri     string `json:packagesendiri bson:"packagesendiri"`
 	Endpointgcfjakarta string `json:endpointgcfjakarta bson:"endpointgcfjakarta"`
