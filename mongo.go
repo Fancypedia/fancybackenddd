@@ -215,6 +215,16 @@ func FindUserByname(mongoconn *mongo.Database, collection string, userdata User)
 	return atdb.GetOneDoc[User](mongoconn, collection, filter)
 }
 
+func FindFrontend(mongoconn *mongo.Database, collection string, userdata Frontend) Frontend {
+	filter := bson.M{"npm": userdata.Npm}
+	return atdb.GetOneDoc[Frontend](mongoconn, collection, filter)
+}
+
+func FindBackend(mongoconn *mongo.Database, collection string, userdata Backend) Backend {
+	filter := bson.M{"npm": userdata.Npm}
+	return atdb.GetOneDoc[Backend](mongoconn, collection, filter)
+}
+
 func FindUserUser(mongoconn *mongo.Database, collection string, userdata User) User {
 	filter := bson.M{
 		"username": userdata.Username,

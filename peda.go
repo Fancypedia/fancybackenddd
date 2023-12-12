@@ -950,9 +950,14 @@ func GCFUpdateFE(publickey, MONGOCONNSTRINGENV, dbname, colluser, collproduct st
 				if err != nil {
 					response.Message = "Error parsing application/json: " + err.Error()
 				} else {
-					UpdateFrontend(mconn, collproduct, bson.M{"npm": sidang.Npm}, sidang)
+					auth3 := FindFrontend(mconn, colluser, sidang)
+					oldNamaDosen := auth3.NamaDosen // Save the old value
+					sidang.NamaDosen = auth2.Username
+					// Use the oldNamaDosen as the identifier for updating
+					UpdateFrontend(mconn, collproduct, bson.M{"namadosen": oldNamaDosen}, sidang)
+
 					response.Status = true
-					response.Message = "Product Update successful"
+					response.Message = "Update successful"
 				}
 			} else {
 				response.Message = "ANDA BUKAN ADMIN"
@@ -984,9 +989,14 @@ func GCFUpdateBE(publickey, MONGOCONNSTRINGENV, dbname, colluser, collproduct st
 				if err != nil {
 					response.Message = "Error parsing application/json: " + err.Error()
 				} else {
-					UpdateBackend(mconn, collproduct, bson.M{"npm": sidang.Npm}, sidang)
+					auth3 := FindBackend(mconn, colluser, sidang)
+					oldNamaDosen := auth3.NamaDosen // Save the old value
+					sidang.NamaDosen = auth2.Username
+					// Use the oldNamaDosen as the identifier for updating
+					UpdateBackend(mconn, collproduct, bson.M{"namadosen": oldNamaDosen}, sidang)
+
 					response.Status = true
-					response.Message = "Product Update successful"
+					response.Message = "Update successful"
 				}
 			} else {
 				response.Message = "ANDA BUKAN ADMIN"
