@@ -938,7 +938,7 @@ func GCFUpdateFE(publickey, MONGOCONNSTRINGENV, dbname, colluser, collproduct st
 	if gettoken == "" {
 		response.Message = "Missing token in Headers"
 	} else {
-		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		checktoken := watoken.DecodeGetId(publickey, gettoken)
 		authdata.Username = checktoken
 		if checktoken == "" {
 			response.Message = "Invalid token"
