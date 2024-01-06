@@ -263,3 +263,23 @@ type Backend struct {
 	Integrasiwamyid    string `json:integrasiwamyid bson:"integrasiwamyid"`
 	Status             bool   `json:status bson:"status"`
 }
+
+type Lokasi struct {
+	ID         primitive.ObjectID `bson:"_id,omitempty"`
+	Properties Name               ` bson:"properties,omitempty"`
+	Geometry   Geometry           `bson:"geometry,omitempty"`
+	Kategori   string             `bson:"kategori,omitempty"`
+}
+type Name struct {
+	Name string `bson:"name,omitempty"`
+}
+
+type LongLat struct {
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+}
+
+type Pesan struct {
+	Status  bool   `json:"status" bson:"status"`
+	Message string `json:"message" bson:"message"`
+}

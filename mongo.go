@@ -758,3 +758,65 @@ func GetAllTesting(mongoconn *mongo.Database, collection string) []Testing {
 	testing := atdb.GetAllDoc[[]Testing](mongoconn, collection)
 	return testing
 }
+
+func GeoIntersects(mongoconn *mongo.Database, long float64, lat float64) (namalokasi string) {
+	lokasicollection := mongoconn.Collection("petapedia")
+	filter := bson.M{
+		"batas": bson.M{
+			"$geoIntersects": bson.M{
+				"$geometry": bson.M{
+					"type":        "Point",
+					"coordinates": []float64{long, lat},
+				},
+			},
+		},
+	}
+	var lokasi Lokasi
+	err := lokasicollection.FindOne(context.TODO(), filter).Decode(&lokasi)
+	if err != nil {
+		fmt.Printf("GetLokasi: %v\n", err)
+	}
+	return lokasi.Properties.Name
+
+}
+
+func GeoWithin(mongoconn *mongo.Database, coordinates [][][]float64) (namalokasi string) {
+	lokasicollection := mongoconn.Collection("petapediaaa")
+	filter := bson.M{
+		"geometry": bson.M{
+			"$geoWithin": bson.M{
+				"$geometry": bson.M{
+					"type":        "Polygon",
+					"coordinates": coordinates,
+				},
+			},
+		},
+	}
+	var lokasi Lokasi
+	err := lokasicollection.FindOne(context.TODO(), filter).Decode(&lokasi)
+	if err != nil {
+		log.Printf("GeoWithin: %v\n", err)
+	}
+	return lokasi.Properties.Name
+
+}
+func Near(mongoconn *mongo.Database, long float64, lat float64) (namalokasi string) {
+	lokasicollection := mongoconn.Collection("near")
+	filter := bson.M{
+		"geometry": bson.M{
+			"$near": bson.M{
+				"$geometry": bson.M{
+					"type":        "LineString",
+					"coordinates": []float64{long, lat},
+				},
+				"$maxDistance": 1000,
+			},
+		},
+	}
+	var lokasi Lokasi
+	err := lokasicollection.FindOne(context.TODO(), filter).Decode(&lokasi)
+	if err != nil {
+		log.Printf("Near: %v\n", err)
+	}
+	return lokasi.Properties.Name
+}

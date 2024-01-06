@@ -1,11 +1,16 @@
 package peda
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 
 	"aidanwoods.dev/go-paseto"
+	"github.com/aiteung/atdb"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -63,4 +68,25 @@ func Encode(name, username, role, privatekey string) (string, error) {
 	token.SetString("role", role)
 	key, err := paseto.NewV4AsymmetricSecretKeyFromHex(privatekey)
 	return token.V4Sign(key, nil), err
+}
+
+func SetConnection2dsphereTest(mongoenv, dbname string) *mongo.Database {
+	var DBmongoinfo = atdb.DBInfo{
+		DBString: mongoenv,
+		DBName:   dbname,
+	}
+	db := atdb.MongoConnect(DBmongoinfo)
+
+	// Create a geospatial index if it doesn't exist
+	indexModel := mongo.IndexModel{
+		Keys: bson.D{
+			{Key: "geometry", Value: "2dsphere"},
+		},
+	}
+
+	_, err := db.Collection("near").Indexes().CreateOne(context.TODO(), indexModel)
+	if err != nil {
+		log.Printf("Error creating geospatial index: %v\n", err)
+	}
+	return db
 }
