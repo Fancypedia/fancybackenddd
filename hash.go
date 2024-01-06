@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"aidanwoods.dev/go-paseto"
@@ -72,7 +73,7 @@ func Encode(name, username, role, privatekey string) (string, error) {
 
 func SetConnection2dsphereTest(mongoenv, dbname string) *mongo.Database {
 	var DBmongoinfo = atdb.DBInfo{
-		DBString: mongoenv,
+		DBString: os.Getenv(mongoenv),
 		DBName:   dbname,
 	}
 	db := atdb.MongoConnect(DBmongoinfo)
@@ -89,4 +90,71 @@ func SetConnection2dsphereTest(mongoenv, dbname string) *mongo.Database {
 		log.Printf("Error creating geospatial index: %v\n", err)
 	}
 	return db
+}
+
+func SetConnection2dsphereTestPoint(mongoenv, dbname string) *mongo.Database {
+	var DBmongoinfo = atdb.DBInfo{
+		DBString: os.Getenv(mongoenv),
+		DBName:   dbname,
+	}
+	db := atdb.MongoConnect(DBmongoinfo)
+
+	// Create a geospatial index if it doesn't exist
+	indexModel := mongo.IndexModel{
+		Keys: bson.D{
+			{Key: "geometry", Value: "2dsphere"},
+		},
+	}
+
+	_, err := db.Collection("nearspehere").Indexes().CreateOne(context.TODO(), indexModel)
+	if err != nil {
+		log.Printf("Error creating geospatial index: %v\n", err)
+	}
+
+	return db
+}
+
+func Polygon(mongoconn *mongo.Database, coordinates [][][]float64) (namalokasi string) {
+	lokasicollection := mongoconn.Collection("polygon")
+
+	// Log coordinates for debugging
+	fmt.Println("Coordinates:", coordinates)
+
+	filter := bson.M{
+		"location": bson.M{
+			"$geoWithin": bson.M{
+				"$geometry": bson.M{
+					"type":        "Polygon",
+					"coordinates": coordinates,
+				},
+			},
+		},
+	}
+
+	fmt.Println("Filter:", filter)
+
+	var lokasi Lokasi
+	err := lokasicollection.FindOne(context.TODO(), filter).Decode(&lokasi)
+	if err != nil {
+		log.Printf("Polygon: %v\n", err)
+		return ""
+	}
+
+	return lokasi.Properties.Name
+}
+
+func GetBoxDoc(db *mongo.Database, collname string, coordinates Polyline) (result string) {
+	filter := bson.M{
+		"geometry": bson.M{
+			"$geoWithin": bson.M{
+				"$box": coordinates.Coordinates,
+			},
+		},
+	}
+	var doc FullGeoJson
+	err := db.Collection(collname).FindOne(context.TODO(), filter).Decode(&doc)
+	if err != nil {
+		fmt.Printf("Box: %v\n", err)
+	}
+	return "Box anda berada pada " + doc.Properties.Name
 }

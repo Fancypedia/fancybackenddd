@@ -3189,3 +3189,52 @@ func PostNear(mongoenv, dbname string, r *http.Request) string {
 	}
 	return GCFReturnStruct(response)
 }
+
+func Polygonnn(mongoenv, dbname string, r *http.Request) string {
+	var coordinate GeometryPolygon
+	var response Pesan
+	response.Status = false
+	mconn := SetConnection(mongoenv, dbname)
+
+	err := json.NewDecoder(r.Body).Decode(&coordinate)
+	if err != nil {
+		response.Message = "error parsing application/json: " + err.Error()
+	} else {
+		response.Status = true
+		response.Message = Polygonn(mconn, coordinate.Coordinates)
+	}
+	return GCFReturnStruct(response)
+}
+
+func NearSpeheree(mongoenv, dbname string, r *http.Request) string {
+	var longlat LongLat
+	var response Pesan
+	response.Status = false
+	mconn := SetConnection2dsphereTest(mongoenv, dbname)
+
+	err := json.NewDecoder(r.Body).Decode(&longlat)
+	if err != nil {
+		response.Message = "error parsing application/json: " + err.Error()
+	} else {
+		response.Status = true
+		response.Message = NearSpehere(mconn, longlat.Longitude, longlat.Latitude)
+	}
+	return GCFReturnStruct(response)
+}
+
+func BoxFix(mongoenv, dbname string, r *http.Request) string {
+	var coordinate LongLatt
+	var response Pesan
+	response.Status = false
+	mconn := SetConnection(mongoenv, dbname)
+
+	err := json.NewDecoder(r.Body).Decode(&coordinate)
+	if err != nil {
+		response.Message = "error parsing application/json: " + err.Error()
+	} else {
+		response.Status = true
+
+		response.Message = Box(mconn, coordinate.Longitude, coordinate.Latitude, coordinate.Longitude2, coordinate.Latitude2)
+	}
+	return GCFReturnStruct(response)
+}

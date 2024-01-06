@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"testing"
 
 	"aidanwoods.dev/go-paseto"
 	"github.com/aiteung/atdb"
@@ -762,7 +763,7 @@ func GetAllTesting(mongoconn *mongo.Database, collection string) []Testing {
 func GeoIntersects(mongoconn *mongo.Database, long float64, lat float64) (namalokasi string) {
 	lokasicollection := mongoconn.Collection("petapedia")
 	filter := bson.M{
-		"batas": bson.M{
+		"geometry": bson.M{
 			"$geoIntersects": bson.M{
 				"$geometry": bson.M{
 					"type":        "Point",
@@ -778,6 +779,31 @@ func GeoIntersects(mongoconn *mongo.Database, long float64, lat float64) (namalo
 	}
 	return lokasi.Properties.Name
 
+}
+
+func TestPolygon(t *testing.T) {
+	// Set up MongoDB connection for testing
+	mconn := SetConnection("mongodb+srv://raulgantengbanget:0nGCVlPPoCsXNhqG@cluster0.9ofhjs3.mongodb.net/?retryWrites=true&w=majority", "petapediaaa")
+
+	// Example coordinates for a polygon
+	coordinates := [][][]float64{
+		{
+			{103.62052506248301, -1.6105001000148462},
+			{103.62061804929925, -1.6106710617710007},
+			{103.62071435707355, -1.6106229269090022},
+			{103.62061472834131, -1.6104420062116702},
+			{103.62052506248301, -1.6105001000148462},
+		},
+	}
+
+	// Call the function being tested
+	result := Polygon(mconn, coordinates)
+
+	// Add your assertions based on expected behavior
+	expectedResult := ""
+	if result != expectedResult {
+		t.Errorf("Expected '%s', got '%s'", expectedResult, result)
+	}
 }
 
 func GeoWithin(mongoconn *mongo.Database, coordinates [][][]float64) (namalokasi string) {
@@ -819,4 +845,71 @@ func Near(mongoconn *mongo.Database, long float64, lat float64) (namalokasi stri
 		log.Printf("Near: %v\n", err)
 	}
 	return lokasi.Properties.Name
+}
+func NearSpehere(mongoconn *mongo.Database, long float64, lat float64) (namalokasi string) {
+	lokasicollection := mongoconn.Collection("near")
+	filter := bson.M{
+		"geometry": bson.M{
+			"$nearSphere": bson.M{
+				"$geometry": bson.M{
+					"type":        "LineString",
+					"coordinates": []float64{long, lat},
+				},
+				"$maxDistance": 1000,
+			},
+		},
+	}
+	var lokasi Lokasi
+	err := lokasicollection.FindOne(context.TODO(), filter).Decode(&lokasi)
+	if err != nil {
+		log.Printf("Near: %v\n", err)
+	}
+	return lokasi.Properties.Name
+}
+
+func Polygonn(mongoconn *mongo.Database, coordinates [][][]float64) (namalokasi string) {
+	lokasicollection := mongoconn.Collection("polygon")
+
+	// Log coordinates for debugging
+	fmt.Println("Coordinates:", coordinates)
+
+	filter := bson.M{
+		"geometry": bson.M{
+			"$geoWithin": bson.M{
+				"$geometry": bson.M{
+					"type":        "Polygon",
+					"coordinates": coordinates,
+				},
+			},
+		},
+	}
+
+	fmt.Println("Filter:", filter)
+
+	var lokasi Lokasi
+	err := lokasicollection.FindOne(context.TODO(), filter).Decode(&lokasi)
+	if err != nil {
+		log.Printf("Polygon: %v\n", err)
+		return ""
+	}
+
+	return lokasi.Properties.Name
+}
+
+func Box(mongoconn *mongo.Database, long1 float64, lat1 float64, long2 float64, lat2 float64) (namalokasi string) {
+	lokasicollection := mongoconn.Collection("box")
+	filter := bson.M{
+		"geometry": bson.M{
+			"$geoWithin": bson.M{
+				"$box": [][]float64{{long1, lat1}, {long2, lat2}},
+			},
+		},
+	}
+	var lokasi Lokasi
+	err := lokasicollection.FindOne(context.TODO(), filter).Decode(&lokasi)
+	if err != nil {
+		fmt.Printf("GetLokasi: %v\n", err)
+	}
+	return lokasi.Properties.Name
+
 }

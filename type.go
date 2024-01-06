@@ -6,6 +6,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+type Polyline struct {
+	Coordinates [][]float64 `json:"coordinates" bson:"coordinates"`
+}
+
 type GeometryPolygon struct {
 	Coordinates [][][]float64 `json:"coordinates" bson:"coordinates"`
 	Type        string        `json:"type" bson:"type"`
@@ -265,18 +269,32 @@ type Backend struct {
 }
 
 type Lokasi struct {
-	ID         primitive.ObjectID `bson:"_id,omitempty"`
-	Properties Name               ` bson:"properties,omitempty"`
-	Geometry   Geometry           `bson:"geometry,omitempty"`
-	Kategori   string             `bson:"kategori,omitempty"`
+	ID         primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Type       string             `json:"type" bson:"type"`
+	Properties Properties         `json:"properties" bson:"properties"`
+	Geometry   Geometry           `json:"geometry" bson:"geometry"`
 }
 type Name struct {
 	Name string `bson:"name,omitempty"`
 }
 
+type FullGeoJson struct {
+	ID         primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Type       string             `json:"type" bson:"type"`
+	Properties Properties         `json:"properties" bson:"properties"`
+	Geometry   Geometry           `json:"geometry" bson:"geometry"`
+}
+
 type LongLat struct {
 	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
+}
+
+type LongLatt struct {
+	Latitude   float64 `json:"latitude"`
+	Longitude  float64 `json:"longitude"`
+	Latitude2  float64 `json:"latitude2"`
+	Longitude2 float64 `json:"longitude2"`
 }
 
 type Pesan struct {
