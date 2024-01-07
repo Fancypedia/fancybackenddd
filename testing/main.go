@@ -111,6 +111,19 @@ func Mix(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, peda.MinDistanceee("mongoenv", "petapediaaa", r))
 }
 
+func Geometryyyy(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodOptions {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type,Authorization")
+		w.Header().Set("Access-Control-Max-Age", "3600")
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	fmt.Fprintf(w, peda.GeometryFix("mongoenv", "petapediaaa", r))
+}
+
 func main() {
 	handlerRequests()
 }
@@ -123,5 +136,6 @@ func handlerRequests() {
 	http.HandleFunc("/radius", Radius)
 	http.HandleFunc("/max", Max)
 	http.HandleFunc("/min", Mix)
+	http.HandleFunc("/geometry", Geometryyyy)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
