@@ -3364,3 +3364,18 @@ func MinDistanceee(mongoenv, dbname string, r *http.Request) string {
 
 	return GCFReturnStruct(response)
 }
+
+func GeometryFix(mongoenv, dbname string, r *http.Request) string {
+	var coordinate GeometryPolygon
+	var response Pesan
+	response.Status = false
+	mconn := SetConnection(mongoenv, dbname)
+	err := json.NewDecoder(r.Body).Decode(&coordinate)
+	if err != nil {
+		response.Message = "error parsing application/json: " + err.Error()
+	} else {
+		response.Status = true
+		response.Message = Geometryyy(mconn, coordinate.Coordinates)
+	}
+	return GCFReturnStruct(response)
+}

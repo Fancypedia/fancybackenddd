@@ -964,3 +964,23 @@ func MinDistancee(mongoconn *mongo.Database, point []float64, minDistance float6
 	}
 	return lokasi.Properties.Name
 }
+
+func Geometryyy(mongoconn *mongo.Database, coordinates [][][]float64) (namalokasi string) {
+	lokasicollection := mongoconn.Collection("geometry")
+	filter := bson.M{
+		"geometry": bson.M{
+			"$geoWithin": bson.M{
+				"$geometry": bson.M{
+					"type":        "Polygon",
+					"coordinates": coordinates,
+				},
+			},
+		},
+	}
+	var lokasi Lokasi
+	err := lokasicollection.FindOne(context.TODO(), filter).Decode(&lokasi)
+	if err != nil {
+		log.Printf("GeoWithin: %v\n", err)
+	}
+	return lokasi.Properties.Name
+}
