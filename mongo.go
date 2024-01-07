@@ -983,4 +983,5 @@ func Geometryyy(mongoconn *mongo.Database, coordinates [][][]float64) (namalokas
 		log.Printf("GeoWithin: %v\n", err)
 	}
 	return lokasi.Properties.Name
+
 }
