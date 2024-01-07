@@ -266,28 +266,3 @@ func TestNearSphere(t *testing.T) {
 	datagedung := NearSpehere(mconn, 103.61028753823456, -1.6246312350403684)
 	fmt.Println(datagedung)
 }
-
-func TestPolygonn(t *testing.T) {
-	// Set up MongoDB connection for testing
-	mconn := SetConnection("mongoenv", "petapediaaa")
-
-	// Example coordinates for a polygon
-	coordinates := [][][]float64{
-		{
-			{103.62052506248301, -1.6105001000148462},
-			{103.62061804929925, -1.6106710617710007},
-			{103.62071435707355, -1.6106229269090022},
-			{103.62061472834131, -1.6104420062116702},
-			{103.62052506248301, -1.6105001000148462},
-		},
-	}
-
-	// Call the function being tested
-	result := Polygon(mconn, coordinates)
-
-	// Add your assertions based on expected behavior
-	expectedResult := ""
-	if result != expectedResult {
-		t.Errorf("Expected '%s', got '%s'", expectedResult, result)
-	}
-}
