@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/aiteung/atapi"
 	"github.com/aiteung/atdb"
@@ -3223,18 +3224,143 @@ func NearSpeheree(mongoenv, dbname string, r *http.Request) string {
 }
 
 func BoxFix(mongoenv, dbname string, r *http.Request) string {
-	var coordinate LongLatt
 	var response Pesan
 	response.Status = false
 	mconn := SetConnection(mongoenv, dbname)
 
-	err := json.NewDecoder(r.Body).Decode(&coordinate)
+	var coordinates Polyline
+
+	err := json.NewDecoder(r.Body).Decode(&coordinates)
 	if err != nil {
 		response.Message = "error parsing application/json: " + err.Error()
 	} else {
 		response.Status = true
-
-		response.Message = Box(mconn, coordinate.Longitude, coordinate.Latitude, coordinate.Longitude2, coordinate.Latitude2)
+		// Pass the Polyline instance to GetBoxDoccc
+		response.Message = GetBoxDoccc(mconn, coordinates)
 	}
+
+	return GCFReturnStruct(response)
+}
+
+func CenterSphere(mongoenv, dbname string, r *http.Request) string {
+	var response Pesan
+	response.Status = false
+	mconn := SetConnection(mongoenv, dbname)
+
+	var longlat LongLat
+	var radius float64
+
+	err := json.NewDecoder(r.Body).Decode(&longlat)
+	if err != nil {
+		response.Message = "error parsing application/json: " + err.Error()
+		return GCFReturnStruct(response)
+	}
+
+	// Pastikan nilai latitude dan longitude berada dalam rentang yang valid
+	if longlat.Latitude < -90 || longlat.Latitude > 90 || longlat.Longitude < -180 || longlat.Longitude > 180 {
+		response.Message = "error: latitude and/or longitude out of bounds"
+		return GCFReturnStruct(response)
+	}
+
+	// Setel nilai radius berdasarkan kebutuhan atau input pengguna
+	queryParams := r.URL.Query()
+	radiusParam := queryParams.Get("radius")
+	if radiusParam != "" {
+		var errConv error
+		radius, errConv = strconv.ParseFloat(radiusParam, 64)
+		if errConv != nil || radius <= 0 {
+			response.Message = "error parsing or invalid positive radius parameter"
+			return GCFReturnStruct(response)
+		}
+	} else {
+		// Default radius jika tidak ada parameter
+		radius = 1000.0
+	}
+
+	response.Status = true
+	response.Message = Center(mconn, longlat.Longitude, longlat.Latitude, radius)
+
+	return GCFReturnStruct(response)
+}
+
+func MaxDistance(mongoenv, dbname string, r *http.Request) string {
+	var response Pesan
+	response.Status = false
+	mconn := SetConnection2dsphereMax(mongoenv, dbname)
+
+	var longlat LongLat
+	var maxDistance float64
+
+	err := json.NewDecoder(r.Body).Decode(&longlat)
+	if err != nil {
+		response.Message = "error parsing application/json: " + err.Error()
+		return GCFReturnStruct(response)
+	}
+
+	// Pastikan nilai latitude dan longitude berada dalam rentang yang valid
+	if longlat.Latitude < -90 || longlat.Latitude > 90 || longlat.Longitude < -180 || longlat.Longitude > 180 {
+		response.Message = "error: latitude and/or longitude out of bounds"
+		return GCFReturnStruct(response)
+	}
+
+	// Setel nilai maxDistance berdasarkan kebutuhan atau input pengguna
+	queryParams := r.URL.Query()
+	maxDistanceParam := queryParams.Get("maxDistance")
+	if maxDistanceParam != "" {
+		var errConv error
+		maxDistance, errConv = strconv.ParseFloat(maxDistanceParam, 64)
+		if errConv != nil || maxDistance <= 0 {
+			response.Message = "error parsing or invalid positive maxDistance parameter"
+			return GCFReturnStruct(response)
+		}
+	} else {
+		// Default maxDistance jika tidak ada parameter
+		maxDistance = 1000.0
+	}
+
+	response.Status = true
+	response.Message = MaxDistancee(mconn, []float64{longlat.Longitude, longlat.Latitude}, maxDistance)
+
+	return GCFReturnStruct(response)
+}
+
+func MinDistanceee(mongoenv, dbname string, r *http.Request) string {
+	var response Pesan
+	response.Status = false
+	mconn := SetConnection2dsphereMix(mongoenv, dbname)
+
+	var longlat LongLat
+	var maxDistance float64
+
+	err := json.NewDecoder(r.Body).Decode(&longlat)
+	if err != nil {
+		response.Message = "error parsing application/json: " + err.Error()
+		return GCFReturnStruct(response)
+	}
+
+	// Pastikan nilai latitude dan longitude berada dalam rentang yang valid
+	if longlat.Latitude < -90 || longlat.Latitude > 90 || longlat.Longitude < -180 || longlat.Longitude > 180 {
+		response.Message = "error: latitude and/or longitude out of bounds"
+		return GCFReturnStruct(response)
+	}
+
+	// Setel nilai maxDistance berdasarkan kebutuhan atau input pengguna
+	queryParams := r.URL.Query()
+	maxDistanceParam := queryParams.Get("minDistance")
+	if maxDistanceParam != "" {
+		var errConv error
+		maxDistance, errConv = strconv.ParseFloat(maxDistanceParam, 64)
+		if errConv != nil || maxDistance <= 0 {
+			response.Message = "error parsing or invalid positive maxDistance parameter"
+			return GCFReturnStruct(response)
+		}
+	} else {
+		// Default maxDistance jika tidak ada parameter
+		maxDistance = 1000.0
+	}
+
+	response.Status = true
+	response.Message = MinDistancee(mconn, []float64{longlat.Longitude, longlat.Latitude}, maxDistance)
+
 	return GCFReturnStruct(response)
 }

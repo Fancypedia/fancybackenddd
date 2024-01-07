@@ -92,6 +92,69 @@ func SetConnection2dsphereTest(mongoenv, dbname string) *mongo.Database {
 	return db
 }
 
+func SetConnection2dsphereMax(mongoenv, dbname string) *mongo.Database {
+	var DBmongoinfo = atdb.DBInfo{
+		DBString: os.Getenv(mongoenv),
+		DBName:   dbname,
+	}
+	db := atdb.MongoConnect(DBmongoinfo)
+
+	// Create a geospatial index if it doesn't exist
+	indexModel := mongo.IndexModel{
+		Keys: bson.D{
+			{Key: "geometry", Value: "2dsphere"},
+		},
+	}
+
+	_, err := db.Collection("max").Indexes().CreateOne(context.TODO(), indexModel)
+	if err != nil {
+		log.Printf("Error creating geospatial index: %v\n", err)
+	}
+	return db
+}
+
+func SetConnection2dsphereMix(mongoenv, dbname string) *mongo.Database {
+	var DBmongoinfo = atdb.DBInfo{
+		DBString: os.Getenv(mongoenv),
+		DBName:   dbname,
+	}
+	db := atdb.MongoConnect(DBmongoinfo)
+
+	// Create a geospatial index if it doesn't exist
+	indexModel := mongo.IndexModel{
+		Keys: bson.D{
+			{Key: "geometry", Value: "2dsphere"},
+		},
+	}
+
+	_, err := db.Collection("min").Indexes().CreateOne(context.TODO(), indexModel)
+	if err != nil {
+		log.Printf("Error creating geospatial index: %v\n", err)
+	}
+	return db
+}
+
+func SetConnection2dsphereTestBox(mongoenv, dbname string) *mongo.Database {
+	var DBmongoinfo = atdb.DBInfo{
+		DBString: os.Getenv(mongoenv),
+		DBName:   dbname,
+	}
+	db := atdb.MongoConnect(DBmongoinfo)
+
+	// Create a geospatial index if it doesn't exist
+	indexModel := mongo.IndexModel{
+		Keys: bson.D{
+			{Key: "geometry", Value: "2dsphere"},
+		},
+	}
+
+	_, err := db.Collection("boxfix").Indexes().CreateOne(context.TODO(), indexModel)
+	if err != nil {
+		fmt.Printf("Error creating 2dsphere index: %v\n", err)
+	}
+	return db
+}
+
 func SetConnection2dsphereTestPoint(mongoenv, dbname string) *mongo.Database {
 	var DBmongoinfo = atdb.DBInfo{
 		DBString: os.Getenv(mongoenv),

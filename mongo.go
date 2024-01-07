@@ -896,20 +896,71 @@ func Polygonn(mongoconn *mongo.Database, coordinates [][][]float64) (namalokasi 
 	return lokasi.Properties.Name
 }
 
-func Box(mongoconn *mongo.Database, long1 float64, lat1 float64, long2 float64, lat2 float64) (namalokasi string) {
-	lokasicollection := mongoconn.Collection("box")
+func GetBoxDoccc(mongoconn *mongo.Database, coordinates Polyline) (result string) {
+	lokasicollection := mongoconn.Collection("boxfix")
 	filter := bson.M{
 		"geometry": bson.M{
 			"$geoWithin": bson.M{
-				"$box": [][]float64{{long1, lat1}, {long2, lat2}},
+				"$box": coordinates.Coordinates,
+			},
+		},
+	}
+	var doc FullGeoJson
+	err := lokasicollection.FindOne(context.TODO(), filter).Decode(&doc)
+	if err != nil {
+		fmt.Printf("Box: %v\n", err)
+	}
+	return "Box anda berada pada " + doc.Properties.Name
+}
+func Center(mongoconn *mongo.Database, longitude, latitude, radius float64) (namalokasi string) {
+	lokasicollection := mongoconn.Collection("center")
+	filter := bson.M{
+		"geometry": bson.M{
+			"$geoWithin": bson.M{
+				"$centerSphere": []interface{}{[]float64{longitude, latitude}, float64(radius) / 6371000},
 			},
 		},
 	}
 	var lokasi Lokasi
 	err := lokasicollection.FindOne(context.TODO(), filter).Decode(&lokasi)
 	if err != nil {
-		fmt.Printf("GetLokasi: %v\n", err)
+		fmt.Printf("Center: %v\n", err)
 	}
 	return lokasi.Properties.Name
+}
 
+func MaxDistancee(mongoconn *mongo.Database, point []float64, maxdistance float64) (namalokasi string) {
+	lokasicollection := mongoconn.Collection("max")
+	filter := bson.M{
+		"geometry": bson.M{
+			"$near": bson.M{
+				"$geometry":    bson.M{"type": "Point", "coordinates": point},
+				"$maxDistance": maxdistance,
+			},
+		},
+	}
+	var lokasi Lokasi
+	err := lokasicollection.FindOne(context.TODO(), filter).Decode(&lokasi)
+	if err != nil {
+		fmt.Printf("MaxDistancee: %v\n", err)
+	}
+	return lokasi.Properties.Name
+}
+
+func MinDistancee(mongoconn *mongo.Database, point []float64, minDistance float64) (namalokasi string) {
+	lokasicollection := mongoconn.Collection("max")
+	filter := bson.M{
+		"geometry": bson.M{
+			"$near": bson.M{
+				"$geometry":    bson.M{"type": "Point", "coordinates": point},
+				"$maxDistance": minDistance,
+			},
+		},
+	}
+	var lokasi Lokasi
+	err := lokasicollection.FindOne(context.TODO(), filter).Decode(&lokasi)
+	if err != nil {
+		fmt.Printf("MaxDistancee: %v\n", err)
+	}
+	return lokasi.Properties.Name
 }

@@ -6,10 +6,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type Polyline struct {
-	Coordinates [][]float64 `json:"coordinates" bson:"coordinates"`
-}
-
 type GeometryPolygon struct {
 	Coordinates [][][]float64 `json:"coordinates" bson:"coordinates"`
 	Type        string        `json:"type" bson:"type"`
@@ -289,6 +285,9 @@ type LongLat struct {
 	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
 }
+type Radius struct {
+	Radius float64 `json:"radius"`
+}
 
 type LongLatt struct {
 	Latitude   float64 `json:"latitude"`
@@ -300,4 +299,19 @@ type LongLatt struct {
 type Pesan struct {
 	Status  bool   `json:"status" bson:"status"`
 	Message string `json:"message" bson:"message"`
+}
+type LocationData struct {
+	ID          string    `bson:"_id"`
+	Province    string    `bson:"province"`
+	District    string    `bson:"district"`
+	SubDistrict string    `bson:"sub_district"`
+	Village     string    `bson:"village"`
+	Border      GeoBorder `bson:"border"`
+}
+type GeoBorder struct {
+	Type        string        `bson:"type"`
+	Coordinates [][][]float64 `bson:"coordinates"`
+}
+type Polyline struct {
+	Coordinates [][]float64 `json:"coordinates"`
 }
