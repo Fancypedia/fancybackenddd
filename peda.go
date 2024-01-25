@@ -1253,31 +1253,13 @@ func GCFCreateProductt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collprod
 				}
 			} else {
 				var dataproduct Product
-				nomoridStr := r.FormValue("Nomorid")
-				nomorid, err := strconv.Atoi(nomoridStr)
-
-				PriceStr := r.FormValue("Price")
-				priceid, err := strconv.Atoi(PriceStr)
-
-				prdoucrStr := r.FormValue("Stock")
-				productid, err := strconv.Atoi(prdoucrStr)
-				if err != nil {
-					response.Message = "Error converting Nomorid to integer: " + err.Error()
-					return GCFReturnStruct(response)
-				}
-				statusStr := r.FormValue("Status")
-				status, err := strconv.ParseBool(statusStr)
-				if err != nil {
-					response.Message = "Error converting Status to boolean: " + err.Error()
-					return GCFReturnStruct(response)
-				}
-				dataproduct.Nomorid = nomorid
+				dataproduct.Nomorid = r.FormValue("Nomorid")
 				dataproduct.Name = r.FormValue("Name")
 				dataproduct.Description = r.FormValue("Description")
-				dataproduct.Price = priceid
-				dataproduct.Stock = productid
+				dataproduct.Price = r.FormValue("Price")
+				dataproduct.Stock = r.FormValue("Stock")
 				dataproduct.Size = r.FormValue("Size")
-				dataproduct.Status = status
+				dataproduct.Status = r.FormValue("Status")
 
 				file, _, err := r.FormFile("Image")
 				if err != nil {
