@@ -1254,24 +1254,25 @@ func GCFCreateProductt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collprod
 		if err != nil {
 			response.Message = "Error parsing application/json: " + err.Error()
 			return GCFReturnStruct(response)
+		} else {
+
+			// Update dataproduct with additional form values
+			dataproduct.Nomorid = r.FormValue("Nomorid")
+			dataproduct.Name = r.FormValue("Name")
+			dataproduct.Description = r.FormValue("Description")
+			dataproduct.Price = r.FormValue("Price")
+			dataproduct.Stock = r.FormValue("Stock")
+			dataproduct.Size = r.FormValue("Size")
+			dataproduct.Status = r.FormValue("Status")
+			dataproduct.Image = r.FormValue("Image")
+
+			// Call CreateNewProduct with the updated dataproduct
+			CreateNewProduct(mconn, collproduct, dataproduct)
+
+			// Set response status and message
+			response.Status = true
+			response.Message = "Product creation successful"
 		}
-
-		// Update dataproduct with additional form values
-		dataproduct.Nomorid = r.FormValue("Nomorid")
-		dataproduct.Name = r.FormValue("Name")
-		dataproduct.Description = r.FormValue("Description")
-		dataproduct.Price = r.FormValue("Price")
-		dataproduct.Stock = r.FormValue("Stock")
-		dataproduct.Size = r.FormValue("Size")
-		dataproduct.Status = r.FormValue("Status")
-		dataproduct.Image = r.FormValue("Image")
-
-		// Call CreateNewProduct with the updated dataproduct
-		CreateNewProduct(mconn, collproduct, dataproduct)
-
-		// Set response status and message
-		response.Status = true
-		response.Message = "Product creation successful"
 	}
 
 	return GCFReturnStruct(response)
