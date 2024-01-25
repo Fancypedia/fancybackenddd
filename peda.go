@@ -1252,7 +1252,43 @@ func GCFCreateProductt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collprod
 					}
 				}
 			} else {
-				response.Message = "ANDA BUKAN ADMIN"
+				var dataproduct Product
+				nomoridStr := r.FormValue("Nomorid")
+				nomorid, err := strconv.Atoi(nomoridStr)
+
+				PriceStr := r.FormValue("Price")
+				priceid, err := strconv.Atoi(PriceStr)
+
+				prdoucrStr := r.FormValue("Stock")
+				productid, err := strconv.Atoi(prdoucrStr)
+				if err != nil {
+					response.Message = "Error converting Nomorid to integer: " + err.Error()
+					return GCFReturnStruct(response)
+				}
+				statusStr := r.FormValue("Status")
+				status, err := strconv.ParseBool(statusStr)
+				if err != nil {
+					response.Message = "Error converting Status to boolean: " + err.Error()
+					return GCFReturnStruct(response)
+				}
+				dataproduct.Nomorid = nomorid
+				dataproduct.Name = r.FormValue("Name")
+				dataproduct.Description = r.FormValue("Description")
+				dataproduct.Price = priceid
+				dataproduct.Stock = productid
+				dataproduct.Size = r.FormValue("Size")
+				dataproduct.Status = status
+
+				file, _, err := r.FormFile("Image")
+				if err != nil {
+					response.Message = "Error retrieving image: " + err.Error()
+				} else {
+					defer file.Close()
+					CreateNewProduct(mconn, collproduct, dataproduct)
+
+					response.Status = true
+					response.Message = "Product creation successful"
+				}
 			}
 		}
 	}
