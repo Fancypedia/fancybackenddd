@@ -1210,9 +1210,15 @@ func GCFCreateProductt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collprod
 			if auth2.Role == "admin" {
 				var dataproduct Product
 				err := json.NewDecoder(r.Body).Decode(&dataproduct)
+
 				if err != nil {
 					response.Message = "Error parsing application/json: " + err.Error()
 				} else {
+					err := r.ParseMultipartForm(10 << 20)
+					if err != nil {
+						response.Message = "Error parsing multipart/form-data: " + err.Error()
+						return GCFReturnStruct(response)
+					}
 					var dataproduct Product
 					dataproduct.Nomorid = r.FormValue("Nomorid")
 					dataproduct.Name = r.FormValue("Name")
@@ -1234,6 +1240,11 @@ func GCFCreateProductt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collprod
 					}
 				}
 			} else {
+				err := r.ParseMultipartForm(10 << 20)
+				if err != nil {
+					response.Message = "Error parsing multipart/form-data: " + err.Error()
+					return GCFReturnStruct(response)
+				}
 				var dataproduct Product
 				dataproduct.Nomorid = r.FormValue("Nomorid")
 				dataproduct.Name = r.FormValue("Name")
@@ -1243,11 +1254,11 @@ func GCFCreateProductt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collprod
 				dataproduct.Size = r.FormValue("Size")
 				dataproduct.Status = r.FormValue("Status")
 
-				file, _, err := r.FormFile("Image")
+				File, _, err := r.FormFile("Image")
 				if err != nil {
 					response.Message = "Error retrieving image: " + err.Error()
 				} else {
-					defer file.Close()
+					defer File.Close()
 					CreateNewProduct(mconn, collproduct, dataproduct)
 
 					response.Status = true
