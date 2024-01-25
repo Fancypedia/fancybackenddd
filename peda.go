@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 
 	"github.com/aiteung/atapi"
 	"github.com/aiteung/atdb"
@@ -1251,14 +1250,15 @@ func GCFCreateProductt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collprod
 		response.Message = "Product creation successful"
 	} else {
 		var dataproduct Product
-		dataproduct.Nomorid = strings.TrimSpace(r.FormValue("Nomorid"))
-		dataproduct.Name = strings.TrimSpace(r.FormValue("Name"))
-		dataproduct.Description = strings.TrimSpace(r.FormValue("Description"))
-		dataproduct.Price = strings.TrimSpace(r.FormValue("Price"))
-		dataproduct.Stock = strings.TrimSpace(r.FormValue("Stock"))
-		dataproduct.Size = strings.TrimSpace(r.FormValue("Size"))
-		dataproduct.Status = strings.TrimSpace(r.FormValue("Status"))
-		dataproduct.Image = strings.TrimSpace(r.FormValue("Image"))
+		// Update dataproduct with additional form values
+		dataproduct.Nomorid = r.FormValue("Nomorid")
+		dataproduct.Name = r.FormValue("Name")
+		dataproduct.Description = r.FormValue("Description")
+		dataproduct.Price = r.FormValue("Price")
+		dataproduct.Stock = r.FormValue("Stock")
+		dataproduct.Size = r.FormValue("Size")
+		dataproduct.Status = r.FormValue("Status")
+		dataproduct.Image = r.FormValue("Image")
 
 		// Call CreateNewProduct with the updated dataproduct
 		CreateNewProduct(mconn, collproduct, dataproduct)
