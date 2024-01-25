@@ -1208,58 +1208,67 @@ func GCFCreateProductt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collprod
 		} else {
 			auth2 := FindUser(mconn, colluser, authdata)
 			if auth2.Role == "admin" {
-				err := r.ParseMultipartForm(10 << 20) // Set a limit to 10MB for the image file
+				var dataproduct Product
+				err := json.NewDecoder(r.Body).Decode(&dataproduct)
 				if err != nil {
-					response.Message = "Error parsing multipart/form-data: " + err.Error()
+					response.Message = "Error parsing application/json: " + err.Error()
 				} else {
-					var dataproduct Product
-					nomoridStr := r.FormValue("Nomorid")
-					nomorid, err := strconv.Atoi(nomoridStr)
+					auth2 := FindUser(mconn, colluser, authdata)
+					if auth2.Role == "admin" {
+						err := r.ParseMultipartForm(10 << 20) // Set a limit to 10MB for the image file
+						if err != nil {
+							response.Message = "Error parsing multipart/form-data: " + err.Error()
+						} else {
+							var dataproduct Product
+							nomoridStr := r.FormValue("Nomorid")
+							nomorid, err := strconv.Atoi(nomoridStr)
 
-					PriceStr := r.FormValue("Price")
-					priceid, err := strconv.Atoi(PriceStr)
+							PriceStr := r.FormValue("Price")
+							priceid, err := strconv.Atoi(PriceStr)
 
-					prdoucrStr := r.FormValue("Stock")
-					productid, err := strconv.Atoi(prdoucrStr)
-					if err != nil {
-						response.Message = "Error converting Nomorid to integer: " + err.Error()
-						return GCFReturnStruct(response)
-					}
-					statusStr := r.FormValue("Status")
-					status, err := strconv.ParseBool(statusStr)
-					if err != nil {
-						response.Message = "Error converting Status to boolean: " + err.Error()
-						return GCFReturnStruct(response)
-					}
-					dataproduct.Nomorid = nomorid
-					dataproduct.Name = r.FormValue("Name")
-					dataproduct.Description = r.FormValue("Description")
-					dataproduct.Price = priceid
-					dataproduct.Stock = productid
-					dataproduct.Size = r.FormValue("Size")
-					dataproduct.Status = status
+							prdoucrStr := r.FormValue("Stock")
+							productid, err := strconv.Atoi(prdoucrStr)
+							if err != nil {
+								response.Message = "Error converting Nomorid to integer: " + err.Error()
+								return GCFReturnStruct(response)
+							}
+							statusStr := r.FormValue("Status")
+							status, err := strconv.ParseBool(statusStr)
+							if err != nil {
+								response.Message = "Error converting Status to boolean: " + err.Error()
+								return GCFReturnStruct(response)
+							}
+							dataproduct.Nomorid = nomorid
+							dataproduct.Name = r.FormValue("Name")
+							dataproduct.Description = r.FormValue("Description")
+							dataproduct.Price = priceid
+							dataproduct.Stock = productid
+							dataproduct.Size = r.FormValue("Size")
+							dataproduct.Status = status
 
-					file, _, err := r.FormFile("Image")
-					if err != nil {
-						response.Message = "Error retrieving image: " + err.Error()
-					} else {
-						defer file.Close()
+							file, _, err := r.FormFile("Image")
+							if err != nil {
+								response.Message = "Error retrieving image: " + err.Error()
+							} else {
+								defer file.Close()
 
-						// You can now save or process the file as needed
-						// Example: Save the file to a predefined location
-						// filename := "path/to/save/" + dataproduct.Name + ".jpg"
-						// err := saveFile(file, filename)
-						// if err != nil {
-						//     response.Message = "Error saving image: " + err.Error()
-						// } else {
-						//     dataproduct.Image = filename
-						// }
+								// You can now save or process the file as needed
+								// Example: Save the file to a predefined location
+								// filename := "path/to/save/" + dataproduct.Name + ".jpg"
+								// err := saveFile(file, filename)
+								// if err != nil {
+								//     response.Message = "Error saving image: " + err.Error()
+								// } else {
+								//     dataproduct.Image = filename
+								// }
 
-						// Update the CreateNewProduct call accordingly based on your needs
-						CreateNewProduct(mconn, collproduct, dataproduct)
+								// Update the CreateNewProduct call accordingly based on your needs
+								CreateNewProduct(mconn, collproduct, dataproduct)
 
-						response.Status = true
-						response.Message = "Product creation successful"
+								response.Status = true
+								response.Message = "Product creation successful"
+							}
+						}
 					}
 				}
 			} else {
@@ -1269,7 +1278,6 @@ func GCFCreateProductt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collprod
 	}
 	return GCFReturnStruct(response)
 }
-
 func GCFEndCodepaseto(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
 	var response Credential
 	response.Status = false
