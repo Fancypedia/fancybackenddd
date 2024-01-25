@@ -1197,80 +1197,66 @@ func GCFCreateProductt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collprod
 	mconn := SetConnection(MONGOCONNSTRINGENV, dbname)
 	var authdata User
 	gettoken := r.Header.Get("token")
-
 	if gettoken == "" {
 		response.Message = "Missing token in headers"
-		return GCFReturnStruct(response)
-	}
-
-	// Process the request with the "Login" token
-	checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
-	authdata.Username = checktoken
-
-	if checktoken == "" {
-		response.Message = "Invalid token"
-		return GCFReturnStruct(response)
-	}
-
-	auth2 := FindUser(mconn, colluser, authdata)
-	if auth2.Role != "admin" {
-		var dataproduct Product
-		err := json.NewDecoder(r.Body).Decode(&dataproduct)
-
-		if err != nil {
-			response.Message = "Error parsing application/json: " + err.Error()
-			return GCFReturnStruct(response)
-		}
-
-		err = r.ParseMultipartForm(10 << 20)
-		if err != nil {
-			response.Message = "Error parsing multipart/form-data: " + err.Error()
-			return GCFReturnStruct(response)
-		}
-
-		dataproduct.Nomorid = r.FormValue("Nomorid")
-		dataproduct.Name = r.FormValue("Name")
-		dataproduct.Description = r.FormValue("Description")
-		dataproduct.Price = r.FormValue("Price")
-		dataproduct.Stock = r.FormValue("Stock")
-		dataproduct.Size = r.FormValue("Size")
-		dataproduct.Status = r.FormValue("Status")
-
-		file, _, err := r.FormFile("Image")
-		if err != nil {
-			response.Message = "Error retrieving image: " + err.Error()
-			return GCFReturnStruct(response)
-		}
-		defer file.Close()
-
-		// Call CreateNewProduct with the updated dataproduct
-		CreateNewProduct(mconn, collproduct, dataproduct)
-
-		response.Status = true
-		response.Message = "Product creation successful"
 	} else {
-		var dataproduct Product
-		// Update dataproduct with additional form values
-		dataproduct.Nomorid = r.FormValue("Nomorid")
-		dataproduct.Name = r.FormValue("Name")
-		dataproduct.Description = r.FormValue("Description")
-		dataproduct.Price = r.FormValue("Price")
-		dataproduct.Stock = r.FormValue("Stock")
-		dataproduct.Size = r.FormValue("Size")
-		dataproduct.Status = r.FormValue("Status")
-		dataproduct.Image = r.FormValue("Image")
+		// Process the request with the "Login" token
+		checktoken := watoken.DecodeGetId(os.Getenv(publickey), gettoken)
+		authdata.Username = checktoken
+		if checktoken == "" {
+			response.Message = "Invalid token"
+		} else {
+			auth2 := FindUser(mconn, colluser, authdata)
+			if auth2.Role == "admin" {
+				var dataproduct Product
+				err := json.NewDecoder(r.Body).Decode(&dataproduct)
 
-		// Call CreateNewProduct with the updated dataproduct
-		CreateNewProduct(mconn, collproduct, dataproduct)
+				if err != nil {
+					response.Message = "Error parsing application/json: " + err.Error()
+				} else {
+					err := r.ParseMultipartForm(10 << 20)
+					if err != nil {
+						response.Message = "Error parsing multipart/form-data: " + err.Error()
+						return GCFReturnStruct(response)
+					}
+					var dataproduct Product
+					dataproduct.Nomorid = r.FormValue("Nomorid")
+					dataproduct.Name = r.FormValue("Name")
+					dataproduct.Description = r.FormValue("Description")
+					dataproduct.Price = r.FormValue("Price")
+					dataproduct.Stock = r.FormValue("Stock")
+					dataproduct.Size = r.FormValue("Size")
+					dataproduct.Status = r.FormValue("Status")
 
-		// Set response status and message
-		response.Status = true
-		response.Message = "Product creation successful"
+					file, _, err := r.FormFile("Image")
+					if err != nil {
+						response.Message = "Error retrieving image: " + err.Error()
+					} else {
+						defer file.Close()
+						CreateNewProduct(mconn, collproduct, dataproduct)
+
+						response.Status = true
+						response.Message = "Product creation successful"
+					}
+				}
+			} else {
+				var dataproduct Product
+				dataproduct.Nomorid = r.FormValue("Nomorid")
+				dataproduct.Name = r.FormValue("Name")
+				dataproduct.Description = r.FormValue("Description")
+				dataproduct.Price = r.FormValue("Price")
+				dataproduct.Stock = r.FormValue("Stock")
+				dataproduct.Size = r.FormValue("Size")
+				dataproduct.Status = r.FormValue("Status")
+				dataproduct.Image = r.FormValue("Image")
+				CreateNewProduct(mconn, collproduct, dataproduct)
+				response.Status = true
+				response.Message = "Product creation successful"
+			}
+		}
 	}
-
 	return GCFReturnStruct(response)
 }
-
 func GCFEndCodepaseto(MONGOCONNSTRINGENV, dbname, collectionname string, r *http.Request) string {
 	var response Credential
 	response.Status = false
