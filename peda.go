@@ -1240,11 +1240,6 @@ func GCFCreateProductt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collprod
 					}
 				}
 			} else {
-				err := r.ParseMultipartForm(10 << 20)
-				if err != nil {
-					response.Message = "Error parsing multipart/form-data: " + err.Error()
-					return GCFReturnStruct(response)
-				}
 				var dataproduct Product
 				dataproduct.Nomorid = r.FormValue("Nomorid")
 				dataproduct.Name = r.FormValue("Name")
@@ -1253,19 +1248,8 @@ func GCFCreateProductt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collprod
 				dataproduct.Stock = r.FormValue("Stock")
 				dataproduct.Size = r.FormValue("Size")
 				dataproduct.Status = r.FormValue("Status")
-				file, _, err := r.FormFile("Image")
-				if err != nil {
-					response.Message = "Error retrieving image: " + err.Error()
-				}
-				defer file.Close()
-				filename := "path/to/save/" + dataproduct.Name + ".jpg"
-				err = saveFile(file, filename)
-				if err != nil {
-					response.Message = "Error saving image: " + err.Error()
-				}
+				dataproduct.Image = r.FormValue("Image")
 				CreateNewProduct(mconn, collproduct, dataproduct)
-				dataproduct.Image = filename
-
 				response.Status = true
 				response.Message = "Product creation successful"
 			}
