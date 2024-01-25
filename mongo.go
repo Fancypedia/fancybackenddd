@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"log"
+	"mime/multipart"
 	"os"
 	"testing"
 
@@ -825,6 +827,17 @@ func GeoWithin(mongoconn *mongo.Database, coordinates [][][]float64) (namalokasi
 	}
 	return lokasi.Properties.Name
 
+}
+
+func saveFile(file multipart.File, filepath string) error {
+	f, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	_, err = io.Copy(f, file)
+	return err
 }
 func Near(mongoconn *mongo.Database, long float64, lat float64) (namalokasi string) {
 	lokasicollection := mongoconn.Collection("near")

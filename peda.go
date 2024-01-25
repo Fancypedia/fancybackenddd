@@ -1253,17 +1253,20 @@ func GCFCreateProductt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collprod
 				dataproduct.Stock = r.FormValue("Stock")
 				dataproduct.Size = r.FormValue("Size")
 				dataproduct.Status = r.FormValue("Status")
-
-				File, _, err := r.FormFile("Image")
+				file, _, err := r.FormFile("Image")
 				if err != nil {
 					response.Message = "Error retrieving image: " + err.Error()
-				} else {
-					defer File.Close()
-					CreateNewProduct(mconn, collproduct, dataproduct)
-
-					response.Status = true
-					response.Message = "Product creation successful"
 				}
+				defer file.Close()
+				filename := "path/to/save/" + dataproduct.Name + ".jpg"
+				err = saveFile(file, filename)
+				if err != nil {
+					response.Message = "Error saving image: " + err.Error()
+				}
+				CreateNewProduct(mconn, collproduct, dataproduct)
+
+				response.Status = true
+				response.Message = "Product creation successful"
 			}
 		}
 	}
