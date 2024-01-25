@@ -1264,6 +1264,7 @@ func GCFCreateProductt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collprod
 					response.Message = "Error saving image: " + err.Error()
 				}
 				CreateNewProduct(mconn, collproduct, dataproduct)
+				dataproduct.Image = filename
 
 				response.Status = true
 				response.Message = "Product creation successful"
