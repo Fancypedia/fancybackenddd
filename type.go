@@ -79,11 +79,11 @@ type Credential struct {
 
 type Product struct {
 	ID          primitive.ObjectID `bson:"_id,omitempty" `
-	Nomorid     string             `json:"nomorid" bson:"nomorid"`
+	Nomorid     int             `json:"nomorid" bson:"nomorid"`
 	Name        string             `json:"name" bson:"name"`
 	Description string             `json:"description" bson:"description"`
-	Price       string             `json:"price" bson:"price"`
-	Stock       string             `json:"stock" bson:"stock"`
+	Price       int             `json:"price" bson:"price"`
+	Stock       int             `json:"stock" bson:"stock"`
 	Size        string             `json:"size" bson:"size"`
 	Image       string             `json:"image" bson:"image"`
 	Status      string             `json:"status" bson:"status"`

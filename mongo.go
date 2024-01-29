@@ -859,7 +859,7 @@ func Near(mongoconn *mongo.Database, long float64, lat float64) (namalokasi stri
 	}
 	return lokasi.Properties.Name
 }
-func NearSpehere(mongoconn *mongo.Database, long, lat float64) ([]string, error) {
+func NearSpehere(mongoconn *mongo.Database, long float64, lat float64) (namalokasi string) {
 	lokasicollection := mongoconn.Collection("near")
 	filter := bson.M{
 		"geometry": bson.M{
@@ -872,35 +872,12 @@ func NearSpehere(mongoconn *mongo.Database, long, lat float64) ([]string, error)
 			},
 		},
 	}
-
-	var lokasis []Lokasi
-	cursor, err := lokasicollection.Find(context.TODO(), filter)
+	var lokasi Lokasi
+	err := lokasicollection.FindOne(context.TODO(), filter).Decode(&lokasi)
 	if err != nil {
-		log.Fatal(err)
-		return nil, err
+		log.Printf("Near: %v\n", err)
 	}
-	defer cursor.Close(context.TODO())
-
-	for cursor.Next(context.TODO()) {
-		var lokasi Lokasi
-		if err := cursor.Decode(&lokasi); err != nil {
-			log.Fatal(err)
-			return nil, err
-		}
-		lokasis = append(lokasis, lokasi)
-	}
-
-	if err := cursor.Err(); err != nil {
-		log.Fatal(err)
-		return nil, err
-	}
-
-	var names []string
-	for _, l := range lokasis {
-		names = append(names, l.Properties.Name)
-	}
-
-	return names, nil
+	return lokasi.Properties.Name
 }
 
 func Polygonn(mongoconn *mongo.Database, coordinates [][][]float64) (namalokasi string) {
