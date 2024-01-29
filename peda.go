@@ -1210,49 +1210,25 @@ func GCFCreateProductt(publickey, MONGOCONNSTRINGENV, dbname, colluser, collprod
 			if auth2.Role == "admin" {
 				var dataproduct Product
 				err := json.NewDecoder(r.Body).Decode(&dataproduct)
-
 				if err != nil {
 					response.Message = "Error parsing application/json: " + err.Error()
 				} else {
-					err := r.ParseMultipartForm(10 << 20)
-					if err != nil {
-						response.Message = "Error parsing multipart/form-data: " + err.Error()
-						return GCFReturnStruct(response)
-					}
-					var dataproduct Product
-					dataproduct.Nomorid = r.FormValue("Nomorid")
-					dataproduct.Name = r.FormValue("Name")
-					dataproduct.Description = r.FormValue("Description")
-					dataproduct.Price = r.FormValue("Price")
-					dataproduct.Stock = r.FormValue("Stock")
-					dataproduct.Size = r.FormValue("Size")
-					dataproduct.Status = r.FormValue("Status")
-
-					file, _, err := r.FormFile("Image")
-					if err != nil {
-						response.Message = "Error retrieving image: " + err.Error()
-					} else {
-						defer file.Close()
-						CreateNewProduct(mconn, collproduct, dataproduct)
-
-						response.Status = true
-						response.Message = "Product creation successful"
-					}
+					CreateNewProduct(mconn, collproduct, Product{
+						Nomorid:     dataproduct.Nomorid,
+						Name:        dataproduct.Name,
+						Description: dataproduct.Description,
+						Price:       dataproduct.Price,
+						Stock:       dataproduct.Stock,
+						Size:        dataproduct.Size,
+						Image:       dataproduct.Image,
+					})
+					response.Status = true
+					response.Message = "Product creation successful"
 				}
 			} else {
-				var dataproduct Product
-				dataproduct.Nomorid = r.FormValue("Nomorid")
-				dataproduct.Name = r.FormValue("Name")
-				dataproduct.Description = r.FormValue("Description")
-				dataproduct.Price = r.FormValue("Price")
-				dataproduct.Stock = r.FormValue("Stock")
-				dataproduct.Size = r.FormValue("Size")
-				dataproduct.Status = r.FormValue("Status")
-				dataproduct.Image = r.FormValue("Image")
-				CreateNewProduct(mconn, collproduct, dataproduct)
-				response.Status = true
-				response.Message = "Product creation successful"
+				response.Message = "ANDA BUKAN ADMIN"
 			}
+
 		}
 	}
 	return GCFReturnStruct(response)
