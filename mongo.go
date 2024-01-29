@@ -873,7 +873,20 @@ func NearSpehere(mongoconn *mongo.Database, long float64, lat float64) (namaloka
 		},
 	}
 	var lokasi Lokasi
-	err := lokasicollection.FindOne(context.TODO(), filter).Decode(&lokasi)
+	cursor, err := lokasicollection.Find(context.TODO(), filter)
+	if err != nil {
+		// handle the error
+		log.Fatal(err)
+	}
+	defer cursor.Close(context.TODO())
+	if cursor.Next(context.TODO()) {
+		err := cursor.Decode(&lokasi)
+		if err != nil {
+			// handle decoding error
+			log.Fatal(err)
+		}
+	}
+
 	if err != nil {
 		log.Printf("Near: %v\n", err)
 	}
