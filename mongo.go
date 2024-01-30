@@ -9,6 +9,7 @@ import (
 	"log"
 	"mime/multipart"
 	"os"
+	"strings"
 	"testing"
 
 	"aidanwoods.dev/go-paseto"
@@ -950,7 +951,7 @@ func Polygonn(mongoconn *mongo.Database, coordinates [][][]float64) (namalokasi 
 	return lokasi.Properties.Name
 }
 
-func GetBoxDoccc(mongoconn *mongo.Database, coordinates Polyline) (result string) {
+func GetBoxDoccc(mongoconn *mongo.Database, coordinates Polyline) (result string, err error) {
 	lokasicollection := mongoconn.Collection("boxfix")
 	filter := bson.M{
 		"geometry": bson.M{
@@ -959,13 +960,41 @@ func GetBoxDoccc(mongoconn *mongo.Database, coordinates Polyline) (result string
 			},
 		},
 	}
-	var doc FullGeoJson
-	err := lokasicollection.FindOne(context.TODO(), filter).Decode(&doc)
+
+	cursor, err := lokasicollection.Find(context.TODO(), filter)
 	if err != nil {
 		fmt.Printf("Box: %v\n", err)
+		return "", err
 	}
-	return "Box anda berada pada " + doc.Properties.Name
+	defer cursor.Close(context.TODO())
+
+	var results []string
+	for cursor.Next(context.TODO()) {
+		var doc FullGeoJson
+		err := cursor.Decode(&doc)
+		if err != nil {
+			fmt.Printf("Decode Err: %v\n", err)
+			continue
+		}
+		results = append(results, doc.Properties.Name)
+	}
+
+	if err := cursor.Err(); err != nil {
+		fmt.Printf("Cursor Err: %v\n", err)
+		return "", err
+	}
+
+	// If no results found
+	if len(results) == 0 {
+		return "No matching documents found", nil
+	}
+
+	// Concatenate the results into a string
+	result = "Box anda berada pada " + strings.Join(results, ", ")
+
+	return result, nil
 }
+
 func Center(mongoconn *mongo.Database, longitude, latitude, radius float64) (namalokasi string) {
 	lokasicollection := mongoconn.Collection("center")
 	filter := bson.M{

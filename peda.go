@@ -3248,7 +3248,12 @@ func BoxFix(mongoenv, dbname string, r *http.Request) string {
 	} else {
 		response.Status = true
 		// Pass the Polyline instance to GetBoxDoccc
-		response.Message = GetBoxDoccc(mconn, coordinates)
+		result, err := GetBoxDoccc(mconn, coordinates)
+		if err != nil {
+			response.Message = "error executing GetBoxDoccc: " + err.Error()
+		} else {
+			response.Message = result
+		}
 	}
 
 	return GCFReturnStruct(response)
