@@ -3186,8 +3186,13 @@ func PostNear(mongoenv, dbname string, r *http.Request) string {
 	if err != nil {
 		response.Message = "error parsing application/json: " + err.Error()
 	} else {
-		response.Status = true
-		response.Message = Near(mconn, longlat.Longitude, longlat.Latitude)
+		names, err := Near(mconn, longlat.Longitude, longlat.Latitude)
+		if err != nil {
+			response.Message = "error executing Near: " + err.Error()
+		} else {
+			response.Status = true
+			response.Message = strings.Join(names, ", ")
+		}
 	}
 	return GCFReturnStruct(response)
 }

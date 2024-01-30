@@ -838,7 +838,7 @@ func saveFile(file multipart.File, filepath string) error {
 	_, err = io.Copy(f, file)
 	return err
 }
-func Near(mongoconn *mongo.Database, long float64, lat float64) (namalokasi string) {
+func Near(mongoconn *mongo.Database, long float64, lat float64) ([]string, error) {
 	lokasicollection := mongoconn.Collection("near")
 	filter := bson.M{
 		"geometry": bson.M{
@@ -851,12 +851,30 @@ func Near(mongoconn *mongo.Database, long float64, lat float64) (namalokasi stri
 			},
 		},
 	}
-	var lokasi Lokasi
-	err := lokasicollection.FindOne(context.TODO(), filter).Decode(&lokasi)
+	cur, err := lokasicollection.Find(context.TODO(), filter)
 	if err != nil {
 		log.Printf("Near: %v\n", err)
+		return nil, err
 	}
-	return lokasi.Properties.Name
+	defer cur.Close(context.TODO())
+
+	var names []string
+	for cur.Next(context.TODO()) {
+		var lokasi Lokasi
+		err := cur.Decode(&lokasi)
+		if err != nil {
+			log.Printf("Decode Err: %v\n", err)
+			continue
+		}
+		names = append(names, lokasi.Properties.Name)
+	}
+
+	if err := cur.Err(); err != nil {
+		log.Printf("Cursor Err: %v\n", err)
+		return nil, err
+	}
+
+	return names, nil
 }
 
 // Modify the NearSpehere function
