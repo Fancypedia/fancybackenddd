@@ -865,7 +865,7 @@ func Near(mongoconn *mongo.Database, long float64, lat float64, max float64, min
 					"coordinates": []float64{long, lat},
 				},
 				"$maxDistance": max,
-				"$mixDistance": min,
+				"$minDistance": min,
 			},
 		},
 	}
