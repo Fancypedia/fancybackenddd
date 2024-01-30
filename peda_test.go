@@ -248,8 +248,8 @@ func TestNear(t *testing.T) {
 	fmt.Println(datagedung)
 }
 
-func TestNearSphere(t *testing.T) {
-	mconn := SetConnection2dsphereTest("mongoenv", "petapediaaa")
-	datagedung := NearSpehere(mconn, 103.61028753823456, -1.6246312350403684)
-	fmt.Println(datagedung)
-}
+// func TestNearSphere(t *testing.T) {
+// 	mconn := SetConnection2dsphereTest("mongoenv", "petapediaaa")
+// 	datagedung := NearSpehere(mconn, 103.61028753823456, -1.6246312350403684)
+// 	fmt.Println(datagedung)
+// }

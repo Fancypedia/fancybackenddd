@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/aiteung/atapi"
 	"github.com/aiteung/atdb"
@@ -3207,6 +3208,7 @@ func Polygonnn(mongoenv, dbname string, r *http.Request) string {
 	return GCFReturnStruct(response)
 }
 
+// Calling code for NearSpeheree
 func NearSpeheree(mongoenv, dbname string, r *http.Request) string {
 	var longlat LongLat
 	var response Pesan
@@ -3217,8 +3219,13 @@ func NearSpeheree(mongoenv, dbname string, r *http.Request) string {
 	if err != nil {
 		response.Message = "error parsing application/json: " + err.Error()
 	} else {
-		response.Status = true
-		response.Message = NearSpehere(mconn, longlat.Longitude, longlat.Latitude)
+		names, err := NearSpehere(mconn, longlat.Longitude, longlat.Latitude)
+		if err != nil {
+			response.Message = "error executing NearSpehere: " + err.Error()
+		} else {
+			response.Status = true
+			response.Message = strings.Join(names, ", ")
+		}
 	}
 	return GCFReturnStruct(response)
 }

@@ -780,7 +780,6 @@ func GeoIntersects(mongoconn *mongo.Database, long float64, lat float64) (namalo
 		fmt.Printf("GetLokasi: %v\n", err)
 	}
 	return lokasi.Properties.Name
-
 }
 
 func TestPolygon(t *testing.T) {
@@ -859,7 +858,9 @@ func Near(mongoconn *mongo.Database, long float64, lat float64) (namalokasi stri
 	}
 	return lokasi.Properties.Name
 }
-func NearSpehere(mongoconn *mongo.Database, long float64, lat float64) (namalokasi string) {
+
+// Modify the NearSpehere function
+func NearSpehere(mongoconn *mongo.Database, long float64, lat float64) ([]string, error) {
 	lokasicollection := mongoconn.Collection("near")
 	filter := bson.M{
 		"geometry": bson.M{
@@ -872,12 +873,34 @@ func NearSpehere(mongoconn *mongo.Database, long float64, lat float64) (namaloka
 			},
 		},
 	}
-	var lokasi Lokasi
-	err := lokasicollection.FindOne(context.TODO(), filter).Decode(&lokasi)
+	var lokasis []Lokasi
+	cur, err := lokasicollection.Find(context.TODO(), filter)
 	if err != nil {
-		log.Printf("Near: %v\n", err)
+		return nil, err
 	}
-	return lokasi.Properties.Name
+	defer cur.Close(context.TODO())
+
+	for cur.Next(context.TODO()) {
+		var lokasi Lokasi
+		err := cur.Decode(&lokasi)
+		if err != nil {
+			fmt.Printf("Decode Err: %v\n", err)
+			continue
+		}
+		lokasis = append(lokasis, lokasi)
+	}
+
+	if err := cur.Err(); err != nil {
+		return nil, err
+	}
+
+	// Extract names from lokasis
+	var names []string
+	for _, doc := range lokasis {
+		names = append(names, doc.Properties.Name)
+	}
+
+	return names, nil
 }
 
 func Polygonn(mongoconn *mongo.Database, coordinates [][][]float64) (namalokasi string) {
