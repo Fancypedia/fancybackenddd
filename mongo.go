@@ -808,7 +808,7 @@ func TestPolygon(t *testing.T) {
 	}
 }
 
-func GeoWithin(mongoconn *mongo.Database, coordinates [][][]float64) (namalokasi string) {
+func GeoWithin(mongoconn *mongo.Database, coordinates [][][]float64) (namalokasi []string) {
 	lokasicollection := mongoconn.Collection("petapediaaa")
 	filter := bson.M{
 		"geometry": bson.M{
@@ -820,13 +820,29 @@ func GeoWithin(mongoconn *mongo.Database, coordinates [][][]float64) (namalokasi
 			},
 		},
 	}
-	var lokasi Lokasi
-	err := lokasicollection.FindOne(context.TODO(), filter).Decode(&lokasi)
+
+	cursor, err := lokasicollection.Find(context.TODO(), filter)
 	if err != nil {
 		log.Printf("GeoWithin: %v\n", err)
+		return nil
 	}
-	return lokasi.Properties.Name
+	defer cursor.Close(context.TODO())
 
+	var lokasi Lokasi
+	for cursor.Next(context.TODO()) {
+		err := cursor.Decode(&lokasi)
+		if err != nil {
+			log.Printf("GeoWithin: %v\n", err)
+			continue
+		}
+		namalokasi = append(namalokasi, lokasi.Properties.Name)
+	}
+
+	if err := cursor.Err(); err != nil {
+		log.Printf("GeoWithin: %v\n", err)
+	}
+
+	return namalokasi
 }
 
 func saveFile(file multipart.File, filepath string) error {
@@ -839,7 +855,7 @@ func saveFile(file multipart.File, filepath string) error {
 	_, err = io.Copy(f, file)
 	return err
 }
-func Near(mongoconn *mongo.Database, long float64, lat float64) ([]string, error) {
+func Near(mongoconn *mongo.Database, long float64, lat float64, max float64, min float64) ([]string, error) {
 	lokasicollection := mongoconn.Collection("near")
 	filter := bson.M{
 		"geometry": bson.M{
@@ -848,7 +864,8 @@ func Near(mongoconn *mongo.Database, long float64, lat float64) ([]string, error
 					"type":        "LineString",
 					"coordinates": []float64{long, lat},
 				},
-				"$maxDistance": 1000,
+				"$maxDistance": max,
+				"$mixDistance": min,
 			},
 		},
 	}

@@ -3171,8 +3171,9 @@ func PostGeoWithin(mongoenv, dbname string, r *http.Request) string {
 		response.Message = "error parsing application/json: " + err.Error()
 	} else {
 		response.Status = true
-		response.Message = GeoWithin(mconn, coordinate.Coordinates)
+		response.Message = strings.Join(GeoWithin(mconn, coordinate.Coordinates), ", ")
 	}
+
 	return GCFReturnStruct(response)
 }
 
@@ -3186,7 +3187,7 @@ func PostNear(mongoenv, dbname string, r *http.Request) string {
 	if err != nil {
 		response.Message = "error parsing application/json: " + err.Error()
 	} else {
-		names, err := Near(mconn, longlat.Longitude, longlat.Latitude)
+		names, err := Near(mconn, longlat.Longitude, longlat.Latitude, longlat.max, longlat.min)
 		if err != nil {
 			response.Message = "error executing Near: " + err.Error()
 		} else {

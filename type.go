@@ -284,6 +284,8 @@ type FullGeoJson struct {
 type LongLat struct {
 	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
+	min       float64 `json:"min"`
+	max       float64 `json:"max"`
 }
 type Radius struct {
 	Radius float64 `json:"radius"`
