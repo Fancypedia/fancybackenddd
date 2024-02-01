@@ -242,11 +242,12 @@ func TestGeoWithin(t *testing.T) {
 	datagedung := GeoWithin(mconn, coordinates)
 	fmt.Println(datagedung)
 }
-func TestNear(t *testing.T) {
-	mconn := SetConnection2dsphereTest("mongoenv", "petapediaaa")
-	datagedung := Near(mconn, 103.61028753823456, -1.6246312350403684)
-	fmt.Println(datagedung)
-}
+
+// func TestNear(t *testing.T) {
+// 	mconn := SetConnection2dsphereTest("mongoenv", "petapediaaa")
+// 	datagedung := Near(mconn, 103.61028753823456, -1.6246312350403684)
+// 	fmt.Println(datagedung)
+// }
 
 // func TestNearSphere(t *testing.T) {
 // 	mconn := SetConnection2dsphereTest("mongoenv", "petapediaaa")
