@@ -19,6 +19,47 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+func FindallProduct(mconn *mongo.Database, collname string) []Product {
+	salon := atdb.GetAllDoc[[]Product](mconn, collname)
+	return salon
+}
+
+func FindallContent(mconn *mongo.Database, collname string) []Content {
+	salon := atdb.GetAllDoc[[]Content](mconn, collname)
+	return salon
+}
+
+func DecodeGetName(publickey string, tokenstring string) string {
+	payload, err := Decode(publickey, tokenstring)
+	if err != nil {
+		fmt.Println("Decode DecodeGetId : ", err)
+	}
+	return payload.Name
+}
+
+func DecodeGetUsername(publickey string, tokenstring string) string {
+	payload, err := Decode(publickey, tokenstring)
+	if err != nil {
+		fmt.Println("Decode DecodeGetId : ", err)
+	}
+	return payload.Username
+}
+
+func DecodeGetRole(publickey string, tokenstring string) string {
+	payload, err := Decode(publickey, tokenstring)
+	if err != nil {
+		fmt.Println("Decode DecodeGetId : ", err)
+	}
+	return payload.Role
+}
+func DecodeGetNomor(publickey string, tokenstring string) string {
+	payload, err := Decode(publickey, tokenstring)
+	if err != nil {
+		fmt.Println("Decode DecodeGetId : ", err)
+	}
+	return payload.Nomor
+}
+
 func SetConnection(MONGOCONNSTRINGENV, dbname string) *mongo.Database {
 	var DBmongoinfo = atdb.DBInfo{
 		DBString: os.Getenv(MONGOCONNSTRINGENV),
@@ -258,13 +299,16 @@ func Decode(publickey, tokenstr string) (payload Payload, err error) {
 
 	return payload, nil
 }
+func InsertUser(mconn *mongo.Database, collname string, datauser User) interface{} {
+	return atdb.InsertOneDoc(mconn, collname, datauser)
+}
+func UsernameExists(mongoenvkatalogfilm, dbname string, userdata User) bool {
+	mconn := SetConnection(mongoenvkatalogfilm, dbname).Collection("user")
+	filter := bson.M{"username": userdata.Username}
 
-func DecodeGetRole(publickey string, tokenstring string) string {
-	payload, err := Decode(publickey, tokenstring)
-	if err != nil {
-		fmt.Println("Decode DecodeGetId : ", err)
-	}
-	return payload.Role
+	var user User
+	err := mconn.FindOne(context.Background(), filter).Decode(&user)
+	return err == nil
 }
 
 func FindPrivate(mongoconn *mongo.Database, collection string, userdata User) User {
@@ -478,6 +522,11 @@ func GetAllProductID(mongoconn *mongo.Database, collection string, productdata P
 
 // content function
 
+func UpdatedProductt(mconn *mongo.Database, collname string, datasalon Product) interface{} {
+	filterr := bson.M{"nomorid": datasalon.Nomorid}
+	return atdb.ReplaceOneDoc(mconn, collname, filterr, datasalon)
+}
+
 func CreateContentt(mongoconn *mongo.Database, collection string, contentdata Content) interface{} {
 	return atdb.InsertOneDoc(mongoconn, collection, contentdata)
 }
@@ -487,8 +536,8 @@ func DeleteContentt(mongoconn *mongo.Database, collection string, contentdata Co
 	return atdb.DeleteOneDoc(mongoconn, collection, filter)
 }
 
-func UpdatedContentt(mongoconn *mongo.Database, collection string, filter bson.M, contentdata Content) interface{} {
-	filter = bson.M{"id": contentdata.ID}
+func UpdatedContentt(mongoconn *mongo.Database, collection string, contentdata Content) interface{} {
+	filter := bson.M{"id": contentdata.ID}
 	return atdb.ReplaceOneDoc(mongoconn, collection, filter, contentdata)
 }
 
@@ -538,8 +587,8 @@ func DeleteComment(mongoconn *mongo.Database, collection string, commentdata Com
 	return atdb.DeleteOneDoc(mongoconn, collection, filter)
 }
 
-func UpdatedComment(mongoconn *mongo.Database, collection string, filter bson.M, commentdata Comment) interface{} {
-	filter = bson.M{"id": commentdata.ID}
+func UpdatedComment(mongoconn *mongo.Database, collection string, commentdata Comment) interface{} {
+	filter := bson.M{"id": commentdata.ID}
 	return atdb.ReplaceOneDoc(mongoconn, collection, filter, commentdata)
 }
 

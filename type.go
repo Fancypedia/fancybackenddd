@@ -55,18 +55,11 @@ type User struct {
 	Private     string `json:"private,omitempty" bson:"private,omitempty"`
 	Publick     string `json:"publick,omitempty" bson:"publick,omitempty"`
 	No_whatsapp string `json:"no_whatsapp,omitempty" bson:"no_whatsapp,omitempty"`
+	Nomor       string `json:"nomor,omitempty" bson:"nomor,omitempty"`
 }
 
 type UserToken struct {
 	Username User `json:"username" bson:"username"`
-}
-
-type Payload struct {
-	User string    `json:"user"`
-	Role string    `json:"role"`
-	Exp  time.Time `json:"exp"`
-	Iat  time.Time `json:"iat"`
-	Nbf  time.Time `json:"nbf"`
 }
 
 type Credential struct {
@@ -299,8 +292,12 @@ type LongLatt struct {
 }
 
 type Pesan struct {
-	Status  bool   `json:"status" bson:"status"`
-	Message string `json:"message" bson:"message"`
+	Status  bool        `json:"status" bson:"status"`
+	Message string      `json:"message" bson:"message"`
+	Data    interface{} `json:"data,omitempty" bson:"data,omitempty"`
+	Role    string      `json:"role,omitempty" bson:"role,omitempty"`
+	Token   string      `json:"token,omitempty" bson:"token,omitempty"`
+	Nomor   string      `json:"nomor,omitempty" bson:"nomor,omitempty"`
 }
 type LocationData struct {
 	ID          string    `bson:"_id"`
@@ -316,4 +313,24 @@ type GeoBorder struct {
 }
 type Polyline struct {
 	Coordinates [][]float64 `json:"coordinates"`
+}
+
+type CredentialUser struct {
+	Status bool `json:"status" bson:"status"`
+	Data   struct {
+		Name     string `json:"name" bson:"name"`
+		Username string `json:"username" bson:"username"`
+		Role     string `json:"role" bson:"role"`
+		Nomor    string `json:"nomor" bson:"nomor"`
+	} `json:"data" bson:"data"`
+	Message string `json:"message,omitempty" bson:"message,omitempty"`
+}
+type Payload struct {
+	Name     string    `json:"name"`
+	Username string    `json:"username"`
+	Role     string    `json:"role"`
+	Nomor    string    `json:"nomor"`
+	Exp      time.Time `json:"exp"`
+	Iat      time.Time `json:"iat"`
+	Nbf      time.Time `json:"nbf"`
 }
